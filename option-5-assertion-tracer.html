@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sufficiency · Assertion Tracer · Helios Robotics Q3 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="gate.js"></script>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="chrome.css" />
+<link rel="stylesheet" href="chrome-midship.css" />
+<link rel="stylesheet" href="flow.css" />
+<link rel="stylesheet" href="ux-fixes.css" />
+<link rel="stylesheet" href="provenance.css" />
+<link rel="stylesheet" href="sources-strip.css" />
+<link rel="stylesheet" href="tour.css">
+<style>
+  /* ---------------- Page-head inline meta ---------------- */
+  .page-meta-inline {
+    margin-top: var(--luna-sp-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--luna-sp-2);
+    align-items: baseline;
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+  }
+  .page-meta-inline .meta-sep {
+    color: var(--luna-text-subdued);
+    opacity: 0.6;
+  }
+  .page-meta-inline .text-subdued {
+    color: var(--luna-text-subdued);
+  }
+
+  /* ---------------- Two-pane layout ---------------- */
+  .tracer-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: var(--luna-sp-5);
+    align-items: start;
+  }
+
+  /* ---------------- Filter bar ---------------- */
+  .filter-bar {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    display: flex; gap: var(--luna-sp-2); align-items: center;
+    margin-bottom: var(--luna-sp-5);
+    font-size: var(--luna-fs-150);
+    flex-wrap: wrap;
+  }
+  .filter-bar .filter-label {
+    color: var(--luna-text-subdued); font-size: var(--luna-fs-100);
+    text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+  }
+  .filter-chip {
+    padding: var(--luna-sp-1) var(--luna-sp-3);
+    border-radius: 999px;
+    font-size: var(--luna-fs-100);
+    background: var(--luna-bg-sunken);
+    color: var(--luna-text-subdued);
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .filter-chip.active {
+    background: var(--luna-teal-50);
+    color: var(--luna-teal-700);
+    border-color: var(--luna-teal-200);
+    font-weight: 500;
+  }
+  .filter-chip:hover:not(.active) { background: var(--luna-gray-200); color: var(--luna-text); }
+
+  /* ---------------- Coverage matrix ---------------- */
+  .coverage-matrix {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--luna-fs-150);
+  }
+  .coverage-matrix thead th {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--luna-text-subdued);
+    padding: var(--luna-sp-2) var(--luna-sp-2);
+    text-align: center;
+    border-bottom: 1px solid var(--luna-border);
+    background: var(--luna-bg-sunken);
+    white-space: nowrap;
+  }
+  .coverage-matrix thead th.row-header-col {
+    text-align: left;
+    padding: var(--luna-sp-2) var(--luna-sp-4);
+    background: var(--luna-bg-sunken);
+    border-right: 1px solid var(--luna-border);
+    min-width: 200px;
+  }
+  .coverage-matrix tbody th {
+    text-align: left;
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-weight: 500;
+    color: var(--luna-text);
+    font-size: var(--luna-fs-150);
+    background: var(--luna-bg-surface);
+    border-right: 1px solid var(--luna-border);
+    border-bottom: 1px solid var(--luna-border);
+    vertical-align: middle;
+  }
+  .coverage-matrix tbody th .asn-sub {
+    display: block;
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+    font-weight: 600;
+  }
+  .coverage-matrix tbody td {
+    padding: 2px;
+    border-bottom: 1px solid var(--luna-border);
+    text-align: center;
+  }
+  .cov-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--luna-sp-2) var(--luna-sp-1);
+    border-radius: var(--luna-radius-sm);
+    cursor: pointer;
+    transition: transform 80ms, box-shadow 80ms;
+    min-height: 54px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+  }
+  .cov-cell:hover {
+    transform: scale(1.04);
+    box-shadow: 0 2px 8px rgba(15,23,42,0.18);
+    z-index: 1;
+    position: relative;
+  }
+  .cov-cell .cov-pct {
+    font-size: var(--luna-fs-200);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .cov-cell .cov-n {
+    font-size: var(--luna-fs-25);
+    opacity: 0.85;
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+  /* Coverage color ramp */
+  .cov-cell.cov-ok    { background: var(--luna-green-100);  color: var(--luna-green-700); }
+  .cov-cell.cov-ok .cov-pct { color: var(--luna-green-700); }
+  .cov-cell.cov-mid   { background: var(--luna-yellow-100); color: var(--luna-yellow-700); }
+  .cov-cell.cov-mid .cov-pct { color: var(--luna-yellow-700); }
+  .cov-cell.cov-low   { background: var(--luna-orange-100); color: var(--luna-orange-700); }
+  .cov-cell.cov-low .cov-pct { color: var(--luna-orange-700); }
+  .cov-cell.cov-bad   { background: var(--luna-red-100);    color: var(--luna-red-700); }
+  .cov-cell.cov-bad .cov-pct { color: var(--luna-red-700); }
+  .cov-cell.cov-crit  { background: var(--luna-red-500);    color: var(--luna-white); }
+  .cov-cell.cov-crit .cov-pct { color: var(--luna-white); }
+  .cov-cell.cov-na    { background: var(--luna-gray-100);   color: var(--luna-text-muted); }
+  .cov-cell.cov-na .cov-pct { color: var(--luna-text-muted); font-weight: 500; }
+
+  /* ---------------- Ranked gap list (right rail) ---------------- */
+  .gap-rail {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-sm);
+    position: sticky;
+    top: var(--luna-sp-4);
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+  }
+  .gap-rail .rail-head {
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    border-bottom: 1px solid var(--luna-border);
+    background: var(--luna-bg-sunken);
+    border-radius: var(--luna-radius-lg) var(--luna-radius-lg) 0 0;
+  }
+  .gap-rail .rail-head h2 {
+    margin: 0;
+    font-size: var(--luna-fs-200);
+    font-weight: 600;
+  }
+  .gap-rail .rail-head .rail-sub {
+    margin-top: 2px;
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+  .gap-rail .rail-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: var(--luna-sp-2) 0;
+  }
+  .gap-rail .rail-foot {
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    border-top: 1px solid var(--luna-border);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    background: var(--luna-bg-sunken);
+    border-radius: 0 0 var(--luna-radius-lg) var(--luna-radius-lg);
+  }
+  .gap-item {
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    border-left: 3px solid var(--luna-red-500);
+    cursor: pointer;
+    border-bottom: 1px solid var(--luna-border);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--luna-sp-3);
+  }
+  .gap-item:hover { background: var(--luna-gray-50); }
+  .gap-item.sev-medium { border-left-color: var(--luna-orange-400); }
+  .gap-item.sev-low { border-left-color: var(--luna-yellow-400); }
+  .gap-item .gi-rank {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-muted);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    width: 22px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .gap-item .gi-body { flex: 1; min-width: 0; }
+  .gap-item .gi-ctrl {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-teal-600);
+    font-weight: 600;
+  }
+  .gap-item .gi-asn {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    font-weight: 500;
+    margin: 2px 0;
+    line-height: 1.35;
+  }
+  .gap-item .gi-meta {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    display: flex;
+    gap: var(--luna-sp-2);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .gap-item .gi-risk {
+    font-size: var(--luna-fs-50);
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--luna-red-500);
+    color: var(--luna-white);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .gap-item.sev-medium .gi-risk { background: var(--luna-orange-400); }
+  .gap-item.sev-low .gi-risk { background: var(--luna-yellow-400); color: var(--luna-gray-900); }
+
+  /* ---------------- Sampling banner ---------------- */
+  .sampling-banner {
+    margin-top: var(--luna-sp-4);
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-200);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-gray-800);
+    line-height: 1.5;
+    display: flex;
+    gap: var(--luna-sp-3);
+    align-items: flex-start;
+  }
+  .sampling-banner .sb-icon {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    background: var(--luna-teal-500);
+    color: var(--luna-white);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .sampling-banner b { color: var(--luna-text); }
+  .sampling-banner code {
+    background: var(--luna-white);
+    border: 1px solid var(--luna-teal-200);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: var(--luna-fs-100);
+    font-family: var(--luna-font-mono);
+  }
+
+  /* ---------------- Legend ---------------- */
+  .cov-legend {
+    display: flex;
+    gap: var(--luna-sp-4);
+    margin-top: var(--luna-sp-3);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .cov-legend .legend-swatch {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  /* ---------------- Drawer: assertion-to-evidence sankey-style ---------------- */
+  .drawer-section { margin-bottom: var(--luna-sp-5); }
+  .drawer-section h3 {
+    font-size: var(--luna-fs-100);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--luna-text-subdued);
+    margin: 0 0 var(--luna-sp-3);
+  }
+
+  .control-summary {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    line-height: 1.5;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--luna-sp-2) var(--luna-sp-3);
+  }
+  .control-summary .cs-label {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .control-summary .cs-val {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+  }
+  .control-summary .cs-val.mono {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+  }
+
+  /* Sankey-ish assertion-to-evidence diagram */
+  .sankey {
+    display: grid;
+    grid-template-columns: 180px 1fr 180px;
+    gap: var(--luna-sp-2) var(--luna-sp-4);
+    align-items: center;
+    position: relative;
+  }
+  .sankey .sk-asn, .sankey .sk-ev {
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    font-size: var(--luna-fs-100);
+    background: var(--luna-bg-surface);
+    line-height: 1.3;
+  }
+  .sankey .sk-asn {
+    border-left: 3px solid var(--luna-teal-400);
+  }
+  .sankey .sk-asn.weak { border-left-color: var(--luna-red-500); background: var(--luna-red-50); }
+  .sankey .sk-asn.mid  { border-left-color: var(--luna-orange-400); background: var(--luna-orange-50); }
+  .sankey .sk-ev {
+    border-left: 3px solid var(--luna-green-400);
+    text-align: left;
+  }
+  .sankey .sk-ev.missing {
+    border-left-color: var(--luna-red-500);
+    background: var(--luna-red-50);
+    color: var(--luna-red-700);
+    font-style: italic;
+  }
+  .sankey .sk-ev.sampled {
+    border-left-color: var(--luna-purple-500);
+    background: var(--luna-purple-50);
+  }
+  .sankey .sk-asn .sk-label {
+    font-weight: 600;
+    color: var(--luna-text);
+    font-size: var(--luna-fs-150);
+    text-transform: capitalize;
+  }
+  .sankey .sk-asn .sk-sub {
+    color: var(--luna-text-subdued);
+    margin-top: 2px;
+  }
+  .sankey .sk-ev .sk-ev-name {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-50);
+    color: var(--luna-gray-700);
+    word-break: break-all;
+  }
+  .sankey .sk-ev .sk-ev-detail {
+    color: var(--luna-text-subdued);
+    margin-top: 2px;
+  }
+  .sankey-link {
+    height: 2px;
+    background: var(--luna-teal-300);
+    width: 100%;
+    position: relative;
+  }
+  .sankey-link.weak    { background: var(--luna-red-400); }
+  .sankey-link.mid     { background: var(--luna-orange-400); }
+  .sankey-link.missing { background: repeating-linear-gradient(90deg, var(--luna-red-300) 0 4px, transparent 4px 8px); }
+  .sankey-link::before, .sankey-link::after {
+    content: '';
+    position: absolute; top: -3px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+  }
+  .sankey-link::before { left: -4px; color: var(--luna-teal-500); }
+  .sankey-link::after  { right: -4px; color: var(--luna-teal-500); }
+  .sankey-link.weak::before, .sankey-link.weak::after { color: var(--luna-red-500); }
+  .sankey-link.mid::before, .sankey-link.mid::after { color: var(--luna-orange-500); }
+  .sankey-link.missing::before, .sankey-link.missing::after { color: var(--luna-red-500); }
+
+  /* Sampling block (inside drawer) */
+  .sample-detail {
+    background: var(--luna-purple-50);
+    border: 1px solid var(--luna-purple-500);
+    border-left-width: 3px;
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-100);
+    line-height: 1.55;
+    color: var(--luna-gray-800);
+  }
+  .sample-detail .sd-title {
+    font-size: var(--luna-fs-150);
+    font-weight: 600;
+    color: var(--luna-text);
+    margin-bottom: var(--luna-sp-2);
+    display: flex;
+    align-items: center;
+    gap: var(--luna-sp-2);
+  }
+  .sample-detail .sd-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--luna-sp-1) var(--luna-sp-3);
+    margin-bottom: var(--luna-sp-2);
+  }
+  .sample-detail .sd-key {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--luna-text-subdued);
+    font-weight: 700;
+  }
+  .sample-detail .sd-val {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text);
+  }
+  .sample-detail .sd-just {
+    background: var(--luna-white);
+    border: 1px solid var(--luna-purple-50);
+    border-radius: 4px;
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    margin-top: var(--luna-sp-2);
+  }
+
+  /* Population mini-grid (sample visualization) */
+  .pop-grid {
+    display: grid;
+    grid-template-columns: repeat(50, 1fr);
+    gap: 2px;
+    margin-top: var(--luna-sp-2);
+    padding: var(--luna-sp-2);
+    background: var(--luna-white);
+    border-radius: 4px;
+  }
+  .pop-dot {
+    aspect-ratio: 1;
+    background: var(--luna-gray-200);
+    border-radius: 1px;
+  }
+  .pop-dot.sampled { background: var(--luna-purple-500); }
+  .pop-dot.exception { background: var(--luna-red-500); }
+  .pop-legend {
+    display: flex;
+    gap: var(--luna-sp-4);
+    margin-top: var(--luna-sp-2);
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+  }
+  .pop-legend .pl-sw {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 1px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* Evidence list inside drawer */
+  .ev-list { display: flex; flex-direction: column; gap: var(--luna-sp-2); }
+  .ev-item {
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    font-size: var(--luna-fs-100);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--luna-sp-2);
+    align-items: center;
+  }
+  .ev-item .ev-name {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text);
+  }
+  .ev-item .ev-meta {
+    color: var(--luna-text-subdued);
+    margin-top: 2px;
+  }
+
+  /* Hover hint */
+  .matrix-wrap {
+    overflow-x: auto;
+    border-radius: var(--luna-radius-lg);
+    border: 1px solid var(--luna-border);
+    background: var(--luna-bg-surface);
+    box-shadow: var(--luna-shadow-sm);
+  }
+  .matrix-wrap .mw-meta {
+    padding: var(--luna-sp-3) var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+    background: var(--luna-bg-sunken);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+  .matrix-wrap .mw-meta b { color: var(--luna-text); font-weight: 600; }
+</style>
+</head>
+<body data-ds="luna" data-flow-category="downstream">
+<script>(function(){try{var d=localStorage.getItem("sufficiency-ds");if(d==="midship"||d==="luna")document.body.dataset.ds=d;}catch(e){}})();</script>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-wordmark">Optro</span>
+    </div>
+    <nav>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M3 13h2v8H3zm6-4h2v12H9zm6-4h2v16h-2zm6-3h2v19h-2z%22/></svg>') no-repeat center/contain;"></span>Dashboard</a>
+      <a href="#" class="active"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/><path d=%22M9 3v18M3 9h18%22/></svg>') no-repeat center/contain;"></span>Controls</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22/><polyline points=%2214 2 14 8 20 8%22/></svg>') no-repeat center/contain;"></span>Evidence</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22/><polyline points=%2212 6 12 12 16 14%22/></svg>') no-repeat center/contain;"></span>Cycles</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M9 17V7a5 5 0 0 1 10 0v10a5 5 0 0 1-10 0z%22/><line x1=%2214%22 y1=%2210%22 x2=%2214%22 y2=%2214%22/></svg>') no-repeat center/contain;"></span>Reports</a>
+    </nav>
+    <div class="sidebar-footer">Q3 2026 · 18 days to close</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <!-- Topbar -->
+    <div class="app-topbar"><a href="index.html" class="back-to-options" title="All options"><span class="arrow">←</span><span>Back to options</span></a>
+      <button class="customer-switch">
+        <span>Helios Robotics</span>
+        <span class="caret">▾</span>
+      </button>
+      <div class="topbar-spacer"></div>
+      <div class="close-countdown">
+        <span>Q3 close:</span> <b>2026-10-15</b> <span>(18 days)</span>
+      </div>
+      <div class="avatar" title="Sarah Kim">SK</div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="app-breadcrumb">
+      <a href="index.html">Sufficiency</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">Assertion Tracer · Q3 2026</span>
+    </div>
+
+    <!-- Body -->
+    <div class="app-body padded-wide">
+
+      <!-- Page head -->
+      <div class="page-head">
+        <div>
+          <span class="eyebrow">Assertion tracer</span>
+          <h1>Coverage matrix<span id="totalAssertions" hidden></span></h1>
+          <p class="page-sub">Red cells = unsupported assertions. Drill any cell to trace assertion-to-evidence.</p>
+          <div class="page-meta-inline" aria-label="Coverage summary">
+            <span><b class="tabular">3,072</b> assertions · <b class="tabular">512</b> controls</span>
+            <span class="meta-sep">·</span>
+            <span id="unsupportedCount-wrap"><b class="tabular" id="unsupportedCount" style="color: var(--luna-red-500);">418</b> unsupported <span class="text-subdued">(13.6%)</span></span>
+            <span class="meta-sep">·</span>
+            <span><b class="tabular" style="color: var(--luna-orange-500);">18</b> days to filing</span>
+          </div>
+        </div>
+        <div class="page-actions">
+          <div class="overflow-menu" style="position: relative; display: inline-block;">
+            <button class="btn subtle" onclick="toggleHeadMenu(event)" aria-haspopup="true" title="More actions">⋯</button>
+            <div id="headMenu" class="overflow-menu-pop" style="display:none; position:absolute; right:0; top:calc(100% + 4px); background:var(--luna-bg-surface); border:1px solid var(--luna-border); border-radius:var(--luna-radius-md); box-shadow:var(--luna-shadow-md); z-index:50; min-width:220px; padding:var(--luna-sp-1);">
+              <button class="btn subtle"
+                id="exportAuditorBtn"
+                style="display:block; width:100%; text-align:left; border:0; background:transparent;"
+                data-ux-confirm
+                data-ux-confirm-title="Export coverage matrix to auditor?"
+                data-ux-confirm-body="Generates a signed PDF of the full 3,072-assertion coverage matrix plus ranked gap list, then surfaces it in the auditor handoff folder."
+                data-ux-confirm-impact="3,072 assertions · 512 controls · 418 open gaps · PDF + CSV bundle"
+                data-ux-confirm-undo="6"
+                onclick="toggleHeadMenu()">Export to auditor</button>
+              <button class="btn subtle" style="display:block; width:100%; text-align:left; border:0; background:transparent;" onclick="resetDemo(); toggleHeadMenu()">Reset demo</button>
+            </div>
+          </div>
+          <button class="btn primary"
+            id="bulkRequestBtn"
+            data-ux-confirm
+            data-ux-confirm-title="Dispatch bulk evidence requests?"
+            data-ux-confirm-body="Sends supporting-evidence requests for the top 50 ranked gaps back to assignees as new Draft items, stamped with the originating assertion id."
+            data-ux-confirm-impact="50 assertions · 50 controls · ~38 owners notified · Q3 close in 18 days"
+            data-ux-confirm-undo="8">Request gaps in bulk</button>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <span class="filter-label">Risk floor</span>
+        <span class="filter-chip active" data-floor="all">All assertions</span>
+        <span class="filter-chip" data-floor="material">Material only · 1,124</span>
+        <span class="filter-chip" data-floor="significant">SAB 99 significant · 487</span>
+      </div>
+
+      <!-- Two pane: matrix + ranked gap rail -->
+      <div class="tracer-layout">
+
+        <!-- Coverage matrix -->
+        <div>
+          <div class="matrix-wrap">
+            <table class="coverage-matrix">
+              <thead>
+                <tr>
+                  <th class="row-header-col">Assertion class</th>
+                  <th>ITGC<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">32 ctrl</span></th>
+                  <th>Revenue<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">86 ctrl</span></th>
+                  <th>Payroll<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">58 ctrl</span></th>
+                  <th>Procure<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">62 ctrl</span></th>
+                  <th>Treasury<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">44 ctrl</span></th>
+                  <th>Tax<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">38 ctrl</span></th>
+                  <th>Inventory<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">51 ctrl</span></th>
+                  <th>FinRep<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">73 ctrl</span></th>
+                  <th>Entity<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">39 ctrl</span></th>
+                  <th>HR<br><span style="font-weight:400;text-transform:none;color:var(--luna-text-muted);font-size:var(--luna-fs-25)">29 ctrl</span></th>
+                </tr>
+              </thead>
+              <tbody id="matrixBody"></tbody>
+            </table>
+          </div>
+
+          <details class="cov-disclosure" style="margin-top: var(--luna-sp-3);">
+            <summary style="cursor:pointer; font-size: var(--luna-fs-100); color: var(--luna-text-subdued); list-style:none; display:flex; gap:var(--luna-sp-3); align-items:center; flex-wrap:wrap;">
+              <span style="display:inline-flex; gap:var(--luna-sp-1); align-items:center;"><span class="legend-swatch" style="background:var(--luna-green-100)"></span><span class="legend-swatch" style="background:var(--luna-yellow-100)"></span><span class="legend-swatch" style="background:var(--luna-orange-100)"></span><span class="legend-swatch" style="background:var(--luna-red-100)"></span><span class="legend-swatch" style="background:var(--luna-red-500)"></span></span>
+              <span>Legend &amp; sampling methodology (412 of 3,072 cells sampled, ASA 530 N=60)</span>
+              <span style="opacity:0.6;">▾</span>
+            </summary>
+            <div class="cov-legend" style="margin-top: var(--luna-sp-2);">
+              <span><span class="legend-swatch" style="background:var(--luna-green-100)"></span>≥95% supported</span>
+              <span><span class="legend-swatch" style="background:var(--luna-yellow-100)"></span>85–95%</span>
+              <span><span class="legend-swatch" style="background:var(--luna-orange-100)"></span>70–85%</span>
+              <span><span class="legend-swatch" style="background:var(--luna-red-100)"></span>50–70%</span>
+              <span><span class="legend-swatch" style="background:var(--luna-red-500)"></span>&lt;50% (critical)</span>
+              <span><span class="legend-swatch" style="background:var(--luna-gray-100)"></span>n/a</span>
+            </div>
+            <div style="margin-top: var(--luna-sp-3); display:flex; gap:var(--luna-sp-2); align-items:center;">
+              <span class="filter-label" style="color: var(--luna-text-subdued); font-size: var(--luna-fs-100); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;">Show in cells</span>
+              <select class="btn sm" style="background: var(--luna-bg-surface); border-color: var(--luna-border-strong);" id="cellMetric">
+                <option value="coverage">Coverage %</option>
+                <option value="gaps">Gap count</option>
+                <option value="risk">Risk-weighted gap</option>
+              </select>
+            </div>
+            <div class="sampling-banner" style="margin-top: var(--luna-sp-3);">
+              <div class="sb-icon">i</div>
+              <div>
+                <b>Coverage is computed on a sample, not exhaustively.</b>
+                For each control–assertion intersection that rests on a population &gt;1,000 rows (412 of 3,072 intersections), this view evaluates a <code>stratified sample N=60 per intersection, ASA 530 ±10% precision at p̂=0.10</code>. Click any cell to see the sample frame and exception trace. Cells backed by full population are unsampled.
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- Ranked gap rail -->
+        <aside class="gap-rail">
+          <div class="rail-head">
+            <h2>Ranked unsupported assertions</h2>
+            <div class="rail-sub"><span id="gapVisibleCount">50</span> of <span id="gapTotalCount">418</span> shown · sorted by risk score</div>
+          </div>
+          <div class="rail-body" id="gapRail"></div>
+          <div class="rail-foot">
+            Risk = (residual deficiency $) × (likelihood). <a href="#" onclick="event.preventDefault(); growl('Methodology: see SAB 99 + COSO 2013 weights.', 'success')">methodology</a>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Drawer -->
+<div class="drawer-backdrop" id="backdrop" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true">
+  <div class="drawer-head">
+    <div>
+      <div style="display:flex; align-items:center; gap: var(--luna-sp-2); margin-bottom: var(--luna-sp-1);">
+        <span class="badge" id="drawer-badge">·</span>
+        <span class="text-subdued" style="font-size: var(--luna-fs-100);" id="drawer-meta">Trace · control</span>
+      </div>
+      <h2 class="h-title" id="drawer-title">Assertion trace</h2>
+    </div>
+    <button class="h-close" onclick="closeDrawer()" aria-label="Close">×</button>
+  </div>
+
+  <div class="drawer-body" id="drawer-body">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="drawer-foot">
+    <button class="btn subtle" onclick="closeDrawer()">Cancel</button>
+    <button class="btn" onclick="commitAction('accept')">Accept gaps as known</button>
+    <button class="btn primary" onclick="commitAction('remediate')">Request supporting evidence</button>
+  </div>
+</aside>
+
+<!-- Growl host -->
+<div class="growl-host" id="growlHost"></div>
+
+<script src="data.js"></script>
+<script>
+  // ============================================================
+  // PROCEDURAL DATA GENERATION
+  // 512 controls, each with 6 assertions = 3,072 assertion rows
+  // ============================================================
+
+  // Seeded RNG (mulberry32)
+  function rng(seed) {
+    return function() {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const ASSERTION_CLASSES = [
+    { key: 'existence',     label: 'Existence',                   sub: 'Recorded items actually occurred' },
+    { key: 'completeness',  label: 'Completeness',                sub: 'All in-scope items recorded' },
+    { key: 'accuracy',      label: 'Accuracy',                    sub: 'Amounts and details captured correctly' },
+    { key: 'cutoff',        label: 'Cutoff',                      sub: 'Posted in the proper period' },
+    { key: 'valuation',     label: 'Valuation / Allocation',      sub: 'Carried at appropriate amounts' },
+    { key: 'rightsOblig',   label: 'Rights & Obligations',        sub: 'Entity holds rights / owes obligations' },
+    { key: 'presentation',  label: 'Presentation / Disclosure',   sub: 'Classified and disclosed per GAAP' },
+  ];
+
+  const DOMAINS_FULL = [
+    { key: 'itgc',      label: 'IT General Controls', ctrlCount: 32  },
+    { key: 'revenue',   label: 'Revenue',             ctrlCount: 86  },
+    { key: 'payroll',   label: 'Payroll',             ctrlCount: 58  },
+    { key: 'procure',   label: 'Procurement',         ctrlCount: 62  },
+    { key: 'treasury',  label: 'Treasury',            ctrlCount: 44  },
+    { key: 'tax',       label: 'Tax',                 ctrlCount: 38  },
+    { key: 'inventory', label: 'Inventory',           ctrlCount: 51  },
+    { key: 'finrep',    label: 'Financial Reporting', ctrlCount: 73  },
+    { key: 'entity',    label: 'Entity-Level',        ctrlCount: 39  },
+    { key: 'hr',        label: 'HR',                  ctrlCount: 29  },
+  ];
+  // Total: 512 controls
+
+  // Some intersections aren't applicable (e.g., cutoff doesn't apply to ITGC)
+  const NA_INTERSECTIONS = new Set([
+    'cutoff:itgc', 'valuation:itgc', 'rightsOblig:itgc', 'rightsOblig:hr',
+    'cutoff:entity', 'valuation:entity', 'rightsOblig:entity',
+    'cutoff:hr', 'valuation:hr',
+  ]);
+
+  // Per-intersection weakness biases — these are the cells you want to fail dramatically
+  // Higher = worse coverage. We tune so a few cells go deeply red (the money shot).
+  const WEAKNESS = {
+    'completeness:revenue': 0.42,   // critical
+    'cutoff:revenue':       0.38,   // critical
+    'existence:procure':    0.20,
+    'accuracy:payroll':     0.18,
+    'completeness:treasury':0.34,
+    'valuation:inventory':  0.28,
+    'presentation:finrep':  0.22,
+    'completeness:tax':     0.31,
+    'rightsOblig:procure':  0.16,
+    'accuracy:treasury':    0.14,
+    'completeness:itgc':    0.12,
+    'existence:itgc':       0.05,
+    'accuracy:finrep':      0.13,
+    'cutoff:payroll':       0.11,
+  };
+
+  // ---- Generate 512 controls ----
+  function generateControls() {
+    const controls = [];
+    let idx = 0;
+    DOMAINS_FULL.forEach(domain => {
+      for (let i = 0; i < domain.ctrlCount; i++) {
+        const r = rng(idx * 991 + 7);
+        const ownerPool = OWNERS.filter(o =>
+          o.team.toLowerCase().includes(domain.key.slice(0,4)) ||
+          (domain.key === 'finrep' && o.team === 'Financial Reporting') ||
+          (domain.key === 'itgc' && (o.team === 'IT Operations' || o.team === 'IT Security')) ||
+          (domain.key === 'entity' && o.team === 'Entity-Level') ||
+          (domain.key === 'hr' && o.team === 'HR') ||
+          (domain.key === 'procure' && o.team === 'Procurement') ||
+          (domain.key === 'inventory' && o.team === 'Inventory') ||
+          (domain.key === 'treasury' && o.team === 'Treasury') ||
+          (domain.key === 'tax' && o.team === 'Tax') ||
+          (domain.key === 'payroll' && o.team === 'Payroll') ||
+          (domain.key === 'revenue' && o.team === 'Revenue')
+        );
+        const owner = ownerPool.length > 0
+          ? ownerPool[Math.floor(r() * ownerPool.length)]
+          : OWNERS[Math.floor(r() * OWNERS.length)];
+
+        // Pick a seed control name from CONTROLS where domain matches, fall back to synthesis
+        const seeds = CONTROLS.filter(c => c.domain === domain.key);
+        const baseName = seeds.length > 0
+          ? seeds[Math.floor(r() * seeds.length)].name
+          : `${domain.label} Control ${i+1}`;
+
+        // Some controls rest on large populations (sample target)
+        const populationN = Math.floor(r() * 9000) + 100;
+        const isLargePop = populationN >= 1000;
+
+        const prefix = domain.key.slice(0,3).toUpperCase();
+        controls.push({
+          id: `${prefix}-${String(i+1).padStart(3,'0')}`,
+          name: baseName + (i > 5 ? ` (var ${i})` : ''),
+          domain: domain.key,
+          domainLabel: domain.label,
+          owner,
+          freq: ['M', 'Q', 'A'][Math.floor(r() * 3)],
+          populationN,
+          isLargePop,
+          riskWeight: r() * 0.7 + 0.3, // 0.3 to 1.0
+        });
+        idx++;
+      }
+    });
+    return controls;
+  }
+
+  // ---- For each control, generate 6 assertions ----
+  function generateAssertions(controls) {
+    const assertions = [];
+    let aIdx = 0;
+    controls.forEach(ctrl => {
+      ASSERTION_CLASSES.forEach(ac => {
+        const intersection = `${ac.key}:${ctrl.domain}`;
+        if (NA_INTERSECTIONS.has(intersection)) {
+          assertions.push({ id: `A-${aIdx++}`, controlId: ctrl.id, control: ctrl,
+            assertionClass: ac.key, assertionLabel: ac.label,
+            applicable: false, supported: null });
+          return;
+        }
+        const r = rng(aIdx * 1009 + 19);
+        const weakness = WEAKNESS[intersection] ?? 0.06;
+        // supported if random > weakness
+        const supported = r() > weakness;
+        const evidenceCount = supported ? (1 + Math.floor(r() * 4)) : (r() < 0.4 ? 0 : 1);
+        const sampleNeeded = ctrl.isLargePop && (ac.key === 'completeness' || ac.key === 'existence' || ac.key === 'accuracy');
+        assertions.push({
+          id: `A-${aIdx++}`,
+          controlId: ctrl.id,
+          control: ctrl,
+          assertionClass: ac.key,
+          assertionLabel: ac.label,
+          assertionSub: ac.sub,
+          applicable: true,
+          supported,
+          evidenceCount,
+          sampleNeeded,
+          weakness,
+          riskScore: supported ? 0 : Math.round(ctrl.riskWeight * (1 + weakness) * 1000),
+        });
+      });
+    });
+    return assertions;
+  }
+
+  const CONTROLS_512 = generateControls();
+  const ASSERTIONS_ALL = generateAssertions(CONTROLS_512);
+
+  // Stamp top-level counts now that data exists
+  document.getElementById('totalAssertions').textContent = ASSERTIONS_ALL.length.toLocaleString();
+
+  // ---- Aggregate per-intersection coverage ----
+  function computeMatrix() {
+    const cells = {}; // key: "assertion:domain"
+    ASSERTIONS_ALL.forEach(a => {
+      const k = `${a.assertionClass}:${a.control.domain}`;
+      if (!cells[k]) cells[k] = { applicable: 0, supported: 0, total: 0, gaps: 0, riskSum: 0 };
+      cells[k].total += 1;
+      if (a.applicable) {
+        cells[k].applicable += 1;
+        if (a.supported) cells[k].supported += 1;
+        else { cells[k].gaps += 1; cells[k].riskSum += a.riskScore; }
+      }
+    });
+    return cells;
+  }
+  const MATRIX = computeMatrix();
+
+  // Total unsupported across all assertions
+  const totalUnsupported = ASSERTIONS_ALL.filter(a => a.applicable && !a.supported).length;
+  document.getElementById('unsupportedCount').textContent = totalUnsupported.toLocaleString();
+  document.getElementById('gapTotalCount').textContent = totalUnsupported.toLocaleString();
+  // Sync burndown total to the real unsupported count before the runtime renders it
+  (function syncBurndownTotal() {
+    const bd = document.getElementById('burndown');
+    if (bd) bd.setAttribute('data-total', String(totalUnsupported));
+  })();
+
+  // ============================================================
+  // RENDERING
+  // ============================================================
+
+  let filterFloor = 'all';
+  let cellMetric = 'coverage';
+  let actedKeys = new Set();
+  let activeDrawerCtrl = null;
+
+  function pctClass(pct) {
+    if (pct >= 0.95) return 'cov-ok';
+    if (pct >= 0.85) return 'cov-mid';
+    if (pct >= 0.70) return 'cov-low';
+    if (pct >= 0.50) return 'cov-bad';
+    return 'cov-crit';
+  }
+
+  function renderMatrix() {
+    const tbody = document.getElementById('matrixBody');
+    let html = '';
+    ASSERTION_CLASSES.forEach(ac => {
+      html += `<tr><th>${ac.label}<span class="asn-sub">${ac.sub}</span></th>`;
+      DOMAINS_FULL.forEach(d => {
+        const k = `${ac.key}:${d.key}`;
+        const cell = MATRIX[k];
+        const isNA = NA_INTERSECTIONS.has(k) || !cell || cell.applicable === 0;
+        if (isNA) {
+          html += `<td><div class="cov-cell cov-na"><div class="cov-pct">n/a</div><div class="cov-n">—</div></div></td>`;
+        } else {
+          const pct = cell.supported / cell.applicable;
+          const cls = pctClass(pct);
+          let topVal, botVal;
+          if (cellMetric === 'gaps') {
+            topVal = cell.gaps.toLocaleString();
+            botVal = `${cell.applicable} total`;
+          } else if (cellMetric === 'risk') {
+            topVal = '$' + (cell.riskSum * 1.4).toFixed(0) + 'K';
+            botVal = `${cell.gaps} gaps`;
+          } else {
+            topVal = Math.round(pct * 100) + '%';
+            botVal = `${cell.supported}/${cell.applicable}`;
+          }
+          html += `<td><div class="cov-cell ${cls}" onclick="openCellDrawer('${ac.key}','${d.key}')" title="${ac.label} · ${d.label}\n${cell.supported}/${cell.applicable} supported · ${cell.gaps} gaps">
+                    <div class="cov-pct">${topVal}</div>
+                    <div class="cov-n">${botVal}</div>
+                  </div></td>`;
+        }
+      });
+      html += '</tr>';
+    });
+    tbody.innerHTML = html;
+  }
+
+  function renderGapRail() {
+    const rail = document.getElementById('gapRail');
+    // Take all unsupported, sort by risk, slice top 50
+    const gaps = ASSERTIONS_ALL
+      .filter(a => a.applicable && !a.supported)
+      .sort((a,b) => b.riskScore - a.riskScore);
+
+    // Apply filter
+    let filtered = gaps;
+    if (filterFloor === 'material') {
+      filtered = gaps.filter(g => g.riskScore > 400);
+    } else if (filterFloor === 'significant') {
+      filtered = gaps.filter(g => g.riskScore > 700);
+    }
+
+    const visible = filtered.slice(0, 50);
+    document.getElementById('gapVisibleCount').textContent = visible.length;
+    document.getElementById('gapTotalCount').textContent = filtered.length.toLocaleString();
+
+    rail.innerHTML = visible.map((g, i) => {
+      const sevClass = g.riskScore > 700 ? '' : (g.riskScore > 400 ? 'sev-medium' : 'sev-low');
+      return `
+        <div class="gap-item ${sevClass}" onclick="openGapDrawer('${g.id}')">
+          <div class="gi-rank">${i + 1}</div>
+          <div class="gi-body">
+            <div class="gi-ctrl">${g.controlId} · ${g.control.domainLabel}</div>
+            <div class="gi-asn">${g.assertionLabel} — unsupported</div>
+            <div class="gi-meta">
+              <span>${g.control.owner.name}</span>
+              <span>·</span>
+              <span>${g.evidenceCount === 0 ? 'no evidence' : g.evidenceCount + ' partial doc' + (g.evidenceCount > 1 ? 's' : '')}</span>
+              ${g.sampleNeeded ? '<span>·</span><span>sampled pop</span>' : ''}
+            </div>
+          </div>
+          <div class="gi-risk">${g.riskScore >= 1000 ? (g.riskScore/1000).toFixed(1) + 'K' : g.riskScore}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ============================================================
+  // DRAWER: cell click → show one representative control's trace
+  // ============================================================
+
+  function openCellDrawer(assertionKey, domainKey) {
+    // Find a representative control in this intersection with at least one gap
+    const candidates = ASSERTIONS_ALL.filter(a =>
+      a.assertionClass === assertionKey &&
+      a.control.domain === domainKey &&
+      a.applicable
+    );
+    if (candidates.length === 0) return;
+    // Prefer one with a gap (sorted by risk score desc)
+    candidates.sort((a,b) => b.riskScore - a.riskScore);
+    const focal = candidates[0];
+    renderDrawer(focal.control, focal);
+  }
+
+  function openGapDrawer(gapId) {
+    const g = ASSERTIONS_ALL.find(a => a.id === gapId);
+    if (!g) return;
+    renderDrawer(g.control, g);
+  }
+
+  function renderDrawer(ctrl, focalAssertion) {
+    activeDrawerCtrl = ctrl;
+
+    // Pull all 6 assertions for the control
+    const ctrlAssertions = ASSERTIONS_ALL.filter(a => a.controlId === ctrl.id);
+
+    const supportedCount = ctrlAssertions.filter(a => a.applicable && a.supported).length;
+    const applicableCount = ctrlAssertions.filter(a => a.applicable).length;
+    const gapCount = applicableCount - supportedCount;
+
+    const badge = gapCount > 0 ? 'red' : 'green';
+    document.getElementById('drawer-badge').className = 'badge ' + badge;
+    document.getElementById('drawer-badge').innerHTML = `<span class="badge-dot"></span>${gapCount} gap${gapCount === 1 ? '' : 's'}`;
+    document.getElementById('drawer-meta').textContent = `${ctrl.id} · ${ctrl.domainLabel}`;
+    document.getElementById('drawer-title').textContent = ctrl.name;
+
+    // Sample frame for large population (the visible sampling block)
+    const r = rng(ctrl.id.length * 113 + 17);
+    const sampleN = ctrl.isLargePop ? 60 : null;
+
+    // For the population dot grid — generate 500 dots, mark 60 sampled, 6 exceptions
+    let popGridHtml = '';
+    if (ctrl.isLargePop) {
+      const exceptionCount = Math.max(0, Math.floor(r() * 5) + 2);
+      const sampledIdx = new Set();
+      // Render only 500 dots representing the population (visual proxy)
+      const dotCount = 500;
+      while (sampledIdx.size < 60) {
+        sampledIdx.add(Math.floor(r() * dotCount));
+      }
+      const exceptionIdx = new Set();
+      const sampledArr = Array.from(sampledIdx);
+      while (exceptionIdx.size < exceptionCount) {
+        exceptionIdx.add(sampledArr[Math.floor(r() * sampledArr.length)]);
+      }
+      const dots = [];
+      for (let i = 0; i < dotCount; i++) {
+        const cls = exceptionIdx.has(i) ? 'exception' : (sampledIdx.has(i) ? 'sampled' : '');
+        dots.push(`<div class="pop-dot ${cls}"></div>`);
+      }
+      popGridHtml = `
+        <div class="pop-grid">${dots.join('')}</div>
+        <div class="pop-legend">
+          <span><span class="pl-sw" style="background:var(--luna-gray-200)"></span>${ctrl.populationN.toLocaleString()} population (visual scale: 1 dot = ~${Math.round(ctrl.populationN/500)} items)</span>
+          <span><span class="pl-sw" style="background:var(--luna-purple-500)"></span>60 sampled</span>
+          <span><span class="pl-sw" style="background:var(--luna-red-500)"></span>${exceptionCount} exception${exceptionCount === 1 ? '' : 's'}</span>
+        </div>
+      `;
+    }
+
+    // Build sankey: 6 assertions → evidence
+    const sankeyHtml = ctrlAssertions.map(a => {
+      const isFocal = focalAssertion && a.id === focalAssertion.id;
+      const cellClass = !a.applicable ? 'mid' : (a.supported ? '' : (a.evidenceCount === 0 ? 'weak' : 'mid'));
+      const linkClass = !a.applicable ? 'missing' : (a.supported ? '' : (a.evidenceCount === 0 ? 'missing' : 'weak'));
+      const focalRing = isFocal ? 'box-shadow: 0 0 0 2px var(--luna-teal-500); border-radius: var(--luna-radius-md);' : '';
+
+      let evHtml;
+      if (!a.applicable) {
+        evHtml = `<div class="sk-ev missing" style="${focalRing}">N/A — not in scope for this control</div>`;
+      } else if (a.supported && a.sampleNeeded) {
+        evHtml = `<div class="sk-ev sampled" style="${focalRing}">
+          <div class="sk-ev-name">${ctrl.id}_Q3_${a.assertionClass}_sample.xlsx</div>
+          <div class="sk-ev-detail">Sample N=60 of ${ctrl.populationN.toLocaleString()} · stratified</div>
+        </div>`;
+      } else if (a.supported) {
+        evHtml = `<div class="sk-ev" style="${focalRing}">
+          <div class="sk-ev-name">${ctrl.id}_Q3_${a.assertionClass}_${String(Math.floor(r() * 9000) + 1000)}.pdf</div>
+          <div class="sk-ev-detail">${a.evidenceCount} doc${a.evidenceCount > 1 ? 's' : ''} · attested by ${ctrl.owner.name.split(' ')[0]}</div>
+        </div>`;
+      } else if (a.evidenceCount === 0) {
+        evHtml = `<div class="sk-ev missing" style="${focalRing}">No evidence linked</div>`;
+      } else {
+        evHtml = `<div class="sk-ev missing" style="${focalRing}">
+          <div class="sk-ev-name">${ctrl.id}_Q3_${a.assertionClass}_partial.pdf</div>
+          <div class="sk-ev-detail">Partial — missing supporting calc</div>
+        </div>`;
+      }
+
+      return `
+        <div class="sk-asn ${cellClass}" style="${isFocal ? 'box-shadow: 0 0 0 2px var(--luna-teal-500);' : ''}">
+          <div class="sk-label">${a.assertionLabel}</div>
+          <div class="sk-sub">${a.assertionSub || 'not applicable'}</div>
+        </div>
+        <div class="sankey-link ${linkClass}"></div>
+        ${evHtml}
+      `;
+    }).join('');
+
+    // Linked evidence items (procedural)
+    const evItems = [];
+    ctrlAssertions.filter(a => a.applicable && a.supported && a.evidenceCount > 0).slice(0, 4).forEach((a, i) => {
+      evItems.push({
+        name: `${ctrl.id}_Q3_${a.assertionClass}_${String(Math.floor(rng(ctrl.id.charCodeAt(0) + i * 17)() * 9000) + 1000)}.${i % 2 === 0 ? 'xlsx' : 'pdf'}`,
+        meta: `Supports: ${a.assertionLabel} · uploaded by ${ctrl.owner.name} on 2026-09-${10 + (i*4) % 18}`,
+      });
+    });
+
+    document.getElementById('drawer-body').innerHTML = `
+      <div class="drawer-section">
+        <h3>Control summary</h3>
+        <div class="control-summary">
+          <span class="cs-label">Control</span>
+          <span class="cs-val mono">${ctrl.id}</span>
+          <span class="cs-label">Domain</span>
+          <span class="cs-val">${ctrl.domainLabel}</span>
+          <span class="cs-label">Owner</span>
+          <span class="cs-val">${ctrl.owner.name} · ${ctrl.owner.team}</span>
+          <span class="cs-label">Frequency</span>
+          <span class="cs-val">${ctrl.freq === 'M' ? 'Monthly' : ctrl.freq === 'Q' ? 'Quarterly' : 'Annual'}</span>
+          <span class="cs-label">Assertions</span>
+          <span class="cs-val">${supportedCount} / ${applicableCount} supported${gapCount > 0 ? ` · <b style="color:var(--luna-red-500)">${gapCount} gap${gapCount === 1 ? '' : 's'}</b>` : ''}</span>
+          <span class="cs-label">Population</span>
+          <span class="cs-val">${ctrl.populationN.toLocaleString()} rows ${ctrl.isLargePop ? '<span class="badge purple"><span class="badge-dot"></span>sampled</span>' : '<span class="badge gray">full</span>'}</span>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <h3>Assertion → evidence trace</h3>
+        <div class="sankey">${sankeyHtml}</div>
+        <div style="margin-top: var(--luna-sp-3); font-size: var(--luna-fs-100); color: var(--luna-text-subdued);">
+          Teal=supported · Orange=partial · Red=missing/weak. ${focalAssertion ? 'Highlighted: ' + focalAssertion.assertionLabel : ''}
+        </div>
+      </div>
+
+      ${ctrl.isLargePop ? `
+      <div class="drawer-section">
+        <h3>Sampling frame (population &gt; 1,000)</h3>
+        <div class="sample-detail">
+          <div class="sd-title">
+            <span class="badge purple"><span class="badge-dot"></span>SAMPLED</span>
+            <span>Population N=${ctrl.populationN.toLocaleString()}, sample n=60</span>
+          </div>
+          <div class="sd-grid">
+            <div class="sd-key">Method</div><div class="sd-val">Stratified random by month + owner</div>
+            <div class="sd-key">Confidence</div><div class="sd-val">95% CI ±10% precision</div>
+            <div class="sd-key">Expected p̂</div><div class="sd-val">0.10 (tolerable rate 10%)</div>
+            <div class="sd-key">Standard</div><div class="sd-val">ASA 530 §A12 / AICPA AU-C 530</div>
+            <div class="sd-key">Seed</div><div class="sd-val">${ctrl.id}-Q3-2026-${ctrl.populationN}</div>
+          </div>
+          <div class="sd-just">
+            <b>Why 60 is enough:</b> at expected exception rate p̂=0.10 with desired ±10% precision and 95% confidence,
+            the required sample is n ≥ <code>(1.96² × 0.10 × 0.90) / 0.10²</code> ≈ 35.
+            We round up to 60 for buffer and stratify across 3 months × ~20 owners to ensure no monthly cluster is missed.
+            Testing all ${ctrl.populationN.toLocaleString()} rows would take ~${Math.round(ctrl.populationN * 0.04)} hours; the sample takes ~2.5h with statistically equivalent assurance.
+          </div>
+          ${popGridHtml}
+        </div>
+      </div>
+      ` : ''}
+
+      ${evItems.length > 0 ? `
+      <div class="drawer-section">
+        <h3>Linked evidence (${evItems.length} of ${supportedCount})</h3>
+        <div class="ev-list">
+          ${evItems.map(e => `
+            <div class="ev-item">
+              <div>
+                <div class="ev-name">${e.name}</div>
+                <div class="ev-meta">${e.meta}</div>
+              </div>
+              <span class="badge green"><span class="badge-dot"></span>linked</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+
+      ${gapCount > 0 ? `
+      <div class="drawer-section">
+        <h3>Gaps to remediate (${gapCount})</h3>
+        <div class="ev-list">
+          ${ctrlAssertions.filter(a => a.applicable && !a.supported).map(a => `
+            <div class="ev-item" style="border-left:3px solid var(--luna-red-500)">
+              <div>
+                <div class="ev-name">${a.assertionLabel}</div>
+                <div class="ev-meta">${a.assertionSub} — ${a.evidenceCount === 0 ? 'no evidence linked' : 'partial evidence, supporting calc missing'}</div>
+              </div>
+              <span class="badge red"><span class="badge-dot"></span>gap</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>` : ''}
+    `;
+
+    document.getElementById('backdrop').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  }
+
+  function closeDrawer() {
+    document.getElementById('backdrop').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+  }
+
+  function bumpBurndown(delta) {
+    const el = document.getElementById('burndown');
+    if (!el) return;
+    if (window.UX && typeof window.UX.bumpBurndown === 'function') {
+      window.UX.bumpBurndown(el, delta);
+    } else {
+      const current = parseInt(el.dataset.cleared || '0', 10);
+      el.dataset.cleared = String(Math.max(0, current + delta));
+    }
+  }
+
+  function setBurndown(value) {
+    const el = document.getElementById('burndown');
+    if (!el) return;
+    const current = parseInt(el.dataset.cleared || '0', 10);
+    bumpBurndown(value - current);
+  }
+
+  function commitAction(kind) {
+    if (!activeDrawerCtrl) return;
+    const ctrl = activeDrawerCtrl;
+    const gaps = ASSERTIONS_ALL.filter(a => a.controlId === ctrl.id && a.applicable && !a.supported);
+    const newlyCleared = gaps.filter(g => !actedKeys.has(g.id)).length;
+    if (kind === 'remediate') {
+      gaps.forEach(g => actedKeys.add(g.id));
+      bumpBurndown(newlyCleared);
+      growl(`<b>Remediation requested.</b> ${gaps.length} assertion${gaps.length === 1 ? '' : 's'} flagged to ${ctrl.owner.name} for ${ctrl.id}.`, 'success');
+    } else {
+      gaps.forEach(g => actedKeys.add(g.id));
+      bumpBurndown(newlyCleared);
+      growl(`<b>Accepted as known gaps.</b> ${gaps.length} assertion${gaps.length === 1 ? '' : 's'} on ${ctrl.id} routed to compensating-control review.`, 'success');
+    }
+    closeDrawer();
+    renderGapRail();
+  }
+
+  function bulkRequest() {
+    // Money shot: take top 50 ranked gaps and request supporting evidence in bulk
+    const visible = ASSERTIONS_ALL
+      .filter(a => a.applicable && !a.supported)
+      .sort((a,b) => b.riskScore - a.riskScore)
+      .slice(0, 50);
+    const owners = new Set(visible.map(g => g.control.owner.name));
+    const ctrls  = new Set(visible.map(g => g.controlId));
+    const newlyCleared = visible.filter(g => !actedKeys.has(g.id)).length;
+    visible.forEach(g => actedKeys.add(g.id));
+    bumpBurndown(newlyCleared);
+    growl(`<b>Bulk evidence requests dispatched.</b> Top ${visible.length} ranked gaps · ${ctrls.size} controls · ${owners.size} owners notified.`, 'success');
+  }
+
+  function resetDemo() {
+    actedKeys.clear();
+    setBurndown(0);
+    renderMatrix();
+    renderGapRail();
+    growl('Demo reset.', 'success');
+  }
+
+  function toggleHeadMenu(e) {
+    if (e) e.stopPropagation();
+    const m = document.getElementById('headMenu');
+    if (!m) return;
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+  document.addEventListener('click', (e) => {
+    const m = document.getElementById('headMenu');
+    if (!m || m.style.display === 'none') return;
+    if (!e.target.closest('.overflow-menu')) m.style.display = 'none';
+  });
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      filterFloor = chip.dataset.floor;
+      renderGapRail();
+    });
+  });
+
+  // Cell metric switcher
+  document.getElementById('cellMetric').addEventListener('change', (e) => {
+    cellMetric = e.target.value;
+    renderMatrix();
+  });
+
+  // Growl
+  function growl(html, kind) {
+    const host = document.getElementById('growlHost');
+    const g = document.createElement('div');
+    g.className = 'growl' + (kind ? ' ' + kind : '');
+    g.innerHTML = '<div class="growl-icon"></div><div>' + html + '</div>';
+    host.appendChild(g);
+    setTimeout(() => { g.style.transition = 'opacity 200ms, transform 200ms'; g.style.opacity = '0'; g.style.transform = 'translateY(8px)'; }, 3800);
+    setTimeout(() => g.remove(), 4100);
+  }
+
+  // Wire confirm-modal callbacks for bulk actions
+  document.getElementById('bulkRequestBtn').addEventListener('ux:confirmed', bulkRequest);
+  document.getElementById('exportAuditorBtn').addEventListener('ux:confirmed', function () {
+    growl('Export queued. PDF ready in ~30s.', 'success');
+  });
+
+  // Boot
+  renderMatrix();
+  renderGapRail();
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+</script>
+
+<script>
+window.TOUR = {
+  title: 'Assertion coverage at testing time',
+  intro: 'Map 3,072 assertions over accepted evidence, find the red gaps, dispatch fixes before close.',
+  steps: [
+    {
+      selector: '.flow-pill',
+      title: 'You sit after Accepted',
+      body: 'This view runs at testing time on evidence already accepted upstream. It traces coverage; it never accepts or rejects.',
+      position: 'bottom'
+    },
+    {
+      selector: '.flow-pill',
+      title: 'Accepted-and-linked only',
+      body: 'Every assertion below resolves to evidence that passed Submitted then Accepted. Drafts and open requests do not count toward coverage.',
+      position: 'bottom'
+    },
+    {
+      selector: '#unsupportedCount-wrap',
+      title: '418 unsupported assertions',
+      body: '13.6 percent of 3,072 assertions lack linked evidence with 18 days to close. Work the ranked rail right-to-left by risk.',
+      position: 'bottom'
+    },
+    {
+      selector: '.coverage-matrix',
+      title: 'Read the red cells first',
+      body: 'Seven assertion classes by ten control domains. Completeness x Revenue and Cutoff x Revenue carry the largest residual deficiency dollars.',
+      position: 'top'
+    },
+    {
+      selector: '.coverage-matrix tbody tr:first-child .cov-cell',
+      title: 'Drill to assertion-to-evidence',
+      body: 'Click a cell to open the worst control inside it: six assertions, their linked evidence chains, and the sampling frame when population exceeds 1,000.',
+      position: 'right'
+    },
+    {
+      selector: 'details.cov-disclosure',
+      title: 'AI suggests N=60, you confirm',
+      body: '412 intersections sit on populations over 1,000 rows. AI recommends stratified N=60 per ASA 530; auditor confirms the frame before testing. Expand the disclosure to see the full methodology.',
+      position: 'top'
+    },
+    {
+      selector: '.gap-rail',
+      title: 'Ranked by risk dollars',
+      body: 'Residual deficiency dollars times likelihood. Rank 1 is the assertion the external auditor opens first; methodology stays visible at the foot.',
+      position: 'left'
+    },
+    {
+      selector: '.page-actions .btn.primary',
+      title: 'Dispatch 50 evidence requests',
+      body: 'Sends supporting-evidence requests for the top 50 ranked gaps back to assignees as new Draft items, stamped with the originating assertion id.',
+      position: 'bottom'
+    }
+  ]
+};
+</script>
+<script src="tour.js"></script>
+
+<script src="nav-routing.js"></script>
+<script src="ds-toggle.js"></script>
+<script src="flow.js"></script>
+<script src="ux-fixes.js"></script>
+<script src="provenance.js"></script>
+<script src="sources-link.js"></script>
+<script src="sources-strip.js"></script>
+</body>
+</html>

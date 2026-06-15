@@ -1,0 +1,150 @@
+/* Provenance + testing strips — injected by provenance.js into every
+   drawer body / row-detail body. Answers two questions the prototypes
+   missed: where did this evidence come from, and where does it go.
+*/
+
+.prov-strip,
+.tests-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--luna-sp-3);
+  padding: var(--luna-sp-3) var(--luna-sp-4);
+  border-radius: var(--luna-radius-md);
+  border-left: 2px solid;
+  font-size: var(--luna-fs-100);
+  line-height: 1.55;
+  margin: 0 0 var(--luna-sp-4);
+}
+
+.prov-strip {
+  background: var(--luna-teal-50);
+  border-left-color: var(--luna-teal-400);
+  color: var(--luna-gray-800);
+}
+.tests-strip {
+  background: var(--luna-purple-50);
+  border-left-color: var(--luna-purple-500);
+  color: var(--luna-gray-800);
+  margin: var(--luna-sp-4) 0 0;
+}
+
+.prov-strip .prov-icon,
+.tests-strip .tests-icon {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--luna-bg-surface);
+  border: 1px solid var(--luna-border);
+  flex-shrink: 0;
+}
+
+.prov-strip .prov-meat,
+.tests-strip .tests-meat {
+  flex: 1; min-width: 0;
+}
+
+.prov-strip .prov-label,
+.tests-strip .tests-label {
+  font-size: var(--luna-fs-25);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--luna-text-subdued);
+  margin: 0 0 2px;
+}
+.prov-strip .prov-label { color: var(--luna-teal-700); }
+.tests-strip .tests-label { color: var(--luna-purple-500); }
+
+.prov-strip .prov-title {
+  font-size: var(--luna-fs-150);
+  font-weight: 600;
+  color: var(--luna-gray-900);
+  margin-bottom: 2px;
+}
+.prov-strip .prov-sub {
+  color: var(--luna-text-subdued);
+  line-height: 1.5;
+}
+.prov-strip .prov-sub code,
+.prov-strip .prov-sub .actor {
+  font-family: var(--luna-font-mono);
+  font-size: 11px;
+  background: var(--luna-bg-surface);
+  border: 1px solid var(--luna-border);
+  padding: 0 4px;
+  border-radius: 3px;
+  color: var(--luna-gray-700);
+}
+.prov-strip .prov-chain {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 11px;
+}
+.prov-strip .prov-chain .step {
+  background: var(--luna-bg-surface);
+  border: 1px solid var(--luna-border);
+  padding: 1px 6px;
+  border-radius: 999px;
+  color: var(--luna-text-subdued);
+}
+.prov-strip .prov-chain .sep { color: var(--luna-gray-300); }
+
+.tests-strip .tests-title {
+  font-size: var(--luna-fs-150);
+  font-weight: 600;
+  color: var(--luna-gray-900);
+  margin-bottom: 4px;
+}
+.tests-strip .tests-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tests-strip .tests-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--luna-sp-2);
+  font-size: var(--luna-fs-100);
+  color: var(--luna-gray-800);
+}
+.tests-strip .tests-list .test-id {
+  font-family: var(--luna-font-mono);
+  font-weight: 600;
+  color: var(--luna-gray-900);
+  background: var(--luna-bg-surface);
+  border: 1px solid var(--luna-border);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+.tests-strip .tests-list .test-attr {
+  flex: 1;
+  min-width: 0;
+}
+.tests-strip .tests-list .test-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.tests-strip .tests-list .test-status.tested  { background: var(--luna-green-50);  color: var(--luna-green-700); }
+.tests-strip .tests-list .test-status.queue   { background: var(--luna-gray-100);  color: var(--luna-gray-700); }
+.tests-strip .tests-list .test-status.active  { background: var(--luna-blue-50);   color: var(--luna-blue-700); }
+.tests-strip .tests-list .test-status.blocked { background: var(--luna-red-50);    color: var(--luna-red-700); }
+
+.tests-strip .tests-sample {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--luna-text-subdued);
+}
+.tests-strip .tests-sample b { color: var(--luna-gray-900); font-weight: 600; }

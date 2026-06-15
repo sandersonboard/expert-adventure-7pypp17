@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sufficiency · Stress test · Helios Robotics Q3 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="gate.js"></script>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="chrome.css" />
+<link rel="stylesheet" href="chrome-midship.css" />
+<link rel="stylesheet" href="flow.css" />
+<link rel="stylesheet" href="ux-fixes.css" />
+<link rel="stylesheet" href="provenance.css" />
+<link rel="stylesheet" href="sources-strip.css" />
+<link rel="stylesheet" href="tour.css">
+<style>
+  /* ============ Page-specific ============ */
+
+  .ts-toolbar {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    display: flex; gap: var(--luna-sp-2); align-items: center;
+    margin-bottom: var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    flex-wrap: wrap;
+  }
+  .ts-toolbar .tb-label {
+    color: var(--luna-text-subdued); font-size: var(--luna-fs-100);
+    text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+  }
+  .chip {
+    padding: var(--luna-sp-1) var(--luna-sp-3);
+    border-radius: 999px;
+    font-size: var(--luna-fs-100);
+    background: var(--luna-bg-sunken);
+    color: var(--luna-text-subdued);
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .chip.active {
+    background: var(--luna-teal-50); color: var(--luna-teal-700);
+    border-color: var(--luna-teal-200); font-weight: 500;
+  }
+  .chip:hover:not(.active) { background: var(--luna-gray-200); color: var(--luna-text); }
+
+  .ts-search {
+    flex: 1; min-width: 180px;
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-1) var(--luna-sp-3);
+    font-size: var(--luna-fs-150);
+    background: var(--luna-bg-surface);
+    color: var(--luna-text);
+  }
+  .ts-search:focus { outline: none; border-color: var(--luna-teal-500); box-shadow: 0 0 0 3px var(--luna-teal-50); }
+
+  /* ============ Distribution disclosure (collapsed by default) ============ */
+  .frag-dist-disclosure {
+    margin-bottom: var(--luna-sp-4);
+  }
+  .frag-dist-disclosure > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--luna-sp-2);
+    padding: var(--luna-sp-1) var(--luna-sp-2);
+    border-radius: var(--luna-radius-sm, 4px);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    user-select: none;
+  }
+  .frag-dist-disclosure > summary::-webkit-details-marker { display: none; }
+  .frag-dist-disclosure > summary::before {
+    content: "▸";
+    font-size: 10px;
+    color: var(--luna-text-muted);
+    transition: transform 120ms;
+  }
+  .frag-dist-disclosure[open] > summary::before { transform: rotate(90deg); }
+  .frag-dist-disclosure > summary:hover { background: var(--luna-gray-50); color: var(--luna-text); }
+  .frag-dist-disclosure .fdd-label { font-weight: 500; color: var(--luna-text); }
+  .frag-dist-disclosure .fdd-hint {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .frag-dist-disclosure[open] .fdd-hint::after { content: " · click to hide"; }
+
+  /* ============ Distribution band ============ */
+  .frag-dist {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    margin-bottom: var(--luna-sp-4);
+    box-shadow: var(--luna-shadow-sm);
+  }
+  .frag-dist .fd-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .frag-dist .fd-head h2 {
+    margin: 0;
+    font-size: var(--luna-fs-200); font-weight: 600;
+  }
+  .frag-dist .fd-head .fd-sub {
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+  }
+  .fd-histogram {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 2px;
+    height: 64px;
+    align-items: end;
+    margin-bottom: var(--luna-sp-2);
+  }
+  .fd-bar {
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    background: var(--luna-gray-200);
+    transition: opacity 120ms;
+    cursor: default;
+  }
+  .fd-bar.brittle { background: var(--luna-red-500); }
+  .fd-bar.fragile { background: var(--luna-orange-400); }
+  .fd-bar.elastic { background: var(--luna-yellow-400); }
+  .fd-bar.stable  { background: var(--luna-green-400); }
+  .fd-axis {
+    display: flex; justify-content: space-between;
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .fd-legend {
+    display: flex; gap: var(--luna-sp-4); margin-top: var(--luna-sp-3);
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    flex-wrap: wrap;
+  }
+  .fd-legend .leg {
+    display: inline-flex; align-items: center; gap: var(--luna-sp-1);
+  }
+  .fd-legend .leg-sw {
+    width: 10px; height: 10px; border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* ============ Ranked table ============ */
+  .rank-table {
+    width: 100%; border-collapse: collapse;
+    font-size: var(--luna-fs-150);
+  }
+  .rank-table thead th {
+    text-align: left;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--luna-text-subdued);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    background: var(--luna-bg-sunken);
+    border-bottom: 1px solid var(--luna-border);
+    position: sticky; top: 0;
+  }
+  .rank-table tbody td {
+    padding: var(--luna-sp-3) var(--luna-sp-3);
+    border-bottom: 1px solid var(--luna-border);
+    vertical-align: middle;
+  }
+  .rank-table tbody tr {
+    cursor: pointer;
+  }
+  .rank-table tbody tr:hover { background: var(--luna-gray-50); }
+  .rank-table .rank-num {
+    font-variant-numeric: tabular-nums;
+    color: var(--luna-text-muted);
+    font-size: var(--luna-fs-100);
+    text-align: right;
+    width: 40px;
+  }
+  .rank-table .ctl-id {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    white-space: nowrap;
+  }
+  .rank-table .ctl-name {
+    color: var(--luna-text); font-weight: 500;
+    line-height: 1.35;
+  }
+  .rank-table .ctl-sub {
+    color: var(--luna-text-subdued);
+    font-size: var(--luna-fs-100);
+    margin-top: 2px;
+  }
+  .rank-table .frag-cell {
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    white-space: nowrap;
+  }
+  .frag-meter {
+    width: 90px; height: 6px;
+    background: var(--luna-gray-100);
+    border-radius: 999px; overflow: hidden;
+    display: inline-block;
+  }
+  .frag-meter > span {
+    display: block; height: 100%;
+  }
+  .frag-meter.brittle > span { background: var(--luna-red-500); }
+  .frag-meter.fragile > span { background: var(--luna-orange-400); }
+  .frag-meter.elastic > span { background: var(--luna-yellow-400); }
+  .frag-meter.stable > span  { background: var(--luna-green-400); }
+  .frag-score {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--luna-text);
+    min-width: 36px;
+  }
+
+  .conclusion-pill {
+    display: inline-flex; align-items: center; gap: var(--luna-sp-1);
+    padding: 2px var(--luna-sp-2);
+    border-radius: 4px;
+    font-size: var(--luna-fs-100);
+    font-weight: 600;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .conclusion-pill.suff {
+    background: var(--luna-green-50); color: var(--luna-green-700);
+    border-color: var(--luna-green-100);
+  }
+  .conclusion-pill.insuff {
+    background: var(--luna-red-50); color: var(--luna-red-700);
+    border-color: var(--luna-red-100);
+  }
+  .conclusion-pill .cp-dot {
+    width: 6px; height: 6px; border-radius: 999px;
+    background: currentColor;
+  }
+
+  .lever-chip {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: 999px;
+    padding: 2px var(--luna-sp-2);
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    white-space: nowrap;
+  }
+  .lever-chip.dom {
+    background: var(--luna-teal-50);
+    border-color: var(--luna-teal-200);
+    color: var(--luna-teal-700);
+    font-weight: 500;
+  }
+
+  .delta-cell {
+    font-variant-numeric: tabular-nums;
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    white-space: nowrap;
+  }
+  .delta-cell b { color: var(--luna-text); font-weight: 600; }
+
+  .table-foot {
+    padding: var(--luna-sp-3) var(--luna-sp-5);
+    border-top: 1px solid var(--luna-border);
+    background: var(--luna-bg-sunken);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+  }
+  .table-foot .pg { display: flex; gap: var(--luna-sp-2); align-items: center; }
+
+  /* ============ Sampling banner ============ */
+  .sampling-banner {
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-200);
+    border-left: 3px solid var(--luna-teal-500);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-4);
+    display: flex; gap: var(--luna-sp-3); align-items: flex-start;
+  }
+  .sampling-banner .sb-icon {
+    flex: 0 0 24px; width: 24px; height: 24px;
+    border-radius: 999px;
+    background: var(--luna-teal-500); color: var(--luna-white);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: var(--luna-fs-100);
+  }
+  .sampling-banner .sb-body {
+    font-size: var(--luna-fs-150); color: var(--luna-gray-800);
+    line-height: 1.5;
+  }
+  .sampling-banner b { color: var(--luna-text); }
+  .sampling-banner .sb-meta {
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    margin-top: 2px;
+  }
+
+  /* ============ Drawer ============ */
+  .gap-section { margin-bottom: var(--luna-sp-5); }
+  .gap-section h3 {
+    font-size: var(--luna-fs-100);
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--luna-text-subdued);
+    margin: 0 0 var(--luna-sp-3);
+  }
+
+  .live-card {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--luna-sp-3);
+    align-items: center;
+    transition: background 140ms, border-color 140ms;
+  }
+  .live-card.suff { background: #e9f7ed; border-color: var(--luna-green-100); }
+  .live-card.insuff { background: #fff0f0; border-color: var(--luna-red-100); }
+  .live-card .lc-conclusion {
+    font-size: var(--luna-fs-450); font-weight: 600;
+    color: var(--luna-text); letter-spacing: -0.01em;
+  }
+  .live-card.suff .lc-conclusion { color: var(--luna-green-700); }
+  .live-card.insuff .lc-conclusion { color: var(--luna-red-700); }
+  .live-card .lc-formula {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-top: var(--luna-sp-1);
+    line-height: 1.5;
+  }
+  .live-card .lc-formula b {
+    color: var(--luna-text); font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .live-card .lc-result {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .live-card .lc-result .lc-r-val {
+    font-size: var(--luna-fs-500);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .live-card .lc-result .lc-r-vs {
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+  }
+
+  .slider-block {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-3);
+  }
+  .slider-block .sb-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: var(--luna-sp-2);
+  }
+  .slider-block .sb-name {
+    font-size: var(--luna-fs-150); font-weight: 500;
+    color: var(--luna-text);
+  }
+  .slider-block .sb-name .sb-dom {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-teal-700);
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-200);
+    padding: 1px 6px; border-radius: 999px;
+    margin-left: var(--luna-sp-1);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 600;
+    vertical-align: 1px;
+  }
+  .slider-block .sb-vals {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+  .slider-block .sb-vals .sb-cur {
+    color: var(--luna-text); font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .slider-block .sb-vals .sb-cur.shifted { color: var(--luna-orange-500); }
+  .slider-block input[type="range"] { width: 100%; }
+  .slider-block .sb-axis {
+    display: flex; justify-content: space-between;
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-top: 4px;
+  }
+  .slider-block .sb-rationale {
+    margin-top: var(--luna-sp-2);
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    line-height: 1.5;
+  }
+  .slider-block .sb-flip {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-top: var(--luna-sp-1);
+  }
+  .slider-block .sb-flip .flip-bar {
+    display: inline-block; height: 4px; background: var(--luna-gray-100);
+    border-radius: 999px; position: relative; vertical-align: middle;
+    width: 120px; margin-left: 4px; overflow: visible;
+  }
+  .slider-block .sb-flip .flip-tick {
+    position: absolute; top: -3px; width: 2px; height: 10px;
+    background: var(--luna-red-500);
+  }
+  .slider-block .sb-flip .flip-current {
+    position: absolute; top: -5px; width: 2px; height: 14px;
+    background: var(--luna-teal-600);
+    transition: left 120ms;
+  }
+
+  .estimate-summary {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-4);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--luna-sp-3);
+  }
+  .estimate-summary .es-row .es-l {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .estimate-summary .es-row .es-v {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .ai-rationale {
+    background: var(--luna-teal-50);
+    border-left: 2px solid var(--luna-teal-400);
+    border-radius: 0 4px 4px 0;
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    color: var(--luna-gray-800);
+    line-height: 1.55;
+  }
+  .ai-rationale .ai-label {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 700; color: var(--luna-teal-700);
+    display: block; margin-bottom: var(--luna-sp-1);
+  }
+
+  .reset-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: var(--luna-sp-3);
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+  }
+
+  /* Drawer width slightly wider for sliders */
+  .drawer.wide { width: min(680px, 92vw); }
+
+  /* Sortable column header */
+  .rank-table thead th.th-sort:hover { color: var(--luna-text); }
+  .rank-table thead th .sort-ind {
+    display: inline-block;
+    margin-left: 4px;
+    color: var(--luna-teal-600);
+    font-size: 10px;
+    width: 10px;
+    vertical-align: 1px;
+  }
+  .rank-table thead th .sort-ind:empty { color: var(--luna-gray-300); }
+  .rank-table thead th .sort-ind:empty::before {
+    content: "↕";
+    color: var(--luna-gray-300);
+  }
+
+  /* ============ Methodology popover ============ */
+  .ux-info {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: transparent;
+    border: 1px dashed var(--luna-border);
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    cursor: pointer;
+    text-transform: none; letter-spacing: 0;
+    font-weight: 500;
+    line-height: 1.6;
+    vertical-align: 1px;
+  }
+  .ux-info:hover {
+    color: var(--luna-teal-700);
+    border-color: var(--luna-teal-300);
+    background: var(--luna-teal-50);
+  }
+  .ux-info:focus-visible {
+    outline: 2px solid var(--luna-teal-500);
+    outline-offset: 2px;
+  }
+  .ux-info .ux-info-glyph {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 12px; height: 12px;
+    border-radius: 999px;
+    background: var(--luna-gray-300);
+    color: var(--luna-white);
+    font-size: 9px; font-weight: 700;
+    font-style: normal;
+  }
+  .ux-info:hover .ux-info-glyph { background: var(--luna-teal-500); }
+
+  /* Stat-strip info button stays inline, no border so it doesn't fight the stat */
+  .stat .ux-info {
+    margin-left: var(--luna-sp-1);
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+  .stat .ux-info:hover { background: transparent; border: none; }
+
+  /* Column-header info button: keeps header tight */
+  .rank-table thead th .ux-info {
+    margin-left: 6px;
+    padding: 0 4px;
+    border: none;
+    background: transparent;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--luna-text-muted);
+  }
+  .rank-table thead th .ux-info:hover {
+    color: var(--luna-teal-700);
+    background: transparent;
+  }
+
+  dialog.methodology-dialog {
+    width: min(560px, 92vw);
+    max-height: 80vh;
+    padding: 0;
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-lg, 0 16px 48px rgba(15, 23, 42, 0.22));
+    background: var(--luna-bg-surface);
+    color: var(--luna-text);
+  }
+  dialog.methodology-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.45);
+  }
+  dialog.methodology-dialog .md-head {
+    padding: var(--luna-sp-4) var(--luna-sp-5) var(--luna-sp-3);
+    border-bottom: 1px solid var(--luna-border);
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: var(--luna-sp-3);
+  }
+  dialog.methodology-dialog .md-head h2 {
+    margin: 0;
+    font-size: var(--luna-fs-300);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  dialog.methodology-dialog .md-head .md-eyebrow {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--luna-text-subdued);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+  dialog.methodology-dialog .md-close {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--luna-text-muted);
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  dialog.methodology-dialog .md-close:hover { color: var(--luna-text); }
+  dialog.methodology-dialog .md-body {
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    font-size: var(--luna-fs-150);
+    line-height: 1.55;
+    color: var(--luna-text);
+    overflow-y: auto;
+  }
+  dialog.methodology-dialog .md-body p { margin: 0 0 var(--luna-sp-3); }
+  dialog.methodology-dialog .md-body p:last-of-type { margin-bottom: 0; }
+  dialog.methodology-dialog .md-formula {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-sm, 4px);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text);
+    margin: 0 0 var(--luna-sp-3);
+    line-height: 1.5;
+  }
+  dialog.methodology-dialog .md-bands {
+    list-style: none;
+    margin: 0 0 var(--luna-sp-3);
+    padding: 0;
+    display: grid; gap: 6px;
+    font-size: var(--luna-fs-100);
+  }
+  dialog.methodology-dialog .md-bands li {
+    display: grid;
+    grid-template-columns: 14px 96px 1fr;
+    gap: var(--luna-sp-2);
+    align-items: baseline;
+  }
+  dialog.methodology-dialog .md-bands .md-sw {
+    width: 10px; height: 10px; border-radius: 2px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+  dialog.methodology-dialog .md-bands b {
+    color: var(--luna-text);
+    font-weight: 600;
+  }
+  dialog.methodology-dialog .md-foot {
+    padding: var(--luna-sp-3) var(--luna-sp-5) var(--luna-sp-4);
+    border-top: 1px solid var(--luna-border);
+    background: var(--luna-bg-sunken);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--luna-sp-3);
+    font-size: var(--luna-fs-100);
+  }
+  dialog.methodology-dialog .md-foot a {
+    color: var(--luna-teal-700);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  dialog.methodology-dialog .md-foot a:hover { text-decoration: underline; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0);
+    white-space: nowrap; border: 0;
+  }
+</style>
+</head>
+<body data-ds="luna" data-flow-category="downstream">
+<script>(function(){try{var d=localStorage.getItem("sufficiency-ds");if(d==="midship"||d==="luna")document.body.dataset.ds=d;}catch(e){}})();</script>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-wordmark">Optro</span>
+    </div>
+    <nav>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M3 13h2v8H3zm6-4h2v12H9zm6-4h2v16h-2zm6-3h2v19h-2z%22/></svg>') no-repeat center/contain;"></span>Dashboard</a>
+      <a href="#" class="active"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/><path d=%22M9 3v18M3 9h18%22/></svg>') no-repeat center/contain;"></span>Controls</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22/><polyline points=%2214 2 14 8 20 8%22/></svg>') no-repeat center/contain;"></span>Evidence</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22/><polyline points=%2212 6 12 12 16 14%22/></svg>') no-repeat center/contain;"></span>Cycles</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M9 17V7a5 5 0 0 1 10 0v10a5 5 0 0 1-10 0z%22/><line x1=%2214%22 y1=%2210%22 x2=%2214%22 y2=%2214%22/></svg>') no-repeat center/contain;"></span>Reports</a>
+    </nav>
+    <div class="sidebar-footer">Q3 2026 · 18 days to close</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <div class="app-topbar"><a href="index.html" class="back-to-options" title="All options"><span class="arrow">←</span><span>Back to options</span></a>
+      <button class="customer-switch">
+        <span>Helios Robotics</span>
+        <span class="caret">▾</span>
+      </button>
+      <div class="topbar-spacer"></div>
+      <div class="close-countdown">
+        <span>Q3 close:</span> <b>2026-10-15</b> <span>(18 days)</span>
+      </div>
+      <div class="avatar" title="Sarah Kim">SK</div>
+    </div>
+
+    <div class="app-breadcrumb">
+      <a href="index.html">Sufficiency</a>
+      <span class="crumb-sep">›</span>
+      <a href="#">Controls</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">Stress test · Estimates</span>
+    </div>
+
+    <div class="app-body padded-wide" data-no-sources-strip>
+
+      <!-- Page head -->
+      <div class="page-head">
+        <div>
+          <span class="eyebrow">Estimate stress test</span>
+          <h1>Which estimates flip if assumptions move a little?</h1>
+          <p class="page-sub"><b id="stat-brittle" style="color: var(--luna-red-500);">19</b> of <span id="stat-total">128</span> estimates flip on a sub-5% driver move. Work those first.<button class="ux-info" type="button" onclick="openMethodology()" aria-haspopup="dialog" aria-controls="methodologyDialog" title="How brittleness is scored" style="margin-left:6px;"><span class="ux-info-glyph" aria-hidden="true">i</span><span class="sr-only">How brittleness is scored</span></button></p>
+        </div>
+      </div>
+
+      <!-- Hidden stat-strip elements kept for JS bindings; not rendered above the fold. -->
+      <span id="stat-fragile" hidden>37</span>
+      <span id="stat-stable" hidden>42</span>
+      <span id="dist-total" hidden>128</span>
+
+      <!-- Distribution (collapsed by default — secondary context, not the primary task) -->
+      <details class="frag-dist-disclosure">
+        <summary>
+          <span class="fdd-label">Fragility distribution &amp; methodology</span>
+          <span class="fdd-hint">show details</span>
+        </summary>
+        <div class="frag-dist" style="margin-top: var(--luna-sp-2);">
+          <div class="fd-histogram" id="histogram"></div>
+          <div class="fd-axis">
+            <span>0% (instant flip)</span>
+            <span>25%</span>
+            <span>50% (very stable)</span>
+          </div>
+          <div class="fd-legend">
+            <span class="leg"><span class="leg-sw" style="background: var(--luna-red-500);"></span>Brittle &lt; 5%</span>
+            <span class="leg"><span class="leg-sw" style="background: var(--luna-orange-400);"></span>Fragile 5–15%</span>
+            <span class="leg"><span class="leg-sw" style="background: var(--luna-yellow-400);"></span>Elastic 15–25%</span>
+            <span class="leg"><span class="leg-sw" style="background: var(--luna-green-400);"></span>Stable &gt; 25%</span>
+          </div>
+          <div style="margin-top: var(--luna-sp-3); padding-top: var(--luna-sp-3); border-top: 1px solid var(--luna-border); font-size: var(--luna-fs-100); color: var(--luna-text-subdued); line-height: 1.5;">
+            <b>Sampling:</b> N=2,000 Latin-hypercube trials per estimate · 95% CI ±0.7 pp · last run 04:17 UTC.
+            <a href="#" onclick="event.preventDefault(); openMethodology();" style="color: var(--luna-teal-700); text-decoration: none; margin-left: 4px;">Methodology →</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- Toolbar — single Band filter group + search. Conclusion + bulk actions live in the table head. -->
+      <div class="ts-toolbar">
+        <span class="chip active" data-band="all">All <span id="cnt-all">128</span></span>
+        <span class="chip" data-band="brittle">Brittle <span id="cnt-brittle">19</span></span>
+        <span class="chip" data-band="fragile">Fragile <span id="cnt-fragile">37</span></span>
+        <span class="chip" data-band="elastic">Elastic <span id="cnt-elastic">30</span></span>
+        <span class="chip" data-band="stable">Stable <span id="cnt-stable">42</span></span>
+        <input type="text" class="ts-search" id="search" placeholder="Search by control name or ID…" />
+      </div>
+
+      <!-- Conclusion filter + burndown + bulk action — kept off the above-the-fold path, attached to the table. -->
+      <div style="display:none;">
+        <span class="chip active" data-conc="all">Both</span>
+        <span class="chip" data-conc="suff">Sufficient</span>
+        <span class="chip" data-conc="insuff">Insufficient</span>
+      </div>
+
+      <!-- Ranked table -->
+      <div class="frame">
+        <div class="frame-head">
+          <h2>Ranked by brittleness · most fragile first</h2>
+          <div class="frame-meta">
+            <span id="visibleCount">Showing 1–50 of 128</span>
+          </div>
+        </div>
+        <!-- Burn-down + bulk action attached to the table head so they don't push the rank table below the fold. -->
+        <div class="ux-burndown" id="brittleBurndown" data-total="19" data-cleared="0" data-label="brittle estimates reviewed today"></div>
+        <div class="bulk-action-bar" style="display:flex; align-items:center; justify-content:space-between; gap: var(--luna-sp-3); padding: var(--luna-sp-2) var(--luna-sp-3); background: var(--luna-bg-sunken); border-top: 1px solid var(--luna-border); border-bottom: 1px solid var(--luna-border);">
+          <div class="text-subdued" style="font-size: var(--luna-fs-100);">
+            <b id="bulkRemediateCount">19</b> brittle estimates queued for remediation · <b id="bulkRemediateExposure">$0</b> combined exposure
+          </div>
+          <button class="btn primary sm"
+                  id="bulkRemediateBtn"
+                  data-ux-confirm
+                  data-ux-confirm-title="Remediate all brittle estimates?"
+                  data-ux-confirm-body="This opens sensitivity packs for every brittle estimate, notifies each owner, and queues all of them for the Q3 close remediation list. You can undo within 10 seconds."
+                  data-ux-confirm-impact="19 estimates · $0 exposure"
+                  data-ux-confirm-undo="10"
+                  data-ux-confirm-label="Remediate all brittle">Remediate all brittle</button>
+        </div>
+        <div class="frame-body dense">
+          <table class="rank-table" id="rankTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Estimate control</th>
+                <th>Today's conclusion</th>
+                <th id="th-brittle" class="th-sort" style="user-select:none;">
+                  <span style="cursor:pointer;" onclick="setSort('flip')">Brittleness score <span class="sort-ind" id="ind-flip">▲</span></span>
+                  <button class="ux-info" type="button" onclick="event.stopPropagation(); openMethodology();" aria-haspopup="dialog" aria-controls="methodologyDialog" title="How brittleness is scored">
+                    <span class="ux-info-glyph" aria-hidden="true">i</span>How brittleness is scored
+                  </button>
+                </th>
+                <th>Dominant lever</th>
+                <th id="th-exposure" class="th-sort" style="cursor:pointer; user-select:none;" onclick="setSort('exposure')">$ exposure <span class="sort-ind" id="ind-exposure"></span></th>
+              </tr>
+            </thead>
+            <tbody id="rankBody"></tbody>
+          </table>
+        </div>
+        <div class="table-foot">
+          <div id="footMsg">Showing 1–50 of 128 estimates. Sorted ascending by minimum-flip %.</div>
+          <div class="pg">
+            <button class="btn sm subtle" id="prevBtn" onclick="prevPage()">← Prev</button>
+            <span id="pageInfo">Page 1 / 3</span>
+            <button class="btn sm subtle" id="nextBtn" onclick="nextPage()">Next →</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Drawer -->
+<div class="drawer-backdrop" id="backdrop" onclick="closeDrawer()"></div>
+<aside class="drawer wide" id="drawer" role="dialog" aria-modal="true">
+  <div class="drawer-head">
+    <div style="flex:1; min-width:0;">
+      <div style="display:flex; align-items:center; gap: var(--luna-sp-2); margin-bottom: var(--luna-sp-1); flex-wrap: wrap;">
+        <span class="badge" id="d-band-badge">·</span>
+        <span class="text-subdued" style="font-size: var(--luna-fs-100);" id="d-meta">Estimate · brittleness · domain</span>
+      </div>
+      <h2 class="h-title" id="d-title">Estimate</h2>
+    </div>
+    <button class="h-close" onclick="closeDrawer()" aria-label="Close">×</button>
+  </div>
+
+  <div class="drawer-body" id="drawer-body"></div>
+
+  <div class="drawer-foot">
+    <button class="btn subtle" onclick="closeDrawer()">Close</button>
+    <button class="btn" onclick="resetSliders()">Reset to baseline</button>
+    <button class="btn primary" onclick="acceptScenario()">Lock scenario &amp; notify owner</button>
+  </div>
+</aside>
+
+<!-- Methodology popover (native <dialog>) -->
+<dialog class="methodology-dialog" id="methodologyDialog" aria-labelledby="methodologyTitle">
+  <div class="md-head">
+    <div>
+      <span class="md-eyebrow">Methodology</span>
+      <h2 id="methodologyTitle">How brittleness is scored</h2>
+    </div>
+    <button type="button" class="md-close" onclick="closeMethodology()" aria-label="Close methodology">×</button>
+  </div>
+  <div class="md-body">
+    <p>For each estimate, we run <b>N=2,000 Latin-hypercube perturbation trials</b> across its 3–5 drivers and record the smallest single-driver move that flips the audit conclusion. The brittleness score is that minimum, expressed in percentage points (0 = instant flip, 50 = effectively unmovable).</p>
+    <div class="md-formula">
+      Brittleness<sub>i</sub> = min<sub>j ∈ drivers</sub> |Δ<sub>j</sub>| such that<br>
+      &nbsp;&nbsp;Conclusion(baseline ⊕ Δ<sub>j</sub> · e<sub>j</sub>) ≠ Conclusion(baseline)
+    </div>
+    <p>A score under <b>5 pp</b> means a <b>1 pp shift</b> in any single assumption flips sufficiency — well inside an auditor's normal challenge band. At N=2,000 the percentile estimate carries a <b>95% CI of ±0.7 pp</b>, comfortably tighter than the 5 pp band width.</p>
+    <ul class="md-bands">
+      <li><span class="md-sw" style="background: var(--luna-red-500);"></span><b>Brittle &lt; 5 pp</b><span class="text-subdued">flips inside the auditor's typical ±5 pp range</span></li>
+      <li><span class="md-sw" style="background: var(--luna-orange-400);"></span><b>Fragile 5–15 pp</b><span class="text-subdued">flips within reasonable challenge</span></li>
+      <li><span class="md-sw" style="background: var(--luna-yellow-400);"></span><b>Elastic 15–25 pp</b><span class="text-subdued">flips only on a sizeable move</span></li>
+      <li><span class="md-sw" style="background: var(--luna-green-400);"></span><b>Stable &gt; 25 pp</b><span class="text-subdued">holds past any reasonable challenge</span></li>
+    </ul>
+    <p>Rows are sorted ascending by brittleness; <b>$ exposure</b> is the secondary sort so two equally-brittle estimates queue largest-dollar first. Sampling design follows <b>AICPA AU-C 540</b> (accounting estimates) and the Latin-hypercube guidance in <b>Helton &amp; Davis (2003)</b>; the ±0.7 pp CI is computed per <b>Cochran (1977), §4.3</b>.</p>
+  </div>
+  <div class="md-foot">
+    <a href="#" onclick="event.preventDefault();">Brittleness methodology →</a>
+    <button type="button" class="btn sm" onclick="closeMethodology()">Got it</button>
+  </div>
+</dialog>
+
+<div class="growl-host" id="growlHost"></div>
+
+<script src="data.js"></script>
+<script>
+/* ===================================================================
+   SEEDED RNG — deterministic procedural generation.
+   =================================================================== */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function() {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function pick(rng, arr) { return arr[Math.floor(rng() * arr.length)]; }
+
+/* ===================================================================
+   POPULATION — 128 estimate controls procedurally generated.
+   =================================================================== */
+const ESTIMATE_TEMPLATES = [
+  // [name, domain, base drivers (3-5), base conclusion bias]
+  { name: "Warranty reserve — robotics units",                  domain: "finrep",   drivers: ["historical claim rate","unit volume","avg repair cost","extended warranty mix"], bias: -0.1 },
+  { name: "Allowance for doubtful accounts — enterprise AR",    domain: "revenue",  drivers: ["expected loss %","aging mix","macro factor","write-off pattern"], bias: 0.0 },
+  { name: "Inventory obsolescence reserve — service parts",     domain: "inventory",drivers: ["months-of-supply","scrap rate","SKU velocity","obsolescence trigger"], bias: -0.05 },
+  { name: "Stock-based comp — RSU expected forfeiture",         domain: "payroll",  drivers: ["forfeiture rate","tenure mix","performance vesting %","grant-date FV"], bias: 0.0 },
+  { name: "Goodwill impairment — Mobility segment",             domain: "finrep",   drivers: ["discount rate (WACC)","terminal growth","margin expansion","revenue CAGR","tax rate"], bias: -0.2 },
+  { name: "Deferred tax asset valuation allowance",             domain: "tax",      drivers: ["future taxable income","reversal pattern","jurisdiction mix"], bias: 0.0 },
+  { name: "Lease incremental borrowing rate",                   domain: "finrep",   drivers: ["benchmark rate","credit spread","term-structure"], bias: 0.05 },
+  { name: "Asset retirement obligation — manufacturing sites",  domain: "finrep",   drivers: ["disposal cost inflation","credit-adjusted rate","timing"], bias: 0.0 },
+  { name: "Contingent legal reserve — IP dispute",              domain: "entity",   drivers: ["probability of adverse outcome","damages range","settlement %"], bias: -0.15 },
+  { name: "Sales returns reserve — direct channel",             domain: "revenue",  drivers: ["historical return rate","new-product mix","season factor"], bias: 0.05 },
+  { name: "SSP allocation — multi-element arrangements",        domain: "revenue",  drivers: ["standalone selling price","discount allocation","performance %"], bias: 0.0 },
+  { name: "Variable consideration — channel rebates",           domain: "revenue",  drivers: ["expected achievement %","constraint","customer mix"], bias: -0.05 },
+  { name: "Bad debt provision — international SMB",             domain: "revenue",  drivers: ["expected loss %","FX volatility","country risk"], bias: -0.1 },
+  { name: "Workers' comp reserve",                              domain: "hr",       drivers: ["claims development factor","wage inflation","frequency"], bias: 0.0 },
+  { name: "Healthcare IBNR",                                    domain: "hr",       drivers: ["completion factor","trend","membership"], bias: 0.0 },
+  { name: "Customer-acquired intangible useful life",           domain: "finrep",   drivers: ["churn rate","cohort tail","economic life"], bias: 0.05 },
+  { name: "Pension benefit obligation discount rate",           domain: "hr",       drivers: ["high-grade corporate yield","mortality table","COLA"], bias: 0.0 },
+  { name: "VAT/sales-tax accrual — nexus expansion",            domain: "tax",      drivers: ["taxable sales by state","rate mix","apportionment"], bias: -0.05 },
+  { name: "Capitalized software useful life",                   domain: "itgc",     drivers: ["technology obsolescence","release cadence","retirement %"], bias: 0.0 },
+  { name: "PP&E impairment — fab tooling",                      domain: "finrep",   drivers: ["forecast cash flows","utilization","WACC"], bias: -0.1 },
+  { name: "Bonus accrual — exec STIP",                          domain: "payroll",  drivers: ["expected achievement %","payout curve","headcount"], bias: 0.0 },
+  { name: "Severance accrual — restructuring",                  domain: "payroll",  drivers: ["impacted headcount","severance multiple","communication date"], bias: -0.05 },
+  { name: "Customer concentration reserve",                     domain: "revenue",  drivers: ["top-10 customer health","contract escalators","renewal %"], bias: -0.05 },
+  { name: "Self-insurance reserve — auto fleet",                domain: "treasury", drivers: ["claim frequency","severity trend","retention level"], bias: 0.0 },
+  { name: "Marketing accrual — co-op programs",                 domain: "procure",  drivers: ["program participation","fund utilization","cutoff timing"], bias: 0.05 },
+  { name: "Cloud commit shortfall accrual",                     domain: "itgc",     drivers: ["forecast usage","commit ratio","price tiers"], bias: -0.05 },
+  { name: "FX exposure — net investment hedge effectiveness",   domain: "treasury", drivers: ["spot vs forward","interest rate diff","horizon"], bias: 0.0 },
+  { name: "Hedge ineffectiveness — commodity swap",             domain: "treasury", drivers: ["basis differential","correlation","tenor"], bias: -0.1 },
+  { name: "Customer warranty extended-svc reserve",             domain: "revenue",  drivers: ["attach rate","cost-per-event","duration"], bias: -0.05 },
+  { name: "License compliance accrual — software audit",        domain: "itgc",     drivers: ["seat-count delta","true-up rate","jurisdiction"], bias: -0.1 },
+  { name: "Tax uncertain position reserve — transfer pricing",  domain: "tax",      drivers: ["recognition threshold %","measurement %","jurisdiction risk","penalty rate"], bias: -0.15 },
+  { name: "Deferred revenue release — milestone contracts",     domain: "revenue",  drivers: ["milestone completion %","customer acceptance","timing"], bias: 0.0 },
+];
+
+const ENTITIES = ["Helios USA","Helios EMEA","Helios APAC","Helios Mobility","Helios Services","Corporate","Helios Industrial","Helios Robotics LLC"];
+const FREQUENCIES = ["Quarterly","Monthly","Semi-annual","Annual"];
+
+/* Generate 128 estimates from templates with seeded variation. */
+const POP_SIZE = 128;
+const ESTIMATES = [];
+(function gen() {
+  const rng = mulberry32(20260612);
+  let serial = 1;
+  for (let i = 0; i < POP_SIZE; i++) {
+    const tpl = ESTIMATE_TEMPLATES[i % ESTIMATE_TEMPLATES.length];
+    const variant = Math.floor(i / ESTIMATE_TEMPLATES.length) + 1;
+    const entity = pick(rng, ENTITIES);
+    const owner = OWNERS[Math.floor(rng() * OWNERS.length)];
+    const freq = pick(rng, FREQUENCIES);
+
+    // Generate the brittleness score (% driver move to flip).
+    // Distribution: skewed — many fragile, fewer brittle, long tail of stable.
+    // Construct from base ~Beta-ish skewed distribution.
+    const r = rng();
+    // Mixture: 15% brittle (<5), 30% fragile (5-15), 25% elastic (15-25), 30% stable (>25)
+    let flip;
+    if (r < 0.15) flip = 0.5 + rng() * 4.5;
+    else if (r < 0.45) flip = 5 + rng() * 10;
+    else if (r < 0.70) flip = 15 + rng() * 10;
+    else flip = 25 + rng() * 25;
+    // Round to 1 dp
+    flip = Math.round(flip * 10) / 10;
+
+    // Determine conclusion: estimates near a flip threshold are most likely
+    // to currently be on the safe side. Use a logistic on bias + noise.
+    const concScore = tpl.bias + (rng() - 0.5) * 1.0 + (flip < 5 ? -0.15 : (flip < 15 ? -0.05 : 0.1));
+    const conclusion = concScore > 0.05 ? "suff" : (concScore < -0.05 ? "insuff" : (rng() < 0.55 ? "suff" : "insuff"));
+
+    // Dominant lever = first driver in template; modulate by variant.
+    const dom = tpl.drivers[Math.floor(rng() * Math.min(2, tpl.drivers.length))];
+
+    // $ exposure (USD), realistic ranges by domain.
+    const expBase = ({finrep:50, revenue:35, inventory:18, payroll:12, hr:9, treasury:22, tax:28, procure:8, itgc:6, entity:14})[tpl.domain] || 15;
+    const exposure = Math.round(expBase * (0.4 + rng() * 4.6)) * 100000;
+
+    // Drivers — copy template's drivers with small random reordering for variants
+    const drivers = tpl.drivers.slice();
+
+    // Generate per-driver sensitivity (the "individual flip%" — smallest equals brittleness).
+    const driverSens = drivers.map((d, j) => {
+      if (j === 0) return flip;
+      return Math.round((flip * (1.3 + rng() * 2.0)) * 10) / 10;
+    });
+    // Shuffle so dominant isn't always first in display order? Keep first for clarity.
+
+    // Generate driver units / baselines / ranges
+    const driverDefs = drivers.map((d, j) => {
+      const sens = driverSens[j];
+      // Pick a sensible base value + range by driver name keyword
+      let unit = "%", base = 5 + rng() * 25, lo = 0, hi = 100, step = 0.1;
+      const dl = d.toLowerCase();
+      if (dl.includes("rate") || dl.includes("%") || dl.includes("growth") || dl.includes("inflation") || dl.includes("margin")) {
+        unit = "%"; base = 1.5 + rng() * 18; lo = 0; hi = Math.max(40, base * 3); step = 0.1;
+      } else if (dl.includes("wacc") || dl.includes("discount") || dl.includes("yield")) {
+        unit = "%"; base = 7 + rng() * 6; lo = 1; hi = 20; step = 0.05;
+      } else if (dl.includes("probability") || dl.includes("threshold")) {
+        unit = "%"; base = 25 + rng() * 50; lo = 0; hi = 100; step = 1;
+      } else if (dl.includes("headcount") || dl.includes("volume") || dl.includes("count")) {
+        unit = "units"; base = Math.round(50 + rng() * 9000); lo = 0; hi = Math.round(base * 2.5); step = 1;
+      } else if (dl.includes("cost") || dl.includes("damages") || dl.includes("severance") || dl.includes("loss")) {
+        unit = "$"; base = Math.round(50 + rng() * 950); lo = 0; hi = Math.round(base * 3); step = 1;
+      } else if (dl.includes("months") || dl.includes("timing") || dl.includes("life") || dl.includes("duration") || dl.includes("tail") || dl.includes("term") || dl.includes("horizon") || dl.includes("tenor")) {
+        unit = "mo"; base = 6 + Math.round(rng() * 60); lo = 1; hi = Math.round(base * 2.5); step = 1;
+      } else {
+        unit = "idx"; base = Math.round((0.5 + rng() * 1.5) * 100) / 100; lo = 0; hi = Math.round(base * 2.5 * 100) / 100; step = 0.01;
+      }
+      base = Math.round(base * 100) / 100;
+      // Threshold value (where flip happens) — derived from sensitivity and direction
+      const dir = (rng() < 0.5) ? 1 : -1;
+      const flipDelta = base * (sens / 100);
+      const flipAt = Math.max(lo, Math.min(hi, base + dir * flipDelta));
+      return {
+        name: d, unit, base, current: base, lo, hi, step,
+        sens, dir, flipAt,
+        rationale: rationaleFor(d)
+      };
+    });
+
+    // ID
+    const idPrefix = ({finrep:"FR-EST", revenue:"REV-EST", inventory:"INV-EST", payroll:"PAY-EST", hr:"HR-EST", treasury:"TRE-EST", tax:"TAX-EST", procure:"PRC-EST", itgc:"ITG-EST", entity:"ENT-EST"})[tpl.domain] || "EST";
+    const id = `${idPrefix}-${String(serial).padStart(3, "0")}`;
+    serial++;
+
+    ESTIMATES.push({
+      id,
+      name: variant > 1 ? `${tpl.name} (v${variant})` : tpl.name,
+      domain: tpl.domain,
+      entity,
+      owner: owner.name,
+      ownerTeam: owner.team,
+      freq,
+      flip,
+      band: flip < 5 ? "brittle" : flip < 15 ? "fragile" : flip < 25 ? "elastic" : "stable",
+      conclusion,
+      dominant: dom,
+      exposure,
+      drivers: driverDefs,
+      lastReviewed: `2026-09-${String(10 + (i*3) % 19).padStart(2,"0")}`,
+      trials: 2000,
+    });
+  }
+})();
+
+function rationaleFor(driver) {
+  const d = driver.toLowerCase();
+  if (d.includes("rate") || d.includes("loss")) return "Pulled from 24-month rolling history. Auditor's typical challenge band: ±2–3 pp.";
+  if (d.includes("wacc") || d.includes("discount")) return "Build-up: risk-free + equity risk premium + size + specific. ±50 bps within reasonable range.";
+  if (d.includes("growth") || d.includes("cagr") || d.includes("terminal")) return "Tied to long-range plan. Auditor challenge: should not exceed long-run GDP.";
+  if (d.includes("probability") || d.includes("threshold")) return "Internal counsel & external advisor input. Range typically ±10 pp absent new fact pattern.";
+  if (d.includes("volume") || d.includes("headcount") || d.includes("units")) return "From operational plan. Sensitivity to forecast variance is high.";
+  if (d.includes("cost") || d.includes("damages")) return "Historical cost per event + inflation. Auditor reviews unit-cost outliers individually.";
+  if (d.includes("mix") || d.includes("pattern")) return "Computed from cohort behavior. Sensitive to recent vs. legacy mix.";
+  return "Management-set assumption with documented support. Stress band reflects benchmark variance.";
+}
+
+/* ===================================================================
+   Stat strip — recompute from generated population.
+   =================================================================== */
+function recomputeStats() {
+  const brittle = ESTIMATES.filter(e => e.band === "brittle").length;
+  const fragile = ESTIMATES.filter(e => e.band === "fragile").length;
+  const elastic = ESTIMATES.filter(e => e.band === "elastic").length;
+  const stable = ESTIMATES.filter(e => e.band === "stable").length;
+  document.getElementById("stat-total").textContent = ESTIMATES.length;
+  document.getElementById("stat-brittle").textContent = brittle;
+  document.getElementById("stat-fragile").textContent = fragile;
+  document.getElementById("stat-stable").textContent = stable;
+  document.getElementById("dist-total").textContent = ESTIMATES.length;
+  document.getElementById("cnt-all").textContent = ESTIMATES.length;
+  document.getElementById("cnt-brittle").textContent = brittle;
+  document.getElementById("cnt-fragile").textContent = fragile;
+  document.getElementById("cnt-elastic").textContent = elastic;
+  document.getElementById("cnt-stable").textContent = stable;
+
+  // Refresh the bulk-remediate impact line so the confirm modal shows live numbers.
+  const brittleEstimates = ESTIMATES.filter(e => e.band === "brittle");
+  const brittleExposure = brittleEstimates.reduce((sum, e) => sum + (e.exposure || 0), 0);
+  const cntEl = document.getElementById("bulkRemediateCount");
+  const expEl = document.getElementById("bulkRemediateExposure");
+  if (cntEl) cntEl.textContent = brittleEstimates.length;
+  if (expEl) expEl.textContent = fmtMoney(brittleExposure);
+  const bulkBtn = document.getElementById("bulkRemediateBtn");
+  if (bulkBtn) {
+    bulkBtn.setAttribute(
+      "data-ux-confirm-impact",
+      `${brittleEstimates.length} estimates · ${fmtMoney(brittleExposure)} combined exposure · all owners notified`
+    );
+    bulkBtn.setAttribute(
+      "data-ux-confirm-body",
+      `This opens sensitivity packs for every brittle estimate (${brittleEstimates.length} total, ${fmtMoney(brittleExposure)} combined exposure), notifies each owner, and queues all of them for the Q3 close remediation list. You can undo within 10 seconds.`
+    );
+  }
+}
+
+/* ===================================================================
+   Distribution histogram
+   =================================================================== */
+function renderHistogram() {
+  const buckets = new Array(20).fill(0);
+  const bucketBand = new Array(20).fill("stable");
+  // bucket width: 50/20 = 2.5 pp
+  ESTIMATES.forEach(e => {
+    const idx = Math.min(19, Math.floor(e.flip / 2.5));
+    buckets[idx]++;
+  });
+  // assign band class by bucket center
+  buckets.forEach((_, i) => {
+    const center = (i + 0.5) * 2.5;
+    bucketBand[i] = center < 5 ? "brittle" : center < 15 ? "fragile" : center < 25 ? "elastic" : "stable";
+  });
+  const maxB = Math.max(...buckets, 1);
+  const host = document.getElementById("histogram");
+  host.innerHTML = buckets.map((c, i) => {
+    const h = Math.max(4, Math.round((c / maxB) * 60));
+    return `<div class="fd-bar ${bucketBand[i]}" style="height:${h}px;" title="${(i*2.5).toFixed(1)}–${((i+1)*2.5).toFixed(1)}% flip · ${c} estimates"></div>`;
+  }).join("");
+}
+
+/* ===================================================================
+   Ranked table (paginated, 50 per page).
+   =================================================================== */
+let activeBand = "all";
+let activeConc = "all";
+let searchTerm = "";
+let page = 0;
+let sortBy = "flip";   // "flip" or "exposure"
+let sortDir = "asc";   // "asc" or "desc"
+const PAGE_SIZE = 50;
+
+function filtered() {
+  const arr = ESTIMATES
+    .filter(e => activeBand === "all" || e.band === activeBand)
+    .filter(e => activeConc === "all" || e.conclusion === activeConc)
+    .filter(e => {
+      if (!searchTerm) return true;
+      const t = searchTerm.toLowerCase();
+      return e.name.toLowerCase().includes(t) || e.id.toLowerCase().includes(t);
+    });
+  const dir = sortDir === "asc" ? 1 : -1;
+  arr.sort((a, b) => (a[sortBy] - b[sortBy]) * dir);
+  return arr;
+}
+
+function setSort(col) {
+  if (sortBy === col) {
+    sortDir = sortDir === "asc" ? "desc" : "asc";
+  } else {
+    sortBy = col;
+    // Sensible default: brittleness asc (most-brittle first), exposure desc (biggest $ first)
+    sortDir = col === "exposure" ? "desc" : "asc";
+  }
+  page = 0;
+  updateSortIndicators();
+  renderTable();
+}
+
+function updateSortIndicators() {
+  const arrow = sortDir === "asc" ? "▲" : "▼";
+  const flipInd = document.getElementById("ind-flip");
+  const expInd = document.getElementById("ind-exposure");
+  if (flipInd) flipInd.textContent = sortBy === "flip" ? arrow : "";
+  if (expInd) expInd.textContent = sortBy === "exposure" ? arrow : "";
+  // Update foot message wording
+  const fm = document.getElementById("footMsg");
+  // foot msg is rebuilt in renderTable, no-op here
+}
+
+function fmtMoney(n) {
+  if (n >= 1_000_000) return `$${(n/1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `$${(n/1_000).toFixed(0)}K`;
+  return `$${n.toFixed(0)}`;
+}
+
+function bandLabel(b) {
+  return { brittle:"Brittle", fragile:"Fragile", elastic:"Elastic", stable:"Stable" }[b];
+}
+function bandBadgeClass(b) {
+  return { brittle:"red", fragile:"orange", elastic:"yellow", stable:"green" }[b];
+}
+
+function renderTable() {
+  const list = filtered();
+  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  if (page >= totalPages) page = totalPages - 1;
+  if (page < 0) page = 0;
+  const start = page * PAGE_SIZE;
+  const end = Math.min(start + PAGE_SIZE, list.length);
+  const slice = list.slice(start, end);
+
+  const body = document.getElementById("rankBody");
+  if (slice.length === 0) {
+    body.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: var(--luna-sp-8); color: var(--luna-text-subdued);">No estimates match these filters.</td></tr>`;
+  } else {
+    body.innerHTML = slice.map((e, i) => {
+      const rank = start + i + 1;
+      const meter = Math.min(100, e.flip * 2); // visual scale to 50 pp
+      const concClass = e.conclusion === "suff" ? "suff" : "insuff";
+      const concText = e.conclusion === "suff" ? "Sufficient" : "Insufficient";
+      const dom = DOMAINS.find(d => d.id === e.domain);
+      return `
+        <tr onclick="openDrawer('${e.id}')">
+          <td class="rank-num">${rank}</td>
+          <td>
+            <div class="ctl-name">${e.name}</div>
+            <div class="ctl-sub"><span class="ctl-id">${e.id}</span> · ${dom ? dom.label : e.domain} · ${e.entity} · ${e.owner}</div>
+          </td>
+          <td><span class="conclusion-pill ${concClass}"><span class="cp-dot"></span>${concText}</span></td>
+          <td>
+            <div class="frag-cell">
+              <span class="frag-meter ${e.band}"><span style="width:${meter}%;"></span></span>
+              <span class="frag-score">${e.flip.toFixed(1)}%</span>
+              <span class="badge ${bandBadgeClass(e.band)}" style="margin-left: var(--luna-sp-1);">${bandLabel(e.band)}</span>
+            </div>
+          </td>
+          <td><span class="lever-chip dom">${e.dominant}</span></td>
+          <td class="delta-cell"><b>${fmtMoney(e.exposure)}</b></td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  document.getElementById("visibleCount").textContent = list.length === 0
+    ? "Showing 0 of " + ESTIMATES.length
+    : `Showing ${start+1}–${end} of ${list.length}` + (list.length !== ESTIMATES.length ? ` (filtered from ${ESTIMATES.length})` : ``);
+  const sortLabel = sortBy === "exposure"
+    ? `sorted ${sortDir === "asc" ? "ascending" : "descending"} by $ exposure`
+    : `sorted ${sortDir === "asc" ? "ascending" : "descending"} by minimum-flip %`;
+  document.getElementById("footMsg").textContent = list.length === 0
+    ? "No matches. Adjust filters above."
+    : `Showing ${start+1}–${end} of ${list.length} estimates · ${sortLabel}.`;
+  document.getElementById("pageInfo").textContent = `Page ${page+1} / ${totalPages}`;
+  document.getElementById("prevBtn").disabled = page === 0;
+  document.getElementById("nextBtn").disabled = page >= totalPages - 1;
+}
+
+function nextPage() { page++; renderTable(); }
+function prevPage() { page--; renderTable(); }
+
+document.querySelectorAll(".chip[data-band]").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".chip[data-band]").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeBand = chip.dataset.band;
+    page = 0;
+    renderTable();
+  });
+});
+document.querySelectorAll(".chip[data-conc]").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".chip[data-conc]").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeConc = chip.dataset.conc;
+    page = 0;
+    renderTable();
+  });
+});
+document.getElementById("search").addEventListener("input", (e) => {
+  searchTerm = e.target.value;
+  page = 0;
+  renderTable();
+});
+
+/* ===================================================================
+   Drawer — assumption sliders with live conclusion flip.
+   =================================================================== */
+let activeEst = null;
+let sliderState = []; // current values mirrored for math
+const FRESH_RESET_LIST = new Set(); // ids reset this session
+
+function openDrawer(id) {
+  const e = ESTIMATES.find(x => x.id === id);
+  if (!e) return;
+  activeEst = e;
+  // initialize slider state from baselines
+  sliderState = e.drivers.map(d => ({ ...d, current: d.base }));
+
+  const dom = DOMAINS.find(d => d.id === e.domain);
+  document.getElementById("d-band-badge").innerHTML = `<span class="badge-dot"></span>${bandLabel(e.band)} · flips at ${e.flip.toFixed(1)}%`;
+  document.getElementById("d-band-badge").className = `badge ${bandBadgeClass(e.band)}`;
+  document.getElementById("d-meta").textContent = `${e.id} · ${dom ? dom.label : e.domain} · ${e.entity}`;
+  document.getElementById("d-title").textContent = e.name;
+
+  const body = document.getElementById("drawer-body");
+  body.innerHTML = `
+
+    <div class="gap-section">
+      <h3>Live conclusion</h3>
+      <div class="live-card ${e.conclusion === 'suff' ? 'suff' : 'insuff'}" id="liveCard">
+        <div>
+          <div class="lc-conclusion" id="lcConclusion">${e.conclusion === 'suff' ? 'Sufficient — within reserve' : 'Insufficient — reserve gap'}</div>
+          <div class="lc-formula" id="lcFormula">Drag drivers to see when the conclusion flips.</div>
+        </div>
+        <div class="lc-result">
+          <div class="lc-r-val" id="lcDelta">0.0%</div>
+          <div class="lc-r-vs">vs. baseline</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Estimate context</h3>
+      <div class="estimate-summary">
+        <div class="es-row"><div class="es-l">$ exposure</div><div class="es-v">${fmtMoney(e.exposure)}</div></div>
+        <div class="es-row"><div class="es-l">Frequency</div><div class="es-v">${e.freq}</div></div>
+        <div class="es-row"><div class="es-l">Owner</div><div class="es-v">${e.owner}</div></div>
+        <div class="es-row"><div class="es-l">Team</div><div class="es-v">${e.ownerTeam}</div></div>
+        <div class="es-row"><div class="es-l">Last reviewed</div><div class="es-v">${e.lastReviewed}</div></div>
+        <div class="es-row"><div class="es-l">Monte-Carlo trials</div><div class="es-v">${e.trials.toLocaleString()}</div></div>
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>AI brittleness summary <span class="text-subdued" style="font-weight:400; letter-spacing:0; text-transform:none; font-size: var(--luna-fs-100);">(suggested reading — auditor confirms)</span></h3>
+      <div class="ai-rationale">
+        <span class="ai-label">Suggested read · why this ranks ${e.band}</span>
+        Across <b>${e.trials.toLocaleString()}</b> Monte-Carlo trials, the smallest assumption move that flipped sufficiency was <b>${e.flip.toFixed(1)}%</b>, on the <b>"${e.dominant}"</b> driver. That sits ${e.band === 'brittle' ? 'well inside the auditor\'s typical ±5 pp challenge band' : e.band === 'fragile' ? 'inside the auditor\'s typical ±5–15 pp challenge band' : e.band === 'elastic' ? 'just outside the auditor\'s typical challenge band' : 'outside any reasonable challenge range'} — auditor decides whether ${e.band === 'brittle' || e.band === 'fragile' ? 'pre-emptive strengthening is warranted.' : 'further support is needed.'}
+      </div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Assumption sliders <span class="text-subdued" style="font-weight:400; letter-spacing:0; text-transform:none; font-size: var(--luna-fs-100);">(${e.drivers.length} drivers · drag to flip the conclusion)</span></h3>
+      <div id="sliderList"></div>
+    </div>
+
+    <div class="gap-section">
+      <h3>Scenarios saved this session</h3>
+      <div class="text-subdued" style="font-size: var(--luna-fs-100);" id="scenarioCount">No locked scenarios yet for this estimate.</div>
+    </div>
+  `;
+
+  renderSliders();
+  recomputeLive();
+
+  document.getElementById("backdrop").classList.add("open");
+  document.getElementById("drawer").classList.add("open");
+}
+
+function renderSliders() {
+  const host = document.getElementById("sliderList");
+  host.innerHTML = sliderState.map((d, i) => {
+    const isDom = d.name === activeEst.dominant;
+    const range = d.hi - d.lo;
+    const flipPct = ((d.flipAt - d.lo) / range) * 100;
+    const curPct = ((d.current - d.lo) / range) * 100;
+    return `
+      <div class="slider-block" id="sb-${i}">
+        <div class="sb-head">
+          <div class="sb-name">${d.name}${isDom ? '<span class="sb-dom">dominant</span>' : ''}</div>
+          <div class="sb-vals">
+            base <span>${fmtVal(d.base, d.unit)}</span> ·
+            now <span class="sb-cur" id="sbCur-${i}">${fmtVal(d.current, d.unit)}</span>
+          </div>
+        </div>
+        <input type="range" class="luna-range" id="sl-${i}"
+               min="${d.lo}" max="${d.hi}" step="${d.step}" value="${d.current}"
+               oninput="onSlide(${i}, this.value)"/>
+        <div class="sb-axis">
+          <span>${fmtVal(d.lo, d.unit)}</span>
+          <span>${fmtVal(d.hi, d.unit)}</span>
+        </div>
+        <div class="sb-flip">
+          Individual sensitivity: <b style="color: var(--luna-text);">${d.sens.toFixed(1)}%</b> to flip on this driver alone
+          <span class="flip-bar">
+            <span class="flip-tick" style="left:${flipPct}%;" title="Flip point: ${fmtVal(d.flipAt, d.unit)}"></span>
+            <span class="flip-current" id="flipCur-${i}" style="left:${curPct}%;"></span>
+          </span>
+        </div>
+        <div class="sb-rationale">${d.rationale}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+function fmtVal(v, unit) {
+  if (unit === "$") return "$" + Math.round(v).toLocaleString();
+  if (unit === "units") return Math.round(v).toLocaleString();
+  if (unit === "mo") return Math.round(v) + " mo";
+  if (unit === "idx") return v.toFixed(2);
+  return Number(v).toFixed(v > 50 ? 0 : (v > 5 ? 1 : 2)) + "%";
+}
+
+function onSlide(i, val) {
+  const d = sliderState[i];
+  d.current = Number(val);
+  const range = d.hi - d.lo;
+  // update visible
+  const curEl = document.getElementById(`sbCur-${i}`);
+  curEl.textContent = fmtVal(d.current, d.unit);
+  const shifted = Math.abs(d.current - d.base) / Math.max(0.0001, Math.abs(d.base)) > 0.001;
+  curEl.classList.toggle("shifted", shifted);
+
+  const curPct = ((d.current - d.lo) / range) * 100;
+  document.getElementById(`flipCur-${i}`).style.left = `${Math.max(0, Math.min(100, curPct))}%`;
+
+  recomputeLive();
+}
+
+/* The headline math: compute the aggregate stress, flip conclusion when
+   it exceeds the brittleness threshold in the appropriate direction. */
+function recomputeLive() {
+  const e = activeEst;
+  // aggregate "pressure" = sum over drivers of (move_i / baseline_i) * direction_i
+  // direction is encoded in d.dir; +1 means increasing the driver pushes toward insufficient
+  let pressure = 0;
+  let absMove = 0;
+  sliderState.forEach(d => {
+    const move = (d.current - d.base) / Math.max(0.0001, Math.abs(d.base));
+    pressure += move * d.dir * (e.flip / Math.max(0.5, d.sens)); // dominant gets the largest weight
+    absMove += Math.abs(move);
+  });
+  // total move %
+  const totalMovePct = absMove * 100;
+
+  // If currently sufficient, flip to insufficient when pressure > +threshold.
+  // If currently insufficient, become sufficient when pressure < -threshold.
+  const baseConc = e.conclusion;
+  // Use threshold of 1.0 (the dominant flip baseline) — slider math normalized to that
+  let live = baseConc;
+  if (baseConc === "suff" && pressure > 1.0) live = "insuff";
+  else if (baseConc === "insuff" && pressure < -1.0) live = "suff";
+
+  // Update DOM
+  const card = document.getElementById("liveCard");
+  card.classList.remove("suff","insuff");
+  card.classList.add(live === "suff" ? "suff" : "insuff");
+  const concEl = document.getElementById("lcConclusion");
+  concEl.textContent = live === "suff" ? "Sufficient — within reserve" : "Insufficient — reserve gap";
+
+  const flipped = live !== baseConc;
+  document.getElementById("lcFormula").innerHTML = flipped
+    ? `<b>Conclusion FLIPPED.</b> Net assumption move <b>${totalMovePct.toFixed(1)}%</b> · pressure index <b>${pressure.toFixed(2)}</b> · threshold ±1.00.`
+    : `Net assumption move <b>${totalMovePct.toFixed(1)}%</b> · pressure index <b>${pressure.toFixed(2)}</b> · threshold ±1.00 to flip.`;
+  document.getElementById("lcDelta").textContent = (pressure >= 0 ? "+" : "") + pressure.toFixed(2);
+}
+
+function resetSliders() {
+  if (!activeEst) return;
+  sliderState = activeEst.drivers.map(d => ({ ...d, current: d.base }));
+  renderSliders();
+  recomputeLive();
+  growl("Sliders reset to baseline.", "success");
+}
+
+let scenariosLocked = 0;
+const reviewedBrittle = new Set(); // ids of brittle estimates already counted in burndown
+
+function _doAcceptScenario(est) {
+  scenariosLocked++;
+  growl(`<b>Scenario locked.</b> Sensitivity pack queued for ${est.owner} (${est.ownerTeam}) — ${est.id}.`, "success");
+  const sc = document.getElementById("scenarioCount");
+  if (sc) sc.textContent = `${scenariosLocked} scenario${scenariosLocked === 1 ? '' : 's'} locked this session.`;
+  // Bump burndown only for brittle estimates, and only once per estimate
+  if (est.band === "brittle" && !reviewedBrittle.has(est.id)) {
+    reviewedBrittle.add(est.id);
+    const bd = document.getElementById("brittleBurndown");
+    if (bd && window.UX && typeof window.UX.bumpBurndown === "function") {
+      window.UX.bumpBurndown(bd, 1);
+    }
+  }
+}
+
+function _undoAcceptScenario(est) {
+  scenariosLocked = Math.max(0, scenariosLocked - 1);
+  const sc = document.getElementById("scenarioCount");
+  if (sc) sc.textContent = scenariosLocked === 0
+    ? "No locked scenarios yet for this estimate."
+    : `${scenariosLocked} scenario${scenariosLocked === 1 ? '' : 's'} locked this session.`;
+  if (est.band === "brittle" && reviewedBrittle.has(est.id)) {
+    reviewedBrittle.delete(est.id);
+    const bd = document.getElementById("brittleBurndown");
+    if (bd && window.UX && typeof window.UX.bumpBurndown === "function") {
+      window.UX.bumpBurndown(bd, -1);
+    }
+  }
+}
+
+function acceptScenario() {
+  if (!activeEst) return;
+  const est = activeEst;
+  // Compute movement summary for impact line
+  let movedDrivers = 0;
+  sliderState.forEach(d => {
+    if (Math.abs(d.current - d.base) / Math.max(0.0001, Math.abs(d.base)) > 0.001) movedDrivers++;
+  });
+  const impact = `${est.id} · ${movedDrivers} of ${est.drivers.length} drivers moved · owner ${est.owner} (${est.ownerTeam}) · ${fmtMoney(est.exposure)} exposure`;
+  const items = [
+    `Lock scenario on "${est.name}"`,
+    `Notify ${est.owner} on ${est.ownerTeam}`,
+    `Attach to sensitivity pack for Q3 close`,
+  ];
+  if (window.UX && typeof window.UX.confirm === "function") {
+    window.UX.confirm({
+      title: "Lock scenario and notify owner?",
+      body: `This locks the current slider positions as a saved scenario for <b>${est.name}</b> and pings the owner to review. You can undo within 8 seconds.`,
+      impactSummary: impact,
+      items,
+      undoSeconds: 8,
+      onConfirm: () => _doAcceptScenario(est),
+      onUndo: () => _undoAcceptScenario(est),
+    });
+  } else {
+    _doAcceptScenario(est);
+  }
+}
+
+function closeDrawer() {
+  document.getElementById("backdrop").classList.remove("open");
+  document.getElementById("drawer").classList.remove("open");
+}
+
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+
+/* ===================================================================
+   Growl
+   =================================================================== */
+function growl(html, kind) {
+  const host = document.getElementById("growlHost");
+  const g = document.createElement("div");
+  g.className = "growl" + (kind ? " " + kind : "");
+  g.innerHTML = '<div class="growl-icon"></div><div>' + html + '</div>';
+  host.appendChild(g);
+  setTimeout(() => { g.style.transition = "opacity 200ms, transform 200ms"; g.style.opacity = "0"; g.style.transform = "translateY(8px)"; }, 3800);
+  setTimeout(() => g.remove(), 4100);
+}
+
+function resetAll() {
+  activeBand = "all"; activeConc = "all"; searchTerm = ""; page = 0;
+  sortBy = "flip"; sortDir = "asc";
+  document.querySelectorAll(".chip[data-band]").forEach(c => c.classList.toggle("active", c.dataset.band === "all"));
+  document.querySelectorAll(".chip[data-conc]").forEach(c => c.classList.toggle("active", c.dataset.conc === "all"));
+  document.getElementById("search").value = "";
+  updateSortIndicators();
+  renderTable();
+  growl("Demo reset. Showing all 128 estimates.", "success");
+}
+
+/* ===================================================================
+   Bulk remediate — wired through the [data-ux-confirm] contract.
+   =================================================================== */
+let bulkRemediated = false;
+const bulkBumpedIds = [];
+
+function _doBulkRemediate() {
+  const brittleEstimates = ESTIMATES.filter(e => e.band === "brittle");
+  bulkBumpedIds.length = 0;
+  brittleEstimates.forEach(e => {
+    if (!reviewedBrittle.has(e.id)) {
+      reviewedBrittle.add(e.id);
+      bulkBumpedIds.push(e.id);
+    }
+  });
+  const bd = document.getElementById("brittleBurndown");
+  if (bd && window.UX && typeof window.UX.bumpBurndown === "function" && bulkBumpedIds.length) {
+    window.UX.bumpBurndown(bd, bulkBumpedIds.length);
+  }
+  scenariosLocked += brittleEstimates.length;
+  const sc = document.getElementById("scenarioCount");
+  if (sc) sc.textContent = `${scenariosLocked} scenario${scenariosLocked === 1 ? '' : 's'} locked this session.`;
+  bulkRemediated = true;
+  growl(`<b>${brittleEstimates.length} brittle estimates queued for remediation.</b> Owners notified · sensitivity packs attached.`, "success");
+}
+
+function _undoBulkRemediate() {
+  if (!bulkRemediated) return;
+  const bd = document.getElementById("brittleBurndown");
+  if (bd && window.UX && typeof window.UX.bumpBurndown === "function" && bulkBumpedIds.length) {
+    window.UX.bumpBurndown(bd, -bulkBumpedIds.length);
+  }
+  bulkBumpedIds.forEach(id => reviewedBrittle.delete(id));
+  const restored = bulkBumpedIds.length;
+  bulkBumpedIds.length = 0;
+  scenariosLocked = Math.max(0, scenariosLocked - restored);
+  const sc = document.getElementById("scenarioCount");
+  if (sc) sc.textContent = scenariosLocked === 0
+    ? "No locked scenarios yet for this estimate."
+    : `${scenariosLocked} scenario${scenariosLocked === 1 ? '' : 's'} locked this session.`;
+  bulkRemediated = false;
+}
+
+document.addEventListener("ux:confirmed", function (ev) {
+  if (ev.target && ev.target.id === "bulkRemediateBtn") {
+    _doBulkRemediate();
+  }
+});
+document.addEventListener("ux:undone", function (ev) {
+  if (ev.target && ev.target.id === "bulkRemediateBtn") {
+    _undoBulkRemediate();
+  }
+});
+
+/* ===================================================================
+   Methodology popover (native <dialog>)
+   =================================================================== */
+function openMethodology() {
+  const d = document.getElementById("methodologyDialog");
+  if (!d) return;
+  if (typeof d.showModal === "function") d.showModal();
+  else d.setAttribute("open", "");
+}
+function closeMethodology() {
+  const d = document.getElementById("methodologyDialog");
+  if (!d) return;
+  if (typeof d.close === "function" && d.open) d.close();
+  else d.removeAttribute("open");
+}
+// Close on backdrop click
+document.getElementById("methodologyDialog")?.addEventListener("click", function(ev) {
+  if (ev.target === this) closeMethodology();
+});
+
+/* ===================================================================
+   Boot
+   =================================================================== */
+recomputeStats();
+renderHistogram();
+renderTable();
+</script>
+
+<script>
+window.TOUR = {
+  title: 'Rank estimates by how easily they flip',
+  intro: 'Runs after evidence is accepted upstream. Stress 128 estimate controls and work the brittle ones first.',
+  steps: [
+    {
+      selector: '.flow-pill',
+      title: 'Downstream of accepted',
+      body: 'This view sits after the four-state lifecycle. Inputs are evidence the reviewer already accepted; nothing here re-opens that decision.',
+      position: 'bottom'
+    },
+    {
+      selector: '.page-head h1',
+      title: 'Brittle estimates, not entries',
+      body: 'The unit of work is the estimate control. Rank 128 of them by how small a driver move flips the audit conclusion.',
+      position: 'bottom'
+    },
+    {
+      selector: '#stat-brittle',
+      title: '19 flip under 5%',
+      body: '19 controls break on a sub-5% driver move — inside the auditor challenge band. Harden these before the next review cycle.',
+      position: 'bottom'
+    },
+    {
+      selector: '.frag-dist-disclosure',
+      title: 'Methodology on demand',
+      body: 'N=2,000 Latin-hypercube Monte-Carlo across 3-5 drivers per estimate yields a 95% CI of ±0.7 pp. Open the disclosure for the histogram and sampling notes.',
+      position: 'bottom'
+    },
+    {
+      selector: '#rankBody tr:first-child .lever-chip',
+      title: 'One driver does the work',
+      body: 'The dominant lever on row 1 carries most of the brittleness. Press it first — that is where reasonable challenge breaks the file.',
+      position: 'left'
+    },
+    {
+      selector: '#rankBody tr:first-child td:last-child',
+      title: 'Exposure orders the queue',
+      body: 'Multiply brittleness by dollars to size the pre-close remediation list. Sort red rows by exposure to set the work order.',
+      position: 'left'
+    }
+  ]
+};
+</script>
+<script src="tour.js"></script>
+
+<script src="nav-routing.js"></script>
+<script src="ds-toggle.js"></script>
+<script src="flow.js"></script>
+<script src="ux-fixes.js"></script>
+<script src="provenance.js"></script>
+<script src="sources-link.js"></script>
+<!-- sources-strip intentionally omitted on this page: the primary task (ranked fragility table + slider drawer) must own above-the-fold real estate. Cross-cycle source intake stays one click away in the sidebar / topbar. -->
+</body>
+</html>

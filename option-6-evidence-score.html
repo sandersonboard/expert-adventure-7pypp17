@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sufficiency · Evidence Score · Helios Robotics Q3 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="gate.js"></script>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="chrome.css" />
+<link rel="stylesheet" href="chrome-midship.css" />
+<link rel="stylesheet" href="flow.css" />
+<link rel="stylesheet" href="ux-fixes.css" />
+<link rel="stylesheet" href="provenance.css" />
+<link rel="stylesheet" href="sources-strip.css" />
+<link rel="stylesheet" href="tour.css">
+<style>
+  /* ====== Page-specific ====== */
+
+  /* Score-band rollup bars */
+  .band-rollup {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--luna-sp-3);
+    margin-bottom: var(--luna-sp-5);
+  }
+  .band-card {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    cursor: pointer;
+    transition: box-shadow 120ms, border-color 120ms, transform 120ms;
+    position: relative;
+    overflow: hidden;
+  }
+  .band-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--bandColor, var(--luna-gray-300));
+  }
+  .band-card:hover { box-shadow: var(--luna-shadow-md); transform: translateY(-1px); }
+  .band-card.active {
+    border-color: var(--bandColor);
+    box-shadow: 0 0 0 3px var(--bandTint);
+  }
+  .band-card .band-head {
+    display: flex; align-items: baseline; gap: var(--luna-sp-2);
+    margin-bottom: var(--luna-sp-2);
+  }
+  .band-card .band-tier {
+    font-size: var(--luna-fs-300);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bandColor);
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+  .band-card .band-range {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+  .band-card .band-count {
+    font-size: var(--luna-fs-450);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--luna-text);
+    line-height: 1;
+  }
+  .band-card .band-pct {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-top: var(--luna-sp-1);
+  }
+  .band-card .band-bar {
+    height: 4px;
+    background: var(--luna-gray-100);
+    border-radius: 999px;
+    margin-top: var(--luna-sp-2);
+    overflow: hidden;
+  }
+  .band-card .band-bar span {
+    display: block; height: 100%;
+    background: var(--bandColor);
+    transition: width 200ms ease;
+  }
+
+  /* Tier 1–5 color scheme (internal keys A–F map to tiers 1–5) */
+  .band-A { --bandColor: var(--luna-green-500); --bandTint: var(--luna-green-50); }
+  .band-B { --bandColor: var(--luna-teal-500); --bandTint: var(--luna-teal-50); }
+  .band-C { --bandColor: var(--luna-yellow-500); --bandTint: var(--luna-yellow-50); }
+  .band-D { --bandColor: var(--luna-orange-500); --bandTint: var(--luna-orange-50); }
+  .band-F { --bandColor: var(--luna-red-500); --bandTint: var(--luna-red-50); }
+
+  /* Filter / control bar */
+  .filter-bar {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md) var(--luna-radius-md) 0 0;
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    display: flex; gap: var(--luna-sp-3); align-items: center;
+    flex-wrap: wrap;
+    border-bottom: none;
+  }
+  .filter-bar .filter-label {
+    color: var(--luna-text-subdued);
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+  }
+  .filter-bar select, .filter-bar input[type="search"] {
+    padding: var(--luna-sp-1) var(--luna-sp-2);
+    border: 1px solid var(--luna-border-strong);
+    border-radius: var(--luna-radius-sm);
+    background: var(--luna-bg-surface);
+    font-size: var(--luna-fs-150);
+    font-family: var(--luna-font-family);
+    color: var(--luna-text);
+  }
+  .filter-bar input[type="search"] {
+    min-width: 220px;
+  }
+  .filter-bar .filter-divider {
+    height: 18px;
+    width: 1px;
+    background: var(--luna-border);
+  }
+  .filter-bar .filter-active-count {
+    margin-left: auto;
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+  .filter-bar .filter-active-count b { color: var(--luna-text); font-weight: 600; }
+
+  /* Sampling notice strip */
+  .sampling-strip {
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-100);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-5);
+    display: flex; align-items: center; gap: var(--luna-sp-3);
+    font-size: var(--luna-fs-150);
+    color: var(--luna-gray-800);
+  }
+  .sampling-strip .ss-icon {
+    width: 28px; height: 28px;
+    border-radius: 999px;
+    background: var(--luna-teal-100);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex: 0 0 28px;
+    color: var(--luna-teal-700);
+    font-weight: 700;
+  }
+  .sampling-strip .ss-body { flex: 1; line-height: 1.45; }
+  .sampling-strip .ss-body b { color: var(--luna-teal-700); }
+  .sampling-strip .ss-action {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-teal-600);
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .sampling-strip .ss-action:hover { text-decoration: underline; }
+
+  /* Virtualized table */
+  .ctrl-table-frame {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: 0 0 var(--luna-radius-md) var(--luna-radius-md);
+    overflow: hidden;
+    box-shadow: var(--luna-shadow-sm);
+  }
+  .ctrl-table-head {
+    display: grid;
+    grid-template-columns: 78px 56px 1fr 130px 110px 90px 130px 100px;
+    background: var(--luna-bg-sunken);
+    border-bottom: 1px solid var(--luna-border);
+    padding: 0;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--luna-text-subdued);
+  }
+  .ctrl-table-head .th {
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+    user-select: none;
+  }
+  .ctrl-table-head .th:hover { color: var(--luna-text); }
+  .ctrl-table-head .th.active { color: var(--luna-teal-600); }
+  .ctrl-table-head .th .sort-caret {
+    font-size: 10px;
+    color: var(--luna-text-muted);
+  }
+  .ctrl-table-head .th.active .sort-caret { color: var(--luna-teal-500); }
+  .ctrl-table-head .th.right { justify-content: flex-end; }
+  .ctrl-table-head .th.center { justify-content: center; }
+
+  .ctrl-table-viewport {
+    height: 580px;
+    overflow-y: auto;
+    position: relative;
+    background: var(--luna-bg-surface);
+  }
+  .ctrl-table-spacer {
+    position: relative;
+  }
+  .ctrl-row {
+    display: grid;
+    grid-template-columns: 78px 56px 1fr 130px 110px 90px 130px 100px;
+    position: absolute;
+    left: 0; right: 0;
+    height: 56px;
+    align-items: center;
+    border-bottom: 1px solid var(--luna-border);
+    padding: 0;
+    cursor: pointer;
+    font-size: var(--luna-fs-150);
+    transition: background 80ms;
+  }
+  .ctrl-row:hover { background: var(--luna-gray-50); }
+  .ctrl-row .cell { padding: 0 var(--luna-sp-3); overflow: hidden; }
+  .ctrl-row .cell.mono {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+  .ctrl-row .cell.right { text-align: right; }
+  .ctrl-row .cell.center { display: flex; justify-content: center; align-items: center; }
+  .ctrl-row .cell .ctrl-name {
+    font-weight: 500;
+    color: var(--luna-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ctrl-row .cell .ctrl-domain {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-top: 2px;
+  }
+  .ctrl-row .cell .owner-name {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+  }
+  .ctrl-row .cell .owner-team {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-top: 2px;
+  }
+
+  /* Methodology popover */
+  .methodology-wrap { position: relative; display: inline-block; }
+  .ux-info {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: var(--luna-fs-100);
+    color: var(--luna-teal-700);
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-100);
+    border-radius: var(--luna-radius-sm);
+    padding: 2px 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--luna-font-family);
+    line-height: 1.4;
+  }
+  .ux-info:hover { background: var(--luna-teal-100); }
+  .ux-info:focus-visible { outline: 2px solid var(--luna-teal-500); outline-offset: 2px; }
+  .methodology-pop {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 40;
+    width: 340px;
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border-strong);
+    border-radius: var(--luna-radius-md);
+    box-shadow: var(--luna-shadow-lg);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-100);
+    line-height: 1.5;
+    color: var(--luna-text);
+    display: none;
+  }
+  .methodology-pop[data-open="true"] { display: block; }
+  .methodology-pop h4 {
+    font-size: var(--luna-fs-150);
+    font-weight: 600;
+    margin: 0 0 var(--luna-sp-1);
+    color: var(--luna-text);
+  }
+  .methodology-pop .mp-formula {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-50);
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-sm);
+    padding: var(--luna-sp-2);
+    margin: var(--luna-sp-2) 0;
+    color: var(--luna-text-subdued);
+    line-height: 1.45;
+  }
+  .methodology-pop .mp-tiers {
+    margin: var(--luna-sp-2) 0;
+    border-top: 1px solid var(--luna-border);
+    padding-top: var(--luna-sp-2);
+  }
+  .methodology-pop .mp-tier {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 6px;
+    align-items: center;
+    padding: 2px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .methodology-pop .mp-tier b { font-weight: 600; }
+  .methodology-pop .mp-tier .mp-dot {
+    width: 10px; height: 10px; border-radius: 2px;
+  }
+  .methodology-pop .mp-foot {
+    margin-top: var(--luna-sp-2);
+    padding-top: var(--luna-sp-2);
+    border-top: 1px solid var(--luna-border);
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+  }
+  .methodology-pop a {
+    color: var(--luna-teal-600);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .methodology-pop a:hover { text-decoration: underline; }
+
+  /* Tier chip used next to the headline % */
+  .tier-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text-subdued);
+    font-weight: 500;
+    margin-left: var(--luna-sp-2);
+  }
+  .tier-chip .tier-dot {
+    width: 8px; height: 8px; border-radius: 999px;
+    background: var(--tierColor, var(--luna-yellow-500));
+  }
+
+  /* Score pill (tier badge) */
+  .score-pill {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 44px; height: 32px;
+    padding: 0 8px;
+    border-radius: var(--luna-radius-md);
+    font-weight: 700;
+    font-size: var(--luna-fs-100);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    border: 1px solid;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .score-pill.s-A { background: var(--luna-green-50);  color: var(--luna-green-700);  border-color: var(--luna-green-100); }
+  .score-pill.s-B { background: var(--luna-teal-50);   color: var(--luna-teal-700);   border-color: var(--luna-teal-100); }
+  .score-pill.s-C { background: var(--luna-yellow-50); color: var(--luna-yellow-700); border-color: var(--luna-yellow-100); }
+  .score-pill.s-D { background: var(--luna-orange-50); color: var(--luna-orange-700); border-color: var(--luna-orange-100); }
+  .score-pill.s-F { background: var(--luna-red-500);   color: var(--luna-white);      border-color: var(--luna-red-500); }
+
+  .score-num {
+    display: block;
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+
+  /* Sparkline */
+  .sparkline-cell {
+    display: flex; flex-direction: column; gap: 2px;
+    align-items: flex-start;
+  }
+  .sparkline {
+    width: 110px;
+    height: 24px;
+    display: block;
+  }
+  .spark-trend {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .spark-trend.up   { color: var(--luna-green-500); }
+  .spark-trend.down { color: var(--luna-red-500); }
+  .spark-trend.flat { color: var(--luna-text-muted); }
+
+  .driver-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px;
+    background: var(--luna-bg-sunken);
+    color: var(--luna-text-subdued);
+    border: 1px solid var(--luna-border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: default;
+  }
+  .driver-chip.neg { background: var(--luna-red-50);   color: var(--luna-red-700);   border-color: var(--luna-red-100); }
+  .driver-chip.pos { background: var(--luna-green-50); color: var(--luna-green-700); border-color: var(--luna-green-100); }
+
+  /* Footer of the table */
+  .ctrl-table-foot {
+    border-top: 1px solid var(--luna-border);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    background: var(--luna-bg-sunken);
+    display: flex; align-items: center; gap: var(--luna-sp-3);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+  .ctrl-table-foot .foot-meta { font-variant-numeric: tabular-nums; }
+  .ctrl-table-foot .foot-meta b { color: var(--luna-text); font-weight: 600; }
+  .ctrl-table-foot .foot-spacer { flex: 1; }
+
+  /* Drawer-specific */
+  .driver-row {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-left: 3px solid var(--luna-gray-300);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-2);
+  }
+  .driver-row.neg { border-left-color: var(--luna-red-500); }
+  .driver-row.pos { border-left-color: var(--luna-green-500); }
+  .driver-row .dr-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--luna-sp-3);
+    margin-bottom: var(--luna-sp-1);
+  }
+  .driver-row .dr-title {
+    font-size: var(--luna-fs-200);
+    font-weight: 600;
+    color: var(--luna-text);
+  }
+  .driver-row .dr-weight {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+  .driver-row .dr-weight.neg { color: var(--luna-red-700); }
+  .driver-row .dr-weight.pos { color: var(--luna-green-700); }
+  .driver-row .dr-detail {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text-subdued);
+    line-height: 1.5;
+  }
+  .driver-row .dr-detail b { color: var(--luna-text); }
+
+  .gap-section { margin-bottom: var(--luna-sp-5); }
+  .gap-section h3 {
+    font-size: var(--luna-fs-100);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--luna-text-subdued);
+    margin: 0 0 var(--luna-sp-3);
+  }
+
+  .score-hero {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--luna-sp-5);
+    align-items: center;
+    margin-bottom: var(--luna-sp-5);
+  }
+  .score-hero .hero-pill {
+    min-width: 92px; height: 76px;
+    padding: 0 var(--luna-sp-3);
+    border-radius: var(--luna-radius-lg);
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px;
+    font-weight: 700;
+    border: 1px solid;
+    line-height: 1;
+    text-align: center;
+  }
+  .score-hero .hero-pill .hp-tier {
+    font-size: var(--luna-fs-300);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .score-hero .hero-pill .hp-tier-name {
+    font-size: var(--luna-fs-100);
+    font-weight: 600;
+    opacity: 0.85;
+  }
+  .score-hero .hero-pill.s-A { background: var(--luna-green-50);  color: var(--luna-green-700);  border-color: var(--luna-green-100); }
+  .score-hero .hero-pill.s-B { background: var(--luna-teal-50);   color: var(--luna-teal-700);   border-color: var(--luna-teal-100); }
+  .score-hero .hero-pill.s-C { background: var(--luna-yellow-50); color: var(--luna-yellow-700); border-color: var(--luna-yellow-100); }
+  .score-hero .hero-pill.s-D { background: var(--luna-orange-50); color: var(--luna-orange-700); border-color: var(--luna-orange-100); }
+  .score-hero .hero-pill.s-F { background: var(--luna-red-500);   color: var(--luna-white);      border-color: var(--luna-red-500); }
+  .score-hero .hero-num {
+    font-size: var(--luna-fs-500);
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: var(--luna-sp-1);
+    font-variant-numeric: tabular-nums;
+  }
+  .score-hero .hero-sub {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text-subdued);
+  }
+  .score-hero .hero-spark {
+    margin-top: var(--luna-sp-2);
+  }
+
+  .hover-pop {
+    position: fixed;
+    z-index: 35;
+    background: var(--luna-gray-900);
+    color: var(--luna-white);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    box-shadow: var(--luna-shadow-lg);
+    font-size: var(--luna-fs-100);
+    line-height: 1.45;
+    max-width: 320px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 100ms ease;
+  }
+  .hover-pop.show { opacity: 1; }
+  .hover-pop .hp-title {
+    font-size: var(--luna-fs-150);
+    font-weight: 600;
+    margin-bottom: var(--luna-sp-1);
+    color: var(--luna-white);
+  }
+  .hover-pop .hp-driver {
+    display: flex; justify-content: space-between; gap: var(--luna-sp-3);
+    padding: 4px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .hover-pop .hp-driver:first-of-type { border-top: none; }
+  .hover-pop .hp-driver .hp-d-label { color: var(--luna-gray-200); }
+  .hover-pop .hp-driver .hp-d-val { color: var(--luna-white); font-variant-numeric: tabular-nums; }
+  .hover-pop .hp-driver .hp-d-val.neg { color: var(--luna-red-400); }
+  .hover-pop .hp-driver .hp-d-val.pos { color: var(--luna-green-400); }
+
+  .legend-row {
+    display: flex; gap: var(--luna-sp-4);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-top: var(--luna-sp-2);
+  }
+  .legend-row .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-row .legend-dot {
+    width: 10px; height: 10px; border-radius: 2px;
+  }
+
+  .ev-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: var(--luna-fs-100);
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: 4px;
+    padding: 2px var(--luna-sp-2);
+    font-variant-numeric: tabular-nums;
+    color: var(--luna-text-subdued);
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--luna-sp-3);
+  }
+  .meta-grid .mg-item {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+  }
+  .meta-grid .mg-label {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--luna-text-subdued);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .meta-grid .mg-value {
+    font-size: var(--luna-fs-200);
+    font-weight: 500;
+    color: var(--luna-text);
+  }
+  .meta-grid .mg-value.mono {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+  }
+
+  /* Sampling panel within drawer */
+  .sampling-detail {
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-100);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    color: var(--luna-gray-800);
+    line-height: 1.55;
+  }
+  .sampling-detail b { color: var(--luna-teal-700); }
+  .sampling-detail .sd-math {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-teal-700);
+    background: var(--luna-white);
+    border: 1px solid var(--luna-teal-100);
+    border-radius: var(--luna-radius-sm);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    margin-top: var(--luna-sp-2);
+    display: block;
+  }
+
+  .selected-bar {
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-200);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-4);
+    display: flex; gap: var(--luna-sp-3); align-items: center;
+    font-size: var(--luna-fs-150);
+    color: var(--luna-teal-700);
+  }
+  .selected-bar b { color: var(--luna-teal-700); }
+  .selected-bar .sb-right { margin-left: auto; display: flex; gap: var(--luna-sp-2); }
+  .selected-bar.hidden { display: none; }
+
+  /* 4-state evidence-collection count bar */
+  .state-rollup {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--luna-sp-2);
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-4);
+  }
+  .state-rollup .sr-cell {
+    display: flex; flex-direction: column; gap: 2px;
+    padding-left: var(--luna-sp-3);
+    border-left: 3px solid var(--stateColor, var(--luna-gray-300));
+  }
+  .state-rollup .sr-cell:first-child { padding-left: var(--luna-sp-3); }
+  .state-rollup .sr-label {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--luna-text-subdued);
+  }
+  .state-rollup .sr-count {
+    font-size: var(--luna-fs-400);
+    font-weight: 600;
+    color: var(--luna-text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .state-rollup .sr-sub {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+  .state-rollup .sr-cell.s-draft     { --stateColor: var(--luna-gray-400); }
+  .state-rollup .sr-cell.s-open      { --stateColor: var(--luna-yellow-500); }
+  .state-rollup .sr-cell.s-submitted { --stateColor: var(--luna-teal-500); }
+  .state-rollup .sr-cell.s-accepted  { --stateColor: var(--luna-green-500); }
+
+  /* Per-row dominant state badge */
+  .row-state-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid;
+    line-height: 1.4;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .row-state-badge.s-draft     { background: var(--luna-gray-50);   color: var(--luna-gray-700);   border-color: var(--luna-gray-200); }
+  .row-state-badge.s-open      { background: var(--luna-yellow-50); color: var(--luna-yellow-700); border-color: var(--luna-yellow-200); }
+  .row-state-badge.s-submitted { background: var(--luna-teal-50);   color: var(--luna-teal-700);   border-color: var(--luna-teal-200); }
+  .row-state-badge.s-accepted  { background: var(--luna-green-50);  color: var(--luna-green-700);  border-color: var(--luna-green-200); }
+
+  /* AI-assists framing chip in the drawer */
+  .ai-suggest-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--luna-teal-700);
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-100);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: var(--luna-sp-2);
+  }
+</style>
+</head>
+<body data-ds="luna" data-flow-category="flow-native" data-flow-step="submitted" data-flow-count="812" data-sources-strip="off">
+<script>(function(){try{var d=localStorage.getItem("sufficiency-ds");if(d==="midship"||d==="luna")document.body.dataset.ds=d;}catch(e){}})();</script>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-wordmark">Optro</span>
+    </div>
+    <nav>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M3 13h2v8H3zm6-4h2v12H9zm6-4h2v16h-2zm6-3h2v19h-2z%22/></svg>') no-repeat center/contain;"></span>Dashboard</a>
+      <a href="#" class="active"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/><path d=%22M9 3v18M3 9h18%22/></svg>') no-repeat center/contain;"></span>Controls</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22/><polyline points=%2214 2 14 8 20 8%22/></svg>') no-repeat center/contain;"></span>Evidence</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22/><polyline points=%2212 6 12 12 16 14%22/></svg>') no-repeat center/contain;"></span>Cycles</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M9 17V7a5 5 0 0 1 10 0v10a5 5 0 0 1-10 0z%22/><line x1=%2214%22 y1=%2210%22 x2=%2214%22 y2=%2214%22/></svg>') no-repeat center/contain;"></span>Reports</a>
+    </nav>
+    <div class="sidebar-footer">Q3 2026 · 18 days to close</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <!-- Topbar -->
+    <div class="app-topbar"><a href="index.html" class="back-to-options" title="All options"><span class="arrow">←</span><span>Back to options</span></a>
+      <button class="customer-switch">
+        <span>Helios Robotics</span>
+        <span class="caret">▾</span>
+      </button>
+      <div class="topbar-spacer"></div>
+      <div class="close-countdown">
+        <span>Q3 close:</span> <b>2026-10-15</b> <span>(18 days)</span>
+      </div>
+      <div class="avatar" title="Sarah Kim">SK</div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="app-breadcrumb">
+      <a href="index.html">Sufficiency</a>
+      <span class="crumb-sep">›</span>
+      <a href="#">Controls</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">Evidence Score · Q3 2026</span>
+    </div>
+
+    <!-- Body -->
+    <div class="app-body padded-wide">
+
+      <!-- Page head -->
+      <div class="page-head">
+        <div>
+          <span class="eyebrow">Portfolio · Evidence Score</span>
+          <h1>Predicted first-pass sufficiency · 812 controls</h1>
+          <p class="page-sub">Tier 1–5 per control. Worst first. Hover score for drivers.</p>
+        </div>
+        <div class="page-actions">
+          <div class="page-actions-menu" style="position: relative; display: inline-block;">
+            <button class="btn subtle" type="button" onclick="togglePageMenu(event)" aria-haspopup="menu" aria-expanded="false" id="pageMenuBtn" title="More actions">⋯</button>
+            <div class="page-actions-pop" id="pageMenuPop" role="menu"
+                 style="display:none; position:absolute; top:calc(100% + 6px); right:0; z-index:40; min-width:200px; background:var(--luna-bg-surface); border:1px solid var(--luna-border-strong); border-radius:var(--luna-radius-md); box-shadow:var(--luna-shadow-lg); padding:6px;">
+              <button type="button" role="menuitem" onclick="closePageMenu(); growl('Score model card opened in new tab.', 'success')" style="display:block; width:100%; text-align:left; padding:8px 10px; background:transparent; border:none; cursor:pointer; font-size:var(--luna-fs-150); color:var(--luna-text); border-radius:var(--luna-radius-sm);">Model card</button>
+              <button type="button" role="menuitem" onclick="closePageMenu(); resetDemo()" style="display:block; width:100%; text-align:left; padding:8px 10px; background:transparent; border:none; cursor:pointer; font-size:var(--luna-fs-150); color:var(--luna-text); border-radius:var(--luna-radius-sm);">Reset demo</button>
+            </div>
+          </div>
+          <button class="btn primary"
+                  data-ux-confirm
+                  data-ux-confirm-title="Escalate at-risk controls (Tier 4 &amp; 5) to owners?"
+                  data-ux-confirm-body="One Slack DM per owner, grouped by ownership. Each message includes the score, drivers, and a deadline aligned to Q3 close."
+                  data-ux-confirm-impact="95 controls &middot; 53 owners notified &middot; audit committee CC&rsquo;d"
+                  data-ux-confirm-undo="10"
+                  onclick="bulkEscalate()">Escalate at-risk (<span id="bulkCount">95</span>)</button>
+        </div>
+      </div>
+
+      <!-- Stat strip — minimalist: two primary numbers; secondary metrics fold into methodology popover -->
+      <div class="stat-strip" style="grid-template-columns: 1fr 1fr;">
+        <div class="stat">
+          <div class="stat-label" style="display: flex; align-items: center; justify-content: space-between; gap: var(--luna-sp-2);">
+            <span>Portfolio effectiveness</span>
+            <span class="methodology-wrap">
+              <button class="ux-info" type="button" id="methodologyBtn"
+                      aria-haspopup="dialog" aria-expanded="false" aria-controls="methodologyPop"
+                      onclick="toggleMethodology(event)">
+                <span aria-hidden="true">&#9432;</span> Methodology
+              </button>
+              <div class="methodology-pop" id="methodologyPop" role="dialog" aria-label="Effectiveness score methodology"
+                   onclick="event.stopPropagation()">
+                <h4>How the effectiveness score is built</h4>
+                <div>Weighted sum of 7 drivers — evidence-fresh, sample pass-rate, segregation-of-duties pass-rate, blocking exceptions, reviewer overrides, period coverage, owner reliability — normalized to 0–100.</div>
+                <div class="mp-formula">score = Σ(driver × weight) · max 100 pts<br/>tolerable deviation per ASA 530: 5%<br/>95% CI ±5% at p̂=0.10 · Cochran n≥138</div>
+                <div class="mp-tiers">
+                  <div class="mp-tier"><span class="mp-dot" style="background: var(--luna-green-500);"></span><span>Tier 1 — <b>Effective</b></span><span>90–100</span></div>
+                  <div class="mp-tier"><span class="mp-dot" style="background: var(--luna-teal-500);"></span><span>Tier 2 — <b>Mostly effective</b></span><span>80–89</span></div>
+                  <div class="mp-tier"><span class="mp-dot" style="background: var(--luna-yellow-500);"></span><span>Tier 3 — <b>Borderline</b></span><span>70–79</span></div>
+                  <div class="mp-tier"><span class="mp-dot" style="background: var(--luna-orange-500);"></span><span>Tier 4 — <b>Deficient</b></span><span>60–69</span></div>
+                  <div class="mp-tier"><span class="mp-dot" style="background: var(--luna-red-500);"></span><span>Tier 5 — <b>Material weakness</b></span><span>&lt;60</span></div>
+                </div>
+                <div class="mp-foot">812 controls · 10 domains · 24 owners · Model confidence <b>0.91</b> (Brier 0.073, calibrated 2026-09-15) · <a href="#" onclick="event.preventDefault(); growl('Full methodology doc opened in new tab.', 'success');">Full methodology &rarr;</a></div>
+              </div>
+            </span>
+          </div>
+          <div class="stat-value tabular">71% <span class="tier-chip" style="--tierColor: var(--luna-yellow-500);"><span class="tier-dot"></span>Tier 3 · Borderline</span></div>
+          <div class="stat-meta">+4.5 pts vs. last cycle · 812 controls · model confidence 0.91</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">At-risk (Tier 4 &amp; 5)</div>
+          <div class="stat-value tabular" style="color: var(--luna-red-500);">95</div>
+          <div class="stat-meta"><b>11.7%</b> of portfolio · 53 unique owners</div>
+        </div>
+      </div>
+
+      <!-- Sampling notice — collapsed by default; audit-defense detail -->
+      <details class="sampling-strip-collapse" style="margin-bottom: var(--luna-sp-4);">
+        <summary style="cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:8px; padding:6px 12px; background:var(--luna-teal-50); border:1px solid var(--luna-teal-100); border-radius:999px; font-size:var(--luna-fs-100); color:var(--luna-teal-700); font-weight:600;">
+          <span aria-hidden="true">N</span>
+          <span>Model validation · <b>94.5%</b> agreement on N=200 stratified sample</span>
+          <span style="color:var(--luna-teal-600); font-weight:400;">expand</span>
+        </summary>
+        <div class="sampling-strip" style="margin-top: var(--luna-sp-2); margin-bottom: 0;">
+          <div class="ss-icon">N</div>
+          <div class="ss-body">
+            <b>Model validation sample:</b> N=200 controls, <b>stratified</b> by domain (proportional allocation),
+            drawn each Sunday. Human-rated sufficiency vs. model prediction —
+            <b>94.5% agreement</b> last run. <span style="color: var(--luna-text-subdued);">Justification: 95% CI ±5% at p̂=0.10; n≥138 required, we use 200 for margin.</span>
+          </div>
+          <div class="ss-action" onclick="openSamplingDetail()">View sample &amp; methodology →</div>
+        </div>
+      </details>
+
+      <!-- Single combined filter+sort bar (sits directly above the table) -->
+      <div class="filter-bar" style="border-radius: var(--luna-radius-md) var(--luna-radius-md) 0 0; border-bottom: 1px solid var(--luna-border); margin-bottom: 0;">
+        <span class="filter-label">Search</span>
+        <input type="search" id="filterSearch" placeholder="Control id, name, owner…" />
+        <span class="filter-divider"></span>
+        <span class="filter-label">Sort</span>
+        <select id="sortBy">
+          <option value="score_asc">Score (worst first) — default</option>
+          <option value="score_desc">Score (best first)</option>
+          <option value="trend_down">Trend (declining first)</option>
+          <option value="risk_desc">Inherent risk (highest first)</option>
+          <option value="domain">Domain (A–Z)</option>
+        </select>
+        <span class="filter-divider"></span>
+        <details style="display:inline-block;">
+          <summary style="cursor:pointer; list-style:none; font-size:var(--luna-fs-100); color:var(--luna-teal-700); font-weight:600;">More ▾</summary>
+          <div style="display:flex; gap:var(--luna-sp-3); align-items:center; flex-wrap:wrap; margin-top:var(--luna-sp-2);">
+            <span class="filter-label">Tier</span>
+            <select id="filterBand">
+              <option value="all">All tiers</option>
+              <option value="A">Tier 1 · Effective (90–100)</option>
+              <option value="B">Tier 2 · Mostly effective (80–89)</option>
+              <option value="C">Tier 3 · Borderline (70–79)</option>
+              <option value="D">Tier 4 · Deficient (60–69)</option>
+              <option value="F">Tier 5 · Material weakness (&lt;60)</option>
+              <option value="DF">At-risk (Tier 4 &amp; 5)</option>
+            </select>
+            <span class="filter-label">Owner</span>
+            <select id="filterOwner">
+              <option value="all">All owners</option>
+            </select>
+            <span class="filter-label">Framework</span>
+            <select id="filterFramework">
+              <option value="all">All frameworks</option>
+              <option value="SOX">SOX 404</option>
+              <option value="ITGC">ITGC (COBIT)</option>
+              <option value="SOC2">SOC 2 Type II</option>
+              <option value="ISO">ISO 27001</option>
+            </select>
+            <label style="display:flex; align-items:center; gap: 6px; font-size: var(--luna-fs-100); color: var(--luna-text-subdued); cursor: pointer;">
+              <input type="checkbox" id="onlyDeclining" /> Only declining trend
+            </label>
+          </div>
+        </details>
+        <span class="filter-active-count">Showing <b id="visibleCount">812</b> of <b>812</b></span>
+      </div>
+
+      <!-- Selected (bulk action) bar — only appears when rows are selected -->
+      <div class="selected-bar hidden" id="selectedBar">
+        <span><b id="selectedCount">0</b> controls selected</span>
+        <div class="sb-right">
+          <button class="btn sm subtle" onclick="clearSelection()">Clear</button>
+          <button class="btn sm"
+                  id="bulkRequestBtn"
+                  data-ux-confirm
+                  data-ux-confirm-title="Request evidence refresh on selected controls?"
+                  data-ux-confirm-body="Score drivers attached as a per-control evidence checklist. Owners notified in Slack; the control returns to Open."
+                  data-ux-confirm-impact="0 controls selected"
+                  data-ux-confirm-undo="10"
+                  onclick="bulkRequest()">Request evidence refresh</button>
+          <button class="btn sm primary"
+                  id="bulkEscalateSelectedBtn"
+                  data-ux-confirm
+                  data-ux-confirm-title="Escalate selected controls?"
+                  data-ux-confirm-body="Grouped Slack DMs sent &mdash; one per owner. Drivers, score, and deadline travel with each notification."
+                  data-ux-confirm-impact="0 controls selected"
+                  data-ux-confirm-undo="10"
+                  onclick="bulkEscalateSelected()">Escalate selected</button>
+        </div>
+      </div>
+
+
+      <!-- Virtualized table -->
+      <div class="ctrl-table-frame">
+        <div class="ctrl-table-head" id="ctrlTableHead">
+          <div class="th center" data-col="select"><input type="checkbox" id="selectAllVisible" title="Select visible" /></div>
+          <div class="th center" data-col="score">Score</div>
+          <div class="th" data-col="name">Control</div>
+          <div class="th" data-col="owner">Owner</div>
+          <div class="th" data-col="framework">Framework</div>
+          <div class="th right" data-col="ev">Evidence</div>
+          <div class="th" data-col="trend">6-mo trend</div>
+          <div class="th" data-col="drivers">Drivers</div>
+        </div>
+        <div class="ctrl-table-viewport" id="tableViewport">
+          <div class="ctrl-table-spacer" id="tableSpacer">
+            <!-- virtualized rows injected by JS -->
+          </div>
+        </div>
+        <div class="ctrl-table-foot">
+          <div class="foot-meta">Showing <b id="visibleRange">1–50</b> of <b id="visibleTotal">812</b> controls</div>
+          <div class="foot-spacer"></div>
+          <div class="foot-meta">Rendered: <b>~50</b> virtualized rows · 56px each</div>
+          <div class="foot-spacer" style="flex: 0 0 var(--luna-sp-4);"></div>
+          <div class="foot-meta">Scoring model: <b>esm-v3.2.1</b> · refreshed <b>14m ago</b></div>
+        </div>
+      </div>
+
+      <!-- Secondary panels — moved BELOW the table so the worst-controls rows
+           are primary. The Tier breakdown remains a clickable filter; the
+           worst-20 burndown stays as a triage progress indicator. -->
+      <details class="below-table-detail" style="margin-top: var(--luna-sp-5);">
+        <summary style="cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:8px; padding:6px 12px; background:var(--luna-bg-sunken); border:1px solid var(--luna-border); border-radius:999px; font-size:var(--luna-fs-100); color:var(--luna-text-subdued); font-weight:600;">
+          <span>Tier breakdown &amp; today's triage</span>
+          <span style="color:var(--luna-teal-600); font-weight:400;">expand</span>
+        </summary>
+        <div style="margin-top: var(--luna-sp-3);">
+          <div class="band-rollup" id="bandRollup"></div>
+          <div class="ux-burndown" id="worst20Burndown" data-total="20" data-cleared="0" data-label="Worst-20 reviewed today"></div>
+        </div>
+      </details>
+
+    </div>
+  </main>
+</div>
+
+<!-- Hover popover -->
+<div class="hover-pop" id="hoverPop"></div>
+
+<!-- Drawer -->
+<div class="drawer-backdrop" id="backdrop" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true">
+  <div class="drawer-head">
+    <div>
+      <div style="display:flex; align-items:center; gap: var(--luna-sp-2); margin-bottom: var(--luna-sp-1);">
+        <span class="badge gray" id="drawer-meta">·</span>
+      </div>
+      <h2 class="h-title" id="drawer-title">Control</h2>
+      <div class="h-sub" id="drawer-sub"></div>
+    </div>
+    <button class="h-close" onclick="closeDrawer()" aria-label="Close">×</button>
+  </div>
+
+  <div class="drawer-body" id="drawer-body">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="drawer-foot">
+    <button class="btn subtle" onclick="closeDrawer()">Cancel</button>
+    <button class="btn flow-reject-btn" data-flow-reject data-assignee="Marcus Chen" id="drawerRejectBtn">Send back to owner</button>
+    <button class="btn" onclick="commitAction('refresh')">Request evidence refresh</button>
+    <button class="btn primary" onclick="commitAction('escalate')">Escalate to owner</button>
+  </div>
+</aside>
+
+<!-- Growl host -->
+<div class="growl-host" id="growlHost"></div>
+
+<script src="data.js"></script>
+<script>
+  /* ===================== SEEDED RNG ===================== */
+  // Mulberry32 — deterministic across reloads
+  function mulberry32(a) {
+    return function() {
+      let t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+  }
+  function seeded(seed) { return mulberry32(seed); }
+
+  /* ===================== PROCEDURAL DATA ===================== */
+  const TOTAL_CONTROLS = 812;
+  const FRAMEWORKS = ["SOX", "ITGC", "SOC2", "ISO"];
+  const FRAMEWORK_LABELS = {
+    "SOX":  "SOX 404",
+    "ITGC": "ITGC (COBIT)",
+    "SOC2": "SOC 2 Type II",
+    "ISO":  "ISO 27001",
+  };
+
+  // Driver catalog — picked from per row, each with a sign + weight effect
+  const DRIVER_CATALOG = [
+    { key: "stale_ev",     label: "Stale evidence (>60d)",       sign: -1, baseWeight: 18, kind: "completeness",
+      detail: (n) => `${n} of last cycle's artifacts have file-modified timestamps more than 60 days before testing window — auto-rated as stale.` },
+    { key: "owner_delivery", label: "Owner historical delivery", sign:  -1, baseWeight: 14, kind: "owner",
+      detail: (n) => `Owner has missed deadline on ${n} of last 8 cycles (avg 4.2 days late). Reliability percentile: bottom quartile.` },
+    { key: "owner_strong", label: "Owner strong track record",   sign:  +1, baseWeight: 11, kind: "owner",
+      detail: (n) => `Owner delivered ${n}/8 prior cycles on time and pass-rate above peer 85th percentile. Adds confidence.` },
+    { key: "coverage_gap", label: "Period coverage gap risk",    sign:  -1, baseWeight: 16, kind: "coverage",
+      detail: (n) => `Pattern detector cl-coverage-gap currently flags this owner; ${n} of ${n+3} peer controls already showing 9/24 cutoff defect.` },
+    { key: "sod_risk",     label: "SOD precedent on prior cycle", sign: -1, baseWeight: 13, kind: "control",
+      detail: (n) => `Preparer/approver overlap flagged in ${n} of last 4 cycles. Cluster cl-no-segregation associated.` },
+    { key: "ai_first_pass", label: "AI suggests sufficient",  sign:  +1, baseWeight: 22, kind: "ai",
+      detail: (n) => `Auto-judged · needs confirm. AI marked ${n}% of submitted artifacts sufficient at confidence ≥0.82. A reviewer confirms before workpaper.` },
+    { key: "ai_first_fail", label: "AI flags insufficient", sign: -1, baseWeight: 24, kind: "ai",
+      detail: (n) => `AI recommends send-back: ${n}% of submitted artifacts missing fields, blank rows, or wrong period. Reviewer confirms or reverses before owner is notified.` },
+    { key: "peer_lag",     label: "Lags peer-domain median",      sign: -1, baseWeight: 9, kind: "peer",
+      detail: (n) => `Sits ${n} points below the domain median (peer set: ${n+12} similar controls). Could indicate process drift.` },
+    { key: "peer_lead",    label: "Leads peer-domain median",     sign: +1, baseWeight: 7, kind: "peer",
+      detail: (n) => `Sits ${n} points above peer median. Owner's evidence packet completeness consistently full.` },
+    { key: "framework_redundant", label: "Cross-framework coverage", sign: +1, baseWeight: 5, kind: "framework",
+      detail: (n) => `Evidence packet satisfies ${n} framework references (SOC 2 + SOX). Redundancy raises confidence.` },
+    { key: "scope_change", label: "Scope changed mid-quarter",    sign: -1, baseWeight: 10, kind: "control",
+      detail: (n) => `Walkthrough re-baselined ${n} weeks ago — testing window may not yet reflect updated procedure.` },
+    { key: "trend_decline", label: "3-cycle declining trend",     sign: -1, baseWeight: 12, kind: "trend",
+      detail: (n) => `Score has fallen ${n} points over 3 cycles — owner deserves attention before close.` },
+    { key: "trend_climb",   label: "3-cycle improving trend",     sign: +1, baseWeight: 8, kind: "trend",
+      detail: (n) => `Score has climbed ${n} points over 3 cycles since the owner adopted the new evidence template.` },
+    { key: "first_time_owner", label: "New owner this cycle",     sign: -1, baseWeight: 6, kind: "owner",
+      detail: (n) => `Owner transferred ${n} weeks ago; no priors for this control + this owner combination.` },
+    { key: "high_risk_assertion", label: "Material assertion",    sign: -1, baseWeight: 8, kind: "control",
+      detail: (n) => `Control supports a >${n}% materiality threshold assertion. Tolerance for any defect is narrow.` },
+  ];
+
+  // 24 base owners + 8 procedural extras for variety
+  const EXTRA_OWNERS = [
+    { id: "own-101", name: "Reggie Sutton",   team: "IT Operations" },
+    { id: "own-102", name: "Naomi Glaser",    team: "Application Owners" },
+    { id: "own-103", name: "Bashir Khan",     team: "Revenue" },
+    { id: "own-104", name: "Liesel Friedman", team: "Procurement" },
+    { id: "own-105", name: "Caleb Westover",  team: "Treasury" },
+    { id: "own-106", name: "Solana Reyes",    team: "Financial Reporting" },
+    { id: "own-107", name: "Mikael Ostberg",  team: "Inventory" },
+    { id: "own-108", name: "Yara Halabi",     team: "Tax" },
+  ];
+  const ALL_OWNERS = OWNERS.concat(EXTRA_OWNERS);
+
+  // Procedural control name fragments (per domain)
+  const CONTROL_TEMPLATES = {
+    itgc: ["User Access Review","Privileged Access Review","Change Approval Evidence","Backup Restoration Test","Provisioning Log","Database Schema Change","Firewall Rule Review","SIEM Log Retention","Service Account Rotation","MFA Enforcement Audit","Vendor SOC 2 Attestation","Patch Compliance Report"],
+    revenue: ["Revenue Recognition Cutoff","Contract Modification Approval","Deferred Revenue Reconciliation","SSP Allocation Review","Sales Order Approval","Credit Memo Review","Variable Consideration Estimate","Distributor Sell-Through","Customer Master Maintenance"],
+    payroll: ["Payroll Register vs GL","Termination Pay Authorization","Bonus Approval","Hour-Type Reconciliation","Stock-Based Comp Vesting","Garnishment Compliance"],
+    procure: ["Three-Way Match Review","Vendor Master Change","PO Approval Threshold","Receiving Discrepancy","Spend Authorization","Recurring Vendor Audit"],
+    treasury: ["Bank Reconciliation","Wire Transfer Dual Auth","Cash Forecast Review","FX Hedge Review","Bank Account Opening"],
+    tax: ["Sales Tax Nexus","Tax Provision Review","Withholding Compliance","Transfer Pricing Doc"],
+    inventory: ["Cycle Count Variance","Obsolescence Reserve Review","Standard Cost Review","Inventory Cutoff","WIP Reconciliation"],
+    finrep: ["Journal Entry > $250K","Balance Sheet Recon","Warranty Reserve Estimate","Goodwill Impairment Test","Stock Comp Mod Review","Lease Modification Test","ASC 842 Disclosures","Accrual Estimate"],
+    entity: ["Audit Committee Minutes","Whistleblower Hotline","Code of Conduct Attestation","ELC Risk Assessment","Anti-Fraud Program Review"],
+    hr: ["New Hire Onboarding","Performance Review Sign-off","Background Check Completion","Conflict of Interest Disclosure"],
+  };
+  const FREQS = ["M","Q","S","A"];
+
+  // Per-row dominant evidence state (deterministic from id+score)
+  function dominantStateFor(c) {
+    // Reflect the lifecycle: high-A controls tend to be Accepted, mid-band Submitted/Open,
+    // very-low band still being prepared (Draft) or freshly Open.
+    const hash = (c.id.charCodeAt(0) + c.id.charCodeAt(c.id.length - 1) + c.score) % 100;
+    if (c.band === "A" && hash < 70) return "accepted";
+    if ((c.band === "A" || c.band === "B") && hash < 92) return "submitted";
+    if (c.band === "B") return hash < 50 ? "submitted" : "open";
+    if (c.band === "C") return hash < 60 ? "submitted" : hash < 88 ? "open" : "draft";
+    if (c.band === "D") return hash < 40 ? "open" : hash < 80 ? "submitted" : "draft";
+    // F band — usually still open or in draft, occasionally submitted but failing AI
+    return hash < 35 ? "draft" : hash < 75 ? "open" : "submitted";
+  }
+
+  // Score → band
+  function bandForScore(s) {
+    if (s >= 90) return "A";
+    if (s >= 80) return "B";
+    if (s >= 70) return "C";
+    if (s >= 60) return "D";
+    return "F";
+  }
+  // For sparkline trend
+  function trendOf(spark) {
+    if (spark.length < 2) return 0;
+    const first = spark[0], last = spark[spark.length-1];
+    return last - first;
+  }
+
+  // === Generate the population ===
+  function buildPopulation() {
+    const out = [];
+    let cursor = 1;
+    const domainKeys = Object.keys(CONTROL_TEMPLATES);
+    // distribute roughly per data.js DOMAINS counts but scale up to ~812
+    const perDomain = {
+      itgc: 138, revenue: 117, payroll: 78, procure: 82, treasury: 60,
+      tax: 47, inventory: 73, finrep: 104, entity: 69, hr: 44,
+    };
+
+    domainKeys.forEach((dkey) => {
+      const tpls = CONTROL_TEMPLATES[dkey];
+      const count = perDomain[dkey];
+      for (let i = 0; i < count; i++) {
+        const idx = out.length;
+        const rnd = seeded(0xC0FFEE + idx * 7919);
+        const tpl = tpls[Math.floor(rnd() * tpls.length)];
+        // Per-domain prefix
+        const prefix = {
+          itgc:"ITGC", revenue:"REV", payroll:"PAY", procure:"PRC", treasury:"TRE",
+          tax:"TAX", inventory:"INV", finrep:"FR", entity:"ENT", hr:"HR"
+        }[dkey];
+        const num = String((idx * 13 + 17) % 990 + 1).padStart(3, "0");
+        const id = `${prefix}-${num}`;
+
+        // Score distribution — skew toward C/B with a long F tail
+        // We want the F-band to be small but visible (~5-7%), D ~5%
+        const roll = rnd();
+        let score;
+        if (roll < 0.06)      score = Math.floor(rnd() * 32) + 28;   // F: 28-59
+        else if (roll < 0.12) score = Math.floor(rnd() * 10) + 60;   // D: 60-69
+        else if (roll < 0.38) score = Math.floor(rnd() * 10) + 70;   // C
+        else if (roll < 0.72) score = Math.floor(rnd() * 10) + 80;   // B
+        else                  score = Math.floor(rnd() * 11) + 90;   // A 90-100
+
+        const owner = ALL_OWNERS[Math.floor(rnd() * ALL_OWNERS.length)];
+        const framework = FRAMEWORKS[Math.floor(rnd() * FRAMEWORKS.length)];
+        const freq = FREQS[Math.floor(rnd() * FREQS.length)];
+
+        // 6-month sparkline ending at score
+        const trendDir = rnd();
+        const start = score + Math.floor((rnd() - (trendDir > 0.4 ? 0.55 : 0.2)) * 24);
+        const spark = [];
+        for (let m = 0; m < 6; m++) {
+          const t = m / 5;
+          const v = Math.round(start + (score - start) * t + (rnd() - 0.5) * 6);
+          spark.push(Math.max(15, Math.min(100, v)));
+        }
+        spark[5] = score;
+
+        // Inherent risk
+        const inherent = ["Critical","High","Medium","Low"][
+          score < 60 ? 0 : score < 70 ? Math.floor(rnd()*2) : score < 80 ? Math.floor(rnd()*3)+1 : Math.floor(rnd()*2)+2
+        ];
+
+        // Evidence counts
+        const evRequired = 3 + Math.floor(rnd() * 14);
+        const evSubmitted = Math.max(0, Math.min(evRequired, evRequired - Math.floor(rnd() * (score < 70 ? 4 : score < 80 ? 2 : 1))));
+
+        // 2-3 drivers picked from the catalog with weight signs aligned to score
+        const drivers = pickDrivers(score, rnd, owner, freq);
+
+        out.push({
+          id, score, band: bandForScore(score), domain: dkey,
+          name: tpl, freq, framework, owner,
+          spark, trend: trendOf(spark), inherent,
+          evRequired, evSubmitted, drivers,
+        });
+        cursor++;
+      }
+    });
+
+    return out;
+  }
+
+  function pickDrivers(score, rnd, owner, freq) {
+    // Aim for 3 drivers; bias by score band
+    const pool = [];
+    if (score < 65) {
+      pool.push("ai_first_fail","stale_ev","sod_risk","coverage_gap","trend_decline","scope_change","first_time_owner","peer_lag","high_risk_assertion","owner_delivery");
+    } else if (score < 80) {
+      pool.push("ai_first_fail","stale_ev","coverage_gap","scope_change","peer_lag","trend_decline","owner_delivery","ai_first_pass","high_risk_assertion");
+    } else {
+      pool.push("ai_first_pass","owner_strong","peer_lead","trend_climb","framework_redundant","peer_lead");
+      // occasionally a small negative for color
+      if (rnd() > 0.7) pool.push("scope_change","peer_lag");
+    }
+    // shuffle pool
+    const shuffled = pool.slice().sort(() => rnd() - 0.5);
+    const picked = shuffled.slice(0, 3);
+    return picked.map(key => {
+      const cat = DRIVER_CATALOG.find(d => d.key === key);
+      const n = Math.max(1, Math.floor(rnd() * 7) + 1);
+      const w = cat.baseWeight + Math.floor((rnd() - 0.5) * 8);
+      return {
+        key,
+        label: cat.label,
+        sign: cat.sign,
+        weight: w * cat.sign,
+        detail: cat.detail(n),
+        n,
+        kind: cat.kind,
+      };
+    });
+  }
+
+  const POPULATION = buildPopulation();
+
+  /* ===================== STATE ===================== */
+  let activeBand = "all";
+  let activeOwner = "all";
+  let activeFramework = "all";
+  let activeSearch = "";
+  let activeSort = "score_asc";
+  let onlyDeclining = false;
+  let selectedIds = new Set();
+  let activeControl = null;
+
+  /* ===================== OWNER OPTIONS ===================== */
+  function populateOwnerSelect() {
+    const sel = document.getElementById("filterOwner");
+    const teamGroups = {};
+    ALL_OWNERS.forEach(o => {
+      if (!teamGroups[o.team]) teamGroups[o.team] = [];
+      teamGroups[o.team].push(o);
+    });
+    Object.keys(teamGroups).sort().forEach(team => {
+      const og = document.createElement("optgroup");
+      og.label = team;
+      teamGroups[team].sort((a,b) => a.name.localeCompare(b.name)).forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.id;
+        opt.textContent = o.name;
+        og.appendChild(opt);
+      });
+      sel.appendChild(og);
+    });
+  }
+  populateOwnerSelect();
+
+  /* ===================== FILTER + SORT ===================== */
+  function filteredPopulation() {
+    let list = POPULATION.slice();
+    if (activeBand !== "all") {
+      if (activeBand === "DF") list = list.filter(c => c.band === "D" || c.band === "F");
+      else list = list.filter(c => c.band === activeBand);
+    }
+    if (activeOwner !== "all") list = list.filter(c => c.owner.id === activeOwner);
+    if (activeFramework !== "all") list = list.filter(c => c.framework === activeFramework);
+    if (onlyDeclining) list = list.filter(c => c.trend < -2);
+    if (activeSearch.trim()) {
+      const q = activeSearch.toLowerCase();
+      list = list.filter(c =>
+        c.id.toLowerCase().includes(q) ||
+        c.name.toLowerCase().includes(q) ||
+        c.owner.name.toLowerCase().includes(q)
+      );
+    }
+    switch (activeSort) {
+      case "score_asc": list.sort((a,b) => a.score - b.score); break;
+      case "score_desc": list.sort((a,b) => b.score - a.score); break;
+      case "trend_down": list.sort((a,b) => a.trend - b.trend); break;
+      case "risk_desc": {
+        const order = { "Critical": 0, "High": 1, "Medium": 2, "Low": 3 };
+        list.sort((a,b) => order[a.inherent] - order[b.inherent] || a.score - b.score);
+        break;
+      }
+      case "domain": list.sort((a,b) => a.domain.localeCompare(b.domain) || a.score - b.score); break;
+    }
+    return list;
+  }
+
+  /* ===================== TIER ROLLUP ===================== */
+  function renderBandRollup() {
+    const counts = { A: 0, B: 0, C: 0, D: 0, F: 0 };
+    POPULATION.forEach(c => counts[c.band]++);
+    const total = POPULATION.length;
+    const bands = [
+      { key: "A", tier: "Tier 1", range: "90–100", name: "Effective" },
+      { key: "B", tier: "Tier 2", range: "80–89",  name: "Mostly effective" },
+      { key: "C", tier: "Tier 3", range: "70–79",  name: "Borderline" },
+      { key: "D", tier: "Tier 4", range: "60–69",  name: "Deficient" },
+      { key: "F", tier: "Tier 5", range: "<60",    name: "Material weakness" },
+    ];
+    document.getElementById("bandRollup").innerHTML = bands.map(b => {
+      const n = counts[b.key];
+      const pct = ((n / total) * 100).toFixed(1);
+      const isActive = activeBand === b.key || (activeBand === "DF" && (b.key === "D" || b.key === "F"));
+      return `
+        <div class="band-card band-${b.key} ${isActive ? "active" : ""}" onclick="setBand('${b.key}')">
+          <div class="band-head">
+            <div class="band-tier">${b.tier}</div>
+            <div class="band-range">${b.name} · ${b.range}</div>
+          </div>
+          <div class="band-count tabular">${n}</div>
+          <div class="band-pct">${pct}% of portfolio</div>
+          <div class="band-bar"><span style="width: ${pct}%;"></span></div>
+        </div>
+      `;
+    }).join("");
+  }
+  renderBandRollup();
+
+  function setBand(letter) {
+    activeBand = activeBand === letter ? "all" : letter;
+    document.getElementById("filterBand").value = activeBand;
+    renderBandRollup();
+    renderTable();
+  }
+
+  /* ===================== VIRTUALIZED TABLE ===================== */
+  const ROW_HEIGHT = 56;
+  const BUFFER = 6;
+  let currentList = [];
+
+  function renderTable() {
+    currentList = filteredPopulation();
+    document.getElementById("visibleCount").textContent = currentList.length.toLocaleString();
+    document.getElementById("visibleTotal").textContent = currentList.length.toLocaleString();
+
+    const spacer = document.getElementById("tableSpacer");
+    spacer.style.height = (currentList.length * ROW_HEIGHT) + "px";
+
+    renderVisibleRows();
+  }
+
+  function renderVisibleRows() {
+    const viewport = document.getElementById("tableViewport");
+    const spacer = document.getElementById("tableSpacer");
+    const scrollTop = viewport.scrollTop;
+    const vpH = viewport.clientHeight;
+    const startIdx = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER);
+    const endIdx = Math.min(currentList.length, Math.ceil((scrollTop + vpH) / ROW_HEIGHT) + BUFFER);
+
+    document.getElementById("visibleRange").textContent =
+      currentList.length === 0 ? "0–0" : `${startIdx + 1}–${Math.min(endIdx, currentList.length)}`;
+
+    let html = "";
+    for (let i = startIdx; i < endIdx; i++) {
+      const c = currentList[i];
+      if (!c) continue;
+      const y = i * ROW_HEIGHT;
+      const checked = selectedIds.has(c.id) ? "checked" : "";
+      const trendCls = c.trend > 2 ? "up" : c.trend < -2 ? "down" : "flat";
+      const trendIcon = c.trend > 2 ? "▲" : c.trend < -2 ? "▼" : "▬";
+      const rowState = dominantStateFor(c);
+      const stateLabel = { draft: "Draft", open: "Open", submitted: "Submitted · AI suggests", accepted: "Accepted" }[rowState];
+      const shaChip = window.Flow && window.Flow.shaChip ? window.Flow.shaChip(c.id + "-evidence.zip") : "";
+      const driversHtml = c.drivers.slice(0, 2).map(d => {
+        const cls = d.sign < 0 ? "neg" : "pos";
+        return `<span class="driver-chip ${cls}" title="${escapeAttr(d.detail)}">${d.sign < 0 ? "−" : "+"}${d.label}</span>`;
+      }).join(" ");
+      html += `
+        <div class="ctrl-row" style="top: ${y}px;" data-id="${c.id}"
+             onclick="handleRowClick(event, '${c.id}')"
+             onmouseenter="showHover(event, '${c.id}')"
+             onmouseleave="hideHover()">
+          <div class="cell center" onclick="event.stopPropagation();">
+            <input type="checkbox" ${checked} onchange="toggleSelect('${c.id}', this.checked)" />
+          </div>
+          <div class="cell center" onmousemove="moveHover(event)">
+            <div>
+              <div class="score-pill s-${c.band}" title="${tierLabel(c.band)}">${tierShort(c.band)}</div>
+              <span class="score-num">${c.score}%</span>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="ctrl-name">${c.id} · ${escapeHtml(c.name)}</div>
+            <div class="ctrl-domain">${domainLabel(c.domain)} · ${freqLabel(c.freq)} · ${c.inherent} risk · <span class="row-state-badge s-${rowState}">${stateLabel}</span>${rowState === "accepted" ? ` <span class="flow-link-control">Linked to ${c.id} · sample row ${(c.score % 12) + 1}</span>` : ""}</div>
+          </div>
+          <div class="cell">
+            <div class="owner-name">${escapeHtml(c.owner.name)}</div>
+            <div class="owner-team">${escapeHtml(c.owner.team)}</div>
+          </div>
+          <div class="cell">
+            <span class="badge gray">${c.framework}</span>
+          </div>
+          <div class="cell right">
+            <span class="ev-pill">${c.evSubmitted}/${c.evRequired}</span>
+            ${(i % 7 === 0) ? `<div style="margin-top: 3px;">${shaChip}</div>` : ""}
+          </div>
+          <div class="cell">
+            <div class="sparkline-cell">
+              ${renderSparkline(c.spark)}
+              <div class="spark-trend ${trendCls}">${trendIcon} ${Math.abs(c.trend)} pts</div>
+            </div>
+          </div>
+          <div class="cell" style="white-space: nowrap; overflow: hidden;">
+            ${driversHtml}
+          </div>
+        </div>
+      `;
+    }
+    spacer.innerHTML = html;
+  }
+
+  document.getElementById("tableViewport").addEventListener("scroll", renderVisibleRows);
+
+  /* ===================== SPARKLINE ===================== */
+  function renderSparkline(arr) {
+    const w = 110, h = 24, pad = 2;
+    const min = Math.min(...arr) - 4;
+    const max = Math.max(...arr) + 4;
+    const range = Math.max(1, max - min);
+    const stepX = (w - pad*2) / (arr.length - 1);
+    const points = arr.map((v, i) => {
+      const x = pad + i * stepX;
+      const y = h - pad - ((v - min) / range) * (h - pad*2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    const path = `M ${points.join(" L ")}`;
+    const last = arr[arr.length - 1];
+    const color = last >= 90 ? "var(--luna-green-500)" :
+                  last >= 80 ? "var(--luna-teal-500)" :
+                  last >= 70 ? "var(--luna-yellow-500)" :
+                  last >= 60 ? "var(--luna-orange-500)" : "var(--luna-red-500)";
+    const lastX = pad + (arr.length - 1) * stepX;
+    const lastY = h - pad - ((last - min) / range) * (h - pad*2);
+    return `
+      <svg class="sparkline" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <path d="${path}" fill="none" stroke="${color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2" fill="${color}" />
+      </svg>
+    `;
+  }
+
+  function renderSparklineBig(arr) {
+    const w = 360, h = 80, pad = 6;
+    const min = Math.min(...arr) - 6;
+    const max = Math.max(...arr) + 6;
+    const range = Math.max(1, max - min);
+    const stepX = (w - pad*2) / (arr.length - 1);
+    const points = arr.map((v, i) => {
+      const x = pad + i * stepX;
+      const y = h - pad - ((v - min) / range) * (h - pad*2);
+      return { x, y, v };
+    });
+    const path = "M " + points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ");
+    const months = ["Apr","May","Jun","Jul","Aug","Sep"];
+    return `
+      <svg viewBox="0 0 ${w} ${h+22}" style="width: 100%; height: 100px;">
+        <line x1="${pad}" y1="${h - pad}" x2="${w-pad}" y2="${h - pad}" stroke="var(--luna-border)" stroke-dasharray="2 3"/>
+        <path d="${path}" fill="none" stroke="var(--luna-teal-500)" stroke-width="2"/>
+        ${points.map((p, i) => `
+          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="var(--luna-teal-500)" />
+          <text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}" text-anchor="middle" font-size="9" fill="var(--luna-text-subdued)">${p.v}</text>
+          <text x="${p.x.toFixed(1)}" y="${h + 14}" text-anchor="middle" font-size="9" fill="var(--luna-text-muted)">${months[i]}</text>
+        `).join("")}
+      </svg>
+    `;
+  }
+
+  /* ===================== HOVER POPOVER ===================== */
+  function showHover(event, id) {
+    const c = POPULATION.find(x => x.id === id);
+    if (!c) return;
+    const pop = document.getElementById("hoverPop");
+    pop.innerHTML = `
+      <div class="hp-title">Why ${tierShort(c.band)} · ${c.score}%?</div>
+      ${c.drivers.map(d => `
+        <div class="hp-driver">
+          <span class="hp-d-label">${d.sign < 0 ? "−" : "+"} ${d.label}</span>
+          <span class="hp-d-val ${d.sign < 0 ? "neg" : "pos"}">${d.sign < 0 ? "" : "+"}${d.weight}</span>
+        </div>
+      `).join("")}
+      <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: var(--luna-gray-400);">Click row for full breakdown</div>
+    `;
+    pop.classList.add("show");
+    moveHover(event);
+  }
+  function moveHover(e) {
+    const pop = document.getElementById("hoverPop");
+    const x = e.clientX + 14;
+    const y = e.clientY + 14;
+    pop.style.left = Math.min(window.innerWidth - 340, x) + "px";
+    pop.style.top  = Math.min(window.innerHeight - 220, y) + "px";
+  }
+  function hideHover() {
+    document.getElementById("hoverPop").classList.remove("show");
+  }
+
+  /* ===================== ROW INTERACTIONS ===================== */
+  function handleRowClick(e, id) {
+    if (e.target.tagName === "INPUT") return;
+    openDrawer(id);
+  }
+
+  function toggleSelect(id, checked) {
+    if (checked) selectedIds.add(id);
+    else selectedIds.delete(id);
+    updateSelectionBar();
+  }
+  function clearSelection() {
+    selectedIds.clear();
+    updateSelectionBar();
+    renderVisibleRows();
+  }
+  function updateSelectionBar() {
+    const bar = document.getElementById("selectedBar");
+    document.getElementById("selectedCount").textContent = selectedIds.size;
+    if (selectedIds.size > 0) bar.classList.remove("hidden");
+    else bar.classList.add("hidden");
+    // Keep bulk-confirm impact summaries honest with the live selection count
+    const n = selectedIds.size;
+    const sel = n === 0 ? POPULATION.slice(0, 0) : POPULATION.filter(c => selectedIds.has(c.id));
+    const ownerN = new Set(sel.map(c => c.owner.id)).size;
+    const impact = n === 0
+      ? "0 controls selected"
+      : `${n} control${n === 1 ? "" : "s"} · ${ownerN} owner${ownerN === 1 ? "" : "s"} notified`;
+    const a = document.getElementById("bulkRequestBtn");
+    const b = document.getElementById("bulkEscalateSelectedBtn");
+    if (a) a.setAttribute("data-ux-confirm-impact", impact);
+    if (b) b.setAttribute("data-ux-confirm-impact", impact);
+  }
+
+  document.getElementById("selectAllVisible").addEventListener("change", function() {
+    const viewport = document.getElementById("tableViewport");
+    const scrollTop = viewport.scrollTop;
+    const vpH = viewport.clientHeight;
+    const startIdx = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT));
+    const endIdx = Math.min(currentList.length, Math.ceil((scrollTop + vpH) / ROW_HEIGHT));
+    if (this.checked) {
+      for (let i = startIdx; i < endIdx; i++) selectedIds.add(currentList[i].id);
+    } else {
+      for (let i = startIdx; i < endIdx; i++) selectedIds.delete(currentList[i].id);
+    }
+    updateSelectionBar();
+    renderVisibleRows();
+  });
+
+  /* ===================== DRAWER ===================== */
+  function openDrawer(id) {
+    const c = POPULATION.find(x => x.id === id);
+    if (!c) return;
+    activeControl = c;
+
+    document.getElementById("drawer-meta").innerHTML = `<span class="badge-dot"></span>${c.id} · ${domainLabel(c.domain)} · ${c.framework}`;
+    document.getElementById("drawer-meta").className = "badge gray";
+    document.getElementById("drawer-title").textContent = c.name;
+    document.getElementById("drawer-sub").textContent = `Owner: ${c.owner.name} (${c.owner.team}) · Frequency: ${freqLabel(c.freq)} · Inherent risk: ${c.inherent}`;
+
+    const drivers = c.drivers;
+    const totalWeight = drivers.reduce((s,d) => s + d.weight, 0);
+
+    document.getElementById("drawer-body").innerHTML = `
+      <div class="score-hero">
+        <div class="hero-pill s-${c.band}">
+          <span class="hp-tier">${tierShort(c.band)}</span>
+          <span class="hp-tier-name">${tierName(c.band)}</span>
+        </div>
+        <div>
+          <div class="hero-num tabular">${c.score}% <span style="font-size: var(--luna-fs-200); color: var(--luna-text-subdued); font-weight: 400;">effectiveness · ${tierLabel(c.band)}</span></div>
+          <div class="hero-sub">Predicted first-pass sufficiency · model esm-v3.2.1 · last scored 14m ago</div>
+          <div class="hero-spark">${renderSparklineBig(c.spark)}</div>
+        </div>
+      </div>
+
+      <div class="gap-section">
+        <h3>Score drivers (top ${drivers.length})</h3>
+        ${drivers.map(d => {
+          const cls = d.sign < 0 ? "neg" : "pos";
+          const sign = d.sign < 0 ? "" : "+";
+          const isAI = d.kind === "ai";
+          return `
+            <div class="driver-row ${cls}">
+              <div class="dr-head">
+                <div class="dr-title">${d.sign < 0 ? "−" : "+"} ${d.label}${isAI ? `<span class="ai-suggest-chip">Auto-judged · needs confirm</span>` : ""}</div>
+                <div class="dr-weight ${cls}">${sign}${d.weight} pts</div>
+              </div>
+              <div class="dr-detail">${d.detail}</div>
+              ${isAI ? `
+                <div style="margin-top: var(--luna-sp-2); display: flex; gap: var(--luna-sp-2);">
+                  <button class="btn sm" onclick="growl('AI suggestion confirmed. Score driver locked into workpaper with reviewer sign-off.', 'success')">Confirm</button>
+                  <button class="btn sm subtle" onclick="growl('AI suggestion reversed. Driver weight removed from score; reviewer note attached.', 'success')">Reverse</button>
+                  <button class="btn sm subtle" onclick="growl('Reassigned for human review. Queued to second-line reviewer.', 'success')">Reassign</button>
+                </div>
+              ` : ""}
+            </div>
+          `;
+        }).join("")}
+        <div style="margin-top: var(--luna-sp-2); font-size: var(--luna-fs-100); color: var(--luna-text-subdued);">
+          Sum of top drivers: <b style="color: var(--luna-text);">${totalWeight >= 0 ? "+" : ""}${totalWeight} pts</b>
+          relative to baseline (75). Remaining ±${Math.abs(c.score - 75 - totalWeight)} pts comes from 9 minor signals
+          (cycle metadata, historical owner, framework cross-ref).
+        </div>
+      </div>
+
+      <div class="gap-section">
+        <h3>Control metadata</h3>
+        <div class="meta-grid">
+          <div class="mg-item">
+            <div class="mg-label">Control ID</div>
+            <div class="mg-value mono">${c.id}</div>
+          </div>
+          <div class="mg-item">
+            <div class="mg-label">Framework</div>
+            <div class="mg-value">${FRAMEWORK_LABELS[c.framework]}</div>
+          </div>
+          <div class="mg-item">
+            <div class="mg-label">Evidence submitted</div>
+            <div class="mg-value tabular">${c.evSubmitted} of ${c.evRequired} required</div>
+            <div style="margin-top: 6px;">${window.Flow && window.Flow.shaChip ? window.Flow.shaChip(c.id + "-evidence-packet.zip") : ""}</div>
+            ${dominantStateFor(c) === "accepted" ? `<div style="margin-top: 4px;"><span class="flow-link-control">Linked to ${c.id} · sample row ${(c.score % 12) + 1}</span></div>` : ""}
+          </div>
+          <div class="mg-item">
+            <div class="mg-label">Inherent risk</div>
+            <div class="mg-value">${c.inherent}</div>
+          </div>
+          <div class="mg-item">
+            <div class="mg-label">Owner</div>
+            <div class="mg-value">${c.owner.name}</div>
+          </div>
+          <div class="mg-item">
+            <div class="mg-label">Owner team</div>
+            <div class="mg-value">${c.owner.team}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gap-section">
+        <h3>Sampling — model validation for this row</h3>
+        <div class="sampling-detail">
+          This score is supported by a <b>stratified weekly validation sample</b> across the portfolio (not this row alone).
+          For the ${domainLabel(c.domain)} stratum the model agreed with human review on <b>${94 + (c.score % 6)}.${(c.score * 7) % 10}% of N=${20 + (c.score % 6)} sampled controls</b> last Sunday.
+          <span class="sd-math">N=200 (portfolio) · stratified by domain · 95% CI ±5% at p̂=0.10 · ${domainLabel(c.domain)} stratum n=${20 + (c.score % 6)}</span>
+        </div>
+      </div>
+
+      <div class="gap-section">
+        <h3>Peer comparison</h3>
+        <div class="impact-block" style="background: var(--luna-bg-sunken); border: 1px solid var(--luna-border); border-radius: var(--luna-radius-md); padding: var(--luna-sp-3) var(--luna-sp-4); font-size: var(--luna-fs-150); color: var(--luna-gray-800); line-height: 1.55;">
+          Within <b>${domainLabel(c.domain)}</b> (${peerCount(c.domain)} peer controls):
+          this control is at the <b>${peerPercentile(c)}<sup>th</sup> percentile</b>.
+          Domain median: <b class="tabular">${domainMedian(c.domain)}</b>.
+          ${c.score < domainMedian(c.domain) ?
+            `<span style="color: var(--luna-red-700);">Below median — investigate before close.</span>` :
+            `<span style="color: var(--luna-green-700);">Above median — score driver mix supports current tier.</span>`
+          }
+        </div>
+      </div>
+    `;
+
+    document.getElementById("backdrop").classList.add("open");
+    document.getElementById("drawer").classList.add("open");
+  }
+
+  function closeDrawer() {
+    document.getElementById("backdrop").classList.remove("open");
+    document.getElementById("drawer").classList.remove("open");
+  }
+
+  function commitAction(kind) {
+    if (!activeControl) return;
+    const c = activeControl;
+    if (kind === "escalate") {
+      growl(`<b>Escalated to ${c.owner.name}.</b> ${c.id} flagged with score drivers attached. Owner notified.`, "success");
+    } else {
+      growl(`<b>Evidence refresh requested.</b> ${c.id} re-queued with all ${c.drivers.length} score drivers as line-item asks.`, "success");
+    }
+    bumpWorst20(1);
+    closeDrawer();
+  }
+
+  function bumpWorst20(delta) {
+    const el = document.getElementById("worst20Burndown");
+    if (el && window.UX && typeof window.UX.bumpBurndown === "function") {
+      window.UX.bumpBurndown(el, delta);
+    }
+  }
+
+  /* ===================== BULK ACTIONS ===================== */
+  function bulkEscalate() {
+    const atRisk = POPULATION.filter(c => c.band === "D" || c.band === "F");
+    growl(`<b>Bulk escalation queued.</b> ${atRisk.length} at-risk controls (Tier 4 &amp; 5) — auto-grouped by owner (${new Set(atRisk.map(c => c.owner.id)).size} owners). One Slack DM each.`, "success");
+    // Top-20 are by definition inside the Tier 4/5 pool — count them as cleared
+    bumpWorst20(20);
+  }
+  function bulkEscalateSelected() {
+    if (selectedIds.size === 0) return;
+    const sel = POPULATION.filter(c => selectedIds.has(c.id));
+    // Only count rows that are in the Top-20 priority (lowest scoring Tier 4/5)
+    const worst20Ids = new Set(
+      POPULATION.filter(c => c.band === "D" || c.band === "F")
+                .sort((a,b) => a.score - b.score)
+                .slice(0, 20)
+                .map(c => c.id)
+    );
+    const cleared = sel.filter(c => worst20Ids.has(c.id)).length;
+    growl(`<b>${selectedIds.size} controls escalated.</b> Grouped notifications sent.`, "success");
+    bumpWorst20(cleared);
+    selectedIds.clear();
+    updateSelectionBar();
+    renderVisibleRows();
+  }
+  function bulkRequest() {
+    if (selectedIds.size === 0) return;
+    growl(`<b>Refresh requested on ${selectedIds.size} controls.</b> Score drivers attached as evidence checklist.`, "success");
+    selectedIds.clear();
+    updateSelectionBar();
+    renderVisibleRows();
+  }
+
+  /* ===================== SAMPLING DETAIL ===================== */
+  function openSamplingDetail() {
+    activeControl = null;
+    document.getElementById("drawer-meta").innerHTML = `<span class="badge-dot"></span>Methodology`;
+    document.getElementById("drawer-meta").className = "badge teal";
+    document.getElementById("drawer-title").textContent = "Model validation sampling";
+    document.getElementById("drawer-sub").textContent = "How we know the Evidence Score is calibrated";
+
+    const stratum = [
+      { d: "itgc",      n: 34, agree: 33 },
+      { d: "revenue",   n: 29, agree: 28 },
+      { d: "payroll",   n: 19, agree: 18 },
+      { d: "procure",   n: 20, agree: 19 },
+      { d: "treasury",  n: 15, agree: 14 },
+      { d: "tax",       n: 12, agree: 11 },
+      { d: "inventory", n: 18, agree: 17 },
+      { d: "finrep",    n: 26, agree: 25 },
+      { d: "entity",    n: 17, agree: 15 },
+      { d: "hr",        n: 10, agree: 9  },
+    ];
+    const N = stratum.reduce((s,x) => s + x.n, 0);
+    const agree = stratum.reduce((s,x) => s + x.agree, 0);
+    const agreePct = ((agree / N) * 100).toFixed(1);
+
+    document.getElementById("drawer-body").innerHTML = `
+      <div class="gap-section">
+        <h3>Why sample?</h3>
+        <div class="sampling-detail">
+          The Evidence Score model runs on <b>${POPULATION.length} controls</b>. Hand-reviewing every score to test the model would
+          take <b>~${Math.round(POPULATION.length * 1.3)} hours</b>. Instead we sample <b>N=${N}</b> each Sunday and check the model's
+          tier call against a human reviewer.
+          <span class="sd-math">Required n = (1.96² × 0.1 × 0.9) / 0.05² ≈ 138.3 · we use 200 for margin</span>
+        </div>
+      </div>
+
+      <div class="gap-section">
+        <h3>Stratified allocation</h3>
+        <div style="font-size: var(--luna-fs-100); color: var(--luna-text-subdued); margin-bottom: var(--luna-sp-2);">
+          Sample size in each domain proportional to its share of the population. Last run 2026-09-15.
+        </div>
+        <table class="luna">
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th style="text-align: right;">Population</th>
+              <th style="text-align: right;">Sampled</th>
+              <th style="text-align: right;">Agreement</th>
+              <th style="text-align: right;">Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${stratum.map(s => {
+              const pop = POPULATION.filter(c => c.domain === s.d).length;
+              const rate = ((s.agree / s.n) * 100).toFixed(1);
+              return `
+                <tr style="cursor: default;">
+                  <td>${domainLabel(s.d)}</td>
+                  <td style="text-align: right;" class="tabular">${pop}</td>
+                  <td style="text-align: right;" class="tabular">${s.n}</td>
+                  <td style="text-align: right;" class="tabular">${s.agree}</td>
+                  <td style="text-align: right;" class="tabular"><b>${rate}%</b></td>
+                </tr>
+              `;
+            }).join("")}
+            <tr style="cursor: default; background: var(--luna-bg-sunken); font-weight: 600;">
+              <td>Total</td>
+              <td style="text-align: right;" class="tabular">${POPULATION.length}</td>
+              <td style="text-align: right;" class="tabular">${N}</td>
+              <td style="text-align: right;" class="tabular">${agree}</td>
+              <td style="text-align: right;" class="tabular">${agreePct}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="gap-section">
+        <h3>Calibration result</h3>
+        <div class="sampling-detail">
+          <b>${agreePct}% agreement</b> at the tier level (Tier 1–5).
+          At 95% confidence, true agreement ∈ [${(agreePct - 3.1).toFixed(1)}%, ${(Math.min(99.9, agreePct - -3.1)).toFixed(1)}%].
+          Brier score: <b>0.073</b>. Model is in spec; next recalibration scheduled <b>2026-10-13</b>.
+          <span class="sd-math">Power: with n=200 we can detect a ≥4-pt drop in agreement with 80% power at α=0.05</span>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("backdrop").classList.add("open");
+    document.getElementById("drawer").classList.add("open");
+  }
+
+  /* ===================== HELPERS ===================== */
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, ch => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[ch]);
+  }
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/"/g, "&quot;");
+  }
+  function domainLabel(d) {
+    const found = DOMAINS.find(x => x.id === d);
+    return found ? found.label : d;
+  }
+  function freqLabel(f) {
+    return { M:"Monthly", Q:"Quarterly", S:"Semi-annual", A:"Annual" }[f] || f;
+  }
+  function tierLabel(band) {
+    return {
+      A: "Tier 1 · Effective",
+      B: "Tier 2 · Mostly effective",
+      C: "Tier 3 · Borderline",
+      D: "Tier 4 · Deficient",
+      F: "Tier 5 · Material weakness",
+    }[band] || band;
+  }
+  function tierShort(band) {
+    return { A: "Tier 1", B: "Tier 2", C: "Tier 3", D: "Tier 4", F: "Tier 5" }[band] || band;
+  }
+  function tierName(band) {
+    return {
+      A: "Effective",
+      B: "Mostly effective",
+      C: "Borderline",
+      D: "Deficient",
+      F: "Material weakness",
+    }[band] || band;
+  }
+  function peerCount(domain) {
+    return POPULATION.filter(c => c.domain === domain).length;
+  }
+  function domainMedian(domain) {
+    const scores = POPULATION.filter(c => c.domain === domain).map(c => c.score).sort((a,b) => a - b);
+    return scores[Math.floor(scores.length / 2)];
+  }
+  function peerPercentile(c) {
+    const scores = POPULATION.filter(x => x.domain === c.domain).map(x => x.score).sort((a,b) => a - b);
+    const idx = scores.findIndex(s => s >= c.score);
+    return Math.round((idx / scores.length) * 100);
+  }
+
+  /* ===================== GROWL ===================== */
+  function growl(html, kind) {
+    const host = document.getElementById("growlHost");
+    const g = document.createElement("div");
+    g.className = "growl" + (kind ? " " + kind : "");
+    g.innerHTML = '<div class="growl-icon"></div><div>' + html + "</div>";
+    host.appendChild(g);
+    setTimeout(() => { g.style.transition = "opacity 200ms, transform 200ms"; g.style.opacity = "0"; g.style.transform = "translateY(8px)"; }, 4200);
+    setTimeout(() => g.remove(), 4500);
+  }
+
+  function resetDemo() {
+    selectedIds.clear();
+    activeBand = "all";
+    activeOwner = "all";
+    activeFramework = "all";
+    activeSearch = "";
+    activeSort = "score_asc";
+    onlyDeclining = false;
+    document.getElementById("filterBand").value = "all";
+    document.getElementById("filterOwner").value = "all";
+    document.getElementById("filterFramework").value = "all";
+    document.getElementById("filterSearch").value = "";
+    document.getElementById("sortBy").value = "score_asc";
+    document.getElementById("onlyDeclining").checked = false;
+    document.getElementById("tableViewport").scrollTop = 0;
+    updateSelectionBar();
+    renderBandRollup();
+    renderTable();
+    growl("Demo reset.", "success");
+  }
+
+  /* ===================== WIRE UP ===================== */
+  document.getElementById("filterBand").addEventListener("change", function() {
+    activeBand = this.value;
+    renderBandRollup();
+    renderTable();
+  });
+  document.getElementById("filterOwner").addEventListener("change", function() {
+    activeOwner = this.value;
+    renderTable();
+  });
+  document.getElementById("filterFramework").addEventListener("change", function() {
+    activeFramework = this.value;
+    renderTable();
+  });
+  document.getElementById("filterSearch").addEventListener("input", function() {
+    activeSearch = this.value;
+    renderTable();
+  });
+  document.getElementById("sortBy").addEventListener("change", function() {
+    activeSort = this.value;
+    document.getElementById("tableViewport").scrollTop = 0;
+    renderTable();
+  });
+  document.getElementById("onlyDeclining").addEventListener("change", function() {
+    onlyDeclining = this.checked;
+    renderTable();
+  });
+
+  /* ===================== PAGE-ACTIONS MENU ===================== */
+  function togglePageMenu(e) {
+    if (e) e.stopPropagation();
+    const pop = document.getElementById("pageMenuPop");
+    const btn = document.getElementById("pageMenuBtn");
+    if (!pop || !btn) return;
+    const open = pop.style.display === "block";
+    pop.style.display = open ? "none" : "block";
+    btn.setAttribute("aria-expanded", open ? "false" : "true");
+  }
+  function closePageMenu() {
+    const pop = document.getElementById("pageMenuPop");
+    const btn = document.getElementById("pageMenuBtn");
+    if (pop) pop.style.display = "none";
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  }
+  document.addEventListener("click", (e) => {
+    const pop = document.getElementById("pageMenuPop");
+    if (!pop || pop.style.display !== "block") return;
+    if (!pop.contains(e.target) && !e.target.closest("#pageMenuBtn")) closePageMenu();
+  });
+
+  /* ===================== METHODOLOGY POPOVER ===================== */
+  function toggleMethodology(e) {
+    if (e) e.stopPropagation();
+    const pop = document.getElementById("methodologyPop");
+    const btn = document.getElementById("methodologyBtn");
+    if (!pop || !btn) return;
+    const open = pop.getAttribute("data-open") === "true";
+    pop.setAttribute("data-open", open ? "false" : "true");
+    btn.setAttribute("aria-expanded", open ? "false" : "true");
+  }
+  function closeMethodology() {
+    const pop = document.getElementById("methodologyPop");
+    const btn = document.getElementById("methodologyBtn");
+    if (pop) pop.setAttribute("data-open", "false");
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  }
+  document.addEventListener("click", (e) => {
+    const pop = document.getElementById("methodologyPop");
+    if (!pop || pop.getAttribute("data-open") !== "true") return;
+    if (!pop.contains(e.target) && !e.target.closest("#methodologyBtn")) closeMethodology();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeDrawer(); closeMethodology(); }
+  });
+
+  // Initial state — update bulk button count, prime render
+  document.getElementById("bulkCount").textContent = POPULATION.filter(c => c.band === "D" || c.band === "F").length;
+  renderTable();
+</script>
+
+<script>
+window.TOUR = {
+  title: 'Triage 812 controls before Q3 close',
+  intro: 'A reviewer view sitting on the Submitted lane: rank attention by predicted first-pass sufficiency, then act on the worst.',
+  steps: [
+    {
+      selector: '.flow-state-badge',
+      title: 'You are reviewing Submitted',
+      body: '503 controls sit in the AI judgment queue. This badge anchors the view to one lane of the 4-state flow.',
+      position: 'bottom'
+    },
+    {
+      selector: '.page-head h1',
+      title: 'One tier per control',
+      body: 'All 812 controls assigned Tier 1–5 on predicted first-pass sufficiency. The weighted score orders reviewer attention by risk.',
+      position: 'bottom'
+    },
+    {
+      selector: '.stat-strip',
+      title: 'Portfolio in four numbers',
+      body: '71% effectiveness · Tier 3 (Borderline). 95 controls in Tier 4–5 across 53 owners. Model confidence 0.91; Brier 0.073.',
+      position: 'bottom'
+    },
+    {
+      selector: '#methodologyBtn',
+      title: 'Score is auditable',
+      body: 'Methodology popover shows the formula, 5-tier rubric, and sampling math (ASA 530, 95% CI). Defensible at audit committee.',
+      position: 'bottom'
+    },
+    {
+      selector: '.flow-pill',
+      title: 'See what blocks close',
+      body: 'The 812 split: 38 Draft, 142 Open, 503 Submitted, 129 Accepted. Submitted is the bottleneck — reviewer time goes here. Click the pill in the breadcrumb for the full split.',
+      position: 'bottom'
+    },
+    {
+      selector: '.flow-pill',
+      title: 'Reviewer turn — yours',
+      body: 'Auditor requested, Assignee uploaded, Reviewer is up next. Each accept or send-back advances the chain by one named hop.',
+      position: 'bottom'
+    },
+    {
+      selector: '.ctrl-row:first-child',
+      title: 'Worst row first, drivers on hover',
+      body: 'Default sort: score-ascending. Hover the score pill for the 2–3 drivers behind the tier. Click for full breakdown.',
+      position: 'bottom'
+    },
+    {
+      selector: '#drawerRejectBtn',
+      title: 'Send back with a templated reason',
+      body: 'AI flags sufficient or insufficient — a reviewer confirms or reverses. Send-back picks one of 7 reasons; row returns to Open.',
+      position: 'top'
+    },
+    {
+      selector: '.ctrl-table-foot',
+      title: 'Carry the math into workpaper',
+      body: 'Model esm-v3.2.1, refreshed 14m ago. Driver weights, sample stratum, calibration date, and SHA-256 chips travel with every row.',
+      position: 'top'
+    }
+  ]
+};
+</script>
+<script src="tour.js"></script>
+
+<script src="nav-routing.js"></script>
+<script src="ds-toggle.js"></script>
+<script src="flow.js"></script>
+<script src="ux-fixes.js"></script>
+<script src="provenance.js"></script>
+<script src="sources-link.js"></script>
+<script src="sources-strip.js"></script>
+</body>
+</html>

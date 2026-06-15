@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sufficiency · Auto-disposition · Helios Robotics Q3 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="gate.js"></script>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="chrome.css" />
+<link rel="stylesheet" href="chrome-midship.css" />
+<link rel="stylesheet" href="flow.css" />
+<link rel="stylesheet" href="ux-fixes.css" />
+<link rel="stylesheet" href="provenance.css" />
+<link rel="stylesheet" href="sources-strip.css" />
+<link rel="stylesheet" href="tour.css">
+<style>
+  .auto-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr 300px;
+    gap: var(--luna-sp-5);
+    align-items: start;
+  }
+
+  /* Threshold panel */
+  .threshold-panel {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-sm);
+    padding: var(--luna-sp-5);
+    margin-bottom: var(--luna-sp-5);
+  }
+  .threshold-panel .panel-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: var(--luna-sp-5);
+    align-items: center;
+  }
+  .threshold-panel .auto-toggle {
+    display: flex; align-items: center; gap: var(--luna-sp-3);
+    font-size: var(--luna-fs-150);
+  }
+  .threshold-panel .auto-toggle .toggle-label {
+    font-weight: 600; color: var(--luna-text);
+  }
+  .threshold-panel .auto-toggle .toggle-sub {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-top: 2px;
+  }
+  .threshold-slider {
+    display: flex; flex-direction: column; gap: var(--luna-sp-2);
+  }
+  .threshold-slider .ts-label {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .threshold-slider .ts-value {
+    font-size: var(--luna-fs-200);
+    color: var(--luna-text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .threshold-slider .ts-ticks {
+    display: flex; justify-content: space-between;
+    font-size: var(--luna-fs-50); color: var(--luna-text-muted);
+  }
+  .split-bar {
+    height: 28px;
+    border-radius: var(--luna-radius-md);
+    overflow: hidden;
+    display: flex;
+    border: 1px solid var(--luna-border);
+    font-size: var(--luna-fs-100);
+    font-weight: 600;
+  }
+  .split-bar .split-seg {
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    transition: flex-basis 200ms ease;
+  }
+  .split-bar .seg-suff      { background: var(--luna-green-500); }
+  .split-bar .seg-insuff    { background: var(--luna-orange-500); }
+  .split-bar .seg-review    { background: var(--luna-yellow-500); color: var(--luna-yellow-900); }
+  .split-legend {
+    display: flex; gap: var(--luna-sp-3); flex-wrap: wrap;
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    margin-top: var(--luna-sp-2);
+  }
+  .split-legend .legend-dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+  /* Left rail */
+  .filter-rail {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    padding: var(--luna-sp-4);
+    box-shadow: var(--luna-shadow-sm);
+    position: sticky;
+    top: var(--luna-sp-4);
+  }
+  .filter-rail h3 {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--luna-text-subdued);
+    margin: var(--luna-sp-3) 0 var(--luna-sp-2);
+  }
+  .filter-rail h3:first-child { margin-top: 0; }
+  .filter-rail .facet-list {
+    display: flex; flex-direction: column;
+  }
+  .filter-rail .facet {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--luna-sp-1) 0;
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    cursor: pointer;
+  }
+  .filter-rail .facet:hover { color: var(--luna-teal-700); }
+  .filter-rail .facet.active { font-weight: 600; color: var(--luna-teal-700); }
+  .filter-rail .facet .facet-count {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+  .filter-rail .facet input { margin-right: var(--luna-sp-2); accent-color: var(--luna-teal-500); }
+
+  /* Center: audit log */
+  .audit-log {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-sm);
+    overflow: hidden;
+  }
+  .audit-log .log-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--luna-sp-3) var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .audit-log .log-head h2 {
+    margin: 0; font-size: var(--luna-fs-300); font-weight: 600;
+  }
+  .audit-log .log-head .log-meta {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+
+  table.audit-table {
+    width: 100%; border-collapse: collapse;
+  }
+  table.audit-table th {
+    text-align: left;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--luna-text-subdued);
+    padding: var(--luna-sp-2) var(--luna-sp-4);
+    background: var(--luna-bg-sunken);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  table.audit-table td {
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    border-bottom: 1px solid var(--luna-border);
+    vertical-align: middle;
+  }
+  table.audit-table tr.row-main { cursor: pointer; }
+  table.audit-table tr.row-main:hover { background: var(--luna-gray-50); }
+  table.audit-table tr.row-main.expanded { background: var(--luna-teal-50); }
+  table.audit-table tr.row-main.reversed td { opacity: 0.55; text-decoration: line-through; }
+
+  td.col-ts     { color: var(--luna-text-subdued); font-family: var(--luna-font-mono); font-size: var(--luna-fs-100); white-space: nowrap; width: 86px; }
+  td.col-ctrl   { font-family: var(--luna-font-mono); font-size: var(--luna-fs-100); color: var(--luna-text); white-space: nowrap; width: 90px; }
+  td.col-ev     { font-family: var(--luna-font-mono); font-size: var(--luna-fs-100); color: var(--luna-text-subdued); white-space: nowrap; width: 110px; }
+  td.col-dec    { width: 134px; }
+  td.col-conf   { font-variant-numeric: tabular-nums; width: 80px; text-align: right; }
+  td.col-rat    { color: var(--luna-text); line-height: 1.5; }
+
+  .conf-bar {
+    width: 60px; height: 5px;
+    background: var(--luna-gray-200);
+    border-radius: 999px;
+    margin-top: 2px;
+    margin-left: auto;
+    overflow: hidden;
+  }
+  .conf-bar span { display: block; height: 100%; }
+  .conf-bar.high span { background: var(--luna-green-500); }
+  .conf-bar.med span  { background: var(--luna-yellow-500); }
+  .conf-bar.low span  { background: var(--luna-red-500); }
+
+  .row-detail {
+    background: var(--luna-bg-sunken);
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .row-detail .detail-grid {
+    display: grid; grid-template-columns: 1fr 240px;
+    gap: var(--luna-sp-4);
+  }
+  .row-detail .detail-section h4 {
+    margin: 0 0 var(--luna-sp-2);
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--luna-text-subdued);
+  }
+  .row-detail .detail-section .reasoning {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    line-height: 1.55;
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+  }
+  .row-detail .reasoning ul { margin: var(--luna-sp-2) 0 0; padding-left: var(--luna-sp-4); }
+  .row-detail .reasoning li { margin: 2px 0; }
+  .row-detail .meta-list { font-size: var(--luna-fs-100); color: var(--luna-text-subdued); line-height: 1.7; }
+  .row-detail .meta-list dt { display: inline-block; min-width: 100px; color: var(--luna-text-muted); font-weight: 500; }
+  .row-detail .meta-list dd { display: inline-block; margin: 0; color: var(--luna-text); }
+  .row-detail .meta-list dl { margin: 0; }
+  .row-detail .detail-actions {
+    display: flex; gap: var(--luna-sp-2);
+    margin-top: var(--luna-sp-3);
+  }
+
+  /* Right rail */
+  .right-rail {
+    display: flex; flex-direction: column;
+    gap: var(--luna-sp-4);
+    position: sticky;
+    top: var(--luna-sp-4);
+  }
+  .right-rail .panel {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    padding: var(--luna-sp-4);
+    box-shadow: var(--luna-shadow-sm);
+  }
+  .right-rail .panel h3 {
+    margin: 0 0 var(--luna-sp-3);
+    font-size: var(--luna-fs-150);
+    font-weight: 600;
+  }
+  .right-rail .panel .sub {
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    line-height: 1.5;
+    margin: 0 0 var(--luna-sp-3);
+  }
+  .right-rail .summary-row {
+    display: flex; justify-content: space-between;
+    padding: var(--luna-sp-2) 0;
+    font-size: var(--luna-fs-150);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .right-rail .summary-row:last-child { border-bottom: none; }
+  .right-rail .summary-row .label { color: var(--luna-text-subdued); }
+  .right-rail .summary-row .val { color: var(--luna-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .right-rail .reason-list {
+    display: flex; flex-direction: column;
+  }
+  .right-rail .reason-list .reason-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: var(--luna-sp-2) 0;
+    font-size: var(--luna-fs-150);
+    border-bottom: 1px dashed var(--luna-border);
+  }
+  .right-rail .reason-list .reason-item:last-child { border-bottom: none; }
+  .right-rail .reason-list .reason-bar {
+    height: 6px; background: var(--luna-gray-100); border-radius: 999px; overflow: hidden;
+    width: 60px;
+  }
+  .right-rail .reason-list .reason-bar span { display: block; height: 100%; background: var(--luna-teal-400); }
+</style>
+</head>
+<body data-ds="luna" data-flow-category="flow-native" data-flow-step="submitted" data-flow-count="2283">
+<script>(function(){try{var d=localStorage.getItem("sufficiency-ds");if(d==="midship"||d==="luna")document.body.dataset.ds=d;}catch(e){}})();</script>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-wordmark">Optro</span>
+    </div>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Controls</a>
+      <a href="#" class="active">Evidence</a>
+      <a href="#">Cycles</a>
+      <a href="#">Reports</a>
+    </nav>
+    <div class="sidebar-footer">Q3 2026 · 18 days to close</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <!-- Topbar -->
+    <div class="app-topbar"><a href="index.html" class="back-to-options" title="All options"><span class="arrow">←</span><span>Back to options</span></a>
+      <button class="customer-switch">
+        <span>Helios Robotics</span>
+        <span class="caret">▾</span>
+      </button>
+      <div class="topbar-spacer"></div>
+      <div class="close-countdown">
+        <span>Q3 close:</span> <b>2026-10-15</b> <span>(18 days)</span>
+      </div>
+      <div class="avatar" title="Sarah Kim">SK</div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="app-breadcrumb">
+      <a href="index.html">Sufficiency</a>
+      <span class="crumb-sep">›</span>
+      <a href="#">Evidence</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">Auto-disposition log · Q3 2026</span>
+    </div>
+
+    <!-- Body -->
+    <div class="app-body padded-wide">
+
+      <!-- Page head -->
+      <div class="page-head">
+        <div>
+          <span class="eyebrow">Auto-disposition · needs confirm</span>
+          <h1>AI suggests dispositions on 2,283 of 2,847 evidences · 80%</h1>
+          <p class="page-sub">Every row is a <b>suggestion</b> awaiting a reviewer's confirm or reverse. Nothing auto-accepts.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn primary">Export decisions to auditor</button>
+        </div>
+      </div>
+
+      <!-- Threshold panel -->
+      <div class="threshold-panel">
+        <div class="panel-row">
+          <div class="auto-toggle">
+            <div class="toggle on" id="autoToggle" onclick="this.classList.toggle('on'); this.classList.toggle('off');"></div>
+            <div class="toggle-label">Auto-disposition <span style="color: var(--luna-green-700);">ON</span></div>
+          </div>
+
+          <div class="threshold-slider">
+            <div class="ts-label">
+              <span>Confidence threshold</span>
+              <span class="ts-value" id="threshVal">0.82</span>
+            </div>
+            <input type="range" class="luna-range" id="threshSlider" min="50" max="99" step="1" value="82" />
+            <div class="ts-ticks"><span>0.50</span><span>0.75</span><span>1.00</span></div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: var(--luna-sp-4); font-size: var(--luna-fs-200); font-weight: 600;">
+            <span style="color: var(--luna-green-700);">Auto <span class="tabular" id="splitAuto">80%</span></span>
+            <span style="color: var(--luna-yellow-700);">Human <span class="tabular" id="splitHuman">20%</span></span>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--luna-sp-4);">
+          <div class="split-bar" id="splitBar">
+            <div class="split-seg seg-suff"   id="segSuff"   style="flex-basis: 67%;">1,899 sufficient</div>
+            <div class="split-seg seg-insuff" id="segInsuff" style="flex-basis: 13%;">384 insufficient</div>
+            <div class="split-seg seg-review" id="segReview" style="flex-basis: 20%;">564 human-only</div>
+          </div>
+          <div class="split-legend" style="justify-content: flex-end;">
+            <span id="legSuff" style="display:none;">1,899</span><span id="legInsuff" style="display:none;">384</span><span id="legReview" style="display:none;">564</span>
+            <span style="color: var(--luna-text-subdued);">4 reversed by reviewer today</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Burn-down meter -->
+      <div class="ux-burndown" id="humanQueueBurndown" data-total="564" data-cleared="13" data-label="of 564 routed-to-human reviewed today"></div>
+
+      <!-- 3-column layout -->
+      <div class="auto-layout">
+
+        <!-- Left rail -->
+        <aside class="filter-rail">
+          <h3>Decision</h3>
+          <div class="facet-list">
+            <label class="facet active"><span><input type="checkbox" checked />All</span><span class="facet-count">2,847</span></label>
+            <label class="facet"><span><input type="checkbox" />Sufficient</span><span class="facet-count">1,899</span></label>
+            <label class="facet"><span><input type="checkbox" />Insufficient</span><span class="facet-count">384</span></label>
+            <label class="facet"><span><input type="checkbox" />Needs review</span><span class="facet-count">564</span></label>
+          </div>
+
+          <h3>Confidence</h3>
+          <div class="facet-list">
+            <label class="facet"><span><input type="checkbox" />≥ 0.90</span><span class="facet-count">1,612</span></label>
+            <label class="facet"><span><input type="checkbox" />0.80 – 0.89</span><span class="facet-count">671</span></label>
+            <label class="facet"><span><input type="checkbox" />0.70 – 0.79</span><span class="facet-count">312</span></label>
+            <label class="facet"><span><input type="checkbox" />&lt; 0.70</span><span class="facet-count">252</span></label>
+          </div>
+
+          <details style="margin-top: var(--luna-sp-3);">
+            <summary style="cursor: pointer; font-size: var(--luna-fs-50); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--luna-text-subdued); padding: var(--luna-sp-1) 0;">Domain</summary>
+            <div class="facet-list" style="margin-top: var(--luna-sp-2);">
+              <label class="facet"><span><input type="checkbox" />IT General</span><span class="facet-count">487</span></label>
+              <label class="facet"><span><input type="checkbox" />Revenue</span><span class="facet-count">412</span></label>
+              <label class="facet"><span><input type="checkbox" />Financial Reporting</span><span class="facet-count">365</span></label>
+              <label class="facet"><span><input type="checkbox" />Payroll</span><span class="facet-count">274</span></label>
+              <label class="facet"><span><input type="checkbox" />Procurement</span><span class="facet-count">289</span></label>
+              <label class="facet"><span><input type="checkbox" />Treasury</span><span class="facet-count">212</span></label>
+              <label class="facet"><span><input type="checkbox" />Other</span><span class="facet-count">808</span></label>
+            </div>
+          </details>
+
+          <details style="margin-top: var(--luna-sp-2);">
+            <summary style="cursor: pointer; font-size: var(--luna-fs-50); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--luna-text-subdued); padding: var(--luna-sp-1) 0;">Reviewer</summary>
+            <div class="facet-list" style="margin-top: var(--luna-sp-2);">
+              <label class="facet"><span><input type="checkbox" />Sarah Kim</span><span class="facet-count">512</span></label>
+              <label class="facet"><span><input type="checkbox" />David Park</span><span class="facet-count">418</span></label>
+              <label class="facet"><span><input type="checkbox" />Priya Anand</span><span class="facet-count">387</span></label>
+              <label class="facet"><span><input type="checkbox" />Tomás Rivera</span><span class="facet-count">214</span></label>
+              <label class="facet"><span><input type="checkbox" />Unassigned</span><span class="facet-count">1,316</span></label>
+            </div>
+          </details>
+        </aside>
+
+        <!-- Center: audit log -->
+        <div class="audit-log">
+          <div class="log-head">
+            <h2>Audit log · AI suggestions awaiting reviewer</h2>
+            <div class="log-meta">Showing the most recent <b>20 of 2,283</b> AI suggestions · click a row to confirm or reverse</div>
+          </div>
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Control</th>
+                <th>Evidence</th>
+                <th>AI suggests</th>
+                <th>Confidence</th>
+                <th>Rationale</th>
+                <th>Reviewer action</th>
+              </tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Right rail -->
+        <aside class="right-rail">
+          <div class="panel">
+            <h3>Spot-check sample</h3>
+            <p class="sub">Pull a random 20-item sample across all auto-judged evidence to validate the model's accuracy this cycle.</p>
+            <button class="btn primary" style="width: 100%;" onclick="growl('20 items pulled to your spot-check queue.', 'success')">Pull 20-item sample</button>
+            <div style="font-size: var(--luna-fs-50); color: var(--luna-text-muted); margin-top: var(--luna-sp-3); line-height: 1.5;">
+              <b>Last spot-check:</b> Yesterday at 16:42 by Sarah Kim · 20 items · 19 confirmed · 1 reversed (PRC-04).
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Today's activity</h3>
+            <div class="summary-row"><span class="label">AI suggestions made</span><span class="val tabular">142</span></div>
+            <div class="summary-row"><span class="label">Suggested sufficient</span><span class="val tabular">98</span></div>
+            <div class="summary-row"><span class="label">Suggested insufficient</span><span class="val tabular">31</span></div>
+            <div class="summary-row"><span class="label">Routed to human-only</span><span class="val tabular">13</span></div>
+            <div class="summary-row"><span class="label">Reviewer sent back</span><span class="val tabular" style="color: var(--luna-orange-700);">4</span></div>
+            <div class="summary-row"><span class="label">Avg confidence</span><span class="val tabular">0.88</span></div>
+          </div>
+
+          <div class="panel">
+            <h3>Top insufficient reasons</h3>
+            <div class="reason-list">
+              <div class="reason-item">
+                <span>Coverage period gap</span>
+                <div class="hstack" style="gap: var(--luna-sp-2);">
+                  <div class="reason-bar"><span style="width: 100%;"></span></div>
+                  <b class="tabular">24</b>
+                </div>
+              </div>
+              <div class="reason-item">
+                <span>Missing supporting attach</span>
+                <div class="hstack" style="gap: var(--luna-sp-2);">
+                  <div class="reason-bar"><span style="width: 75%;"></span></div>
+                  <b class="tabular">18</b>
+                </div>
+              </div>
+              <div class="reason-item">
+                <span>Approver field blank</span>
+                <div class="hstack" style="gap: var(--luna-sp-2);">
+                  <div class="reason-bar"><span style="width: 62%;"></span></div>
+                  <b class="tabular">15</b>
+                </div>
+              </div>
+              <div class="reason-item">
+                <span>SOD violation</span>
+                <div class="hstack" style="gap: var(--luna-sp-2);">
+                  <div class="reason-bar"><span style="width: 38%;"></span></div>
+                  <b class="tabular">9</b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="growl-host" id="growlHost"></div>
+
+<script src="data.js"></script>
+<script>
+  const decisionColors = {
+    sufficient:   { badge: 'green',  label: 'Suggests: sufficient' },
+    insufficient: { badge: 'orange', label: 'Suggests: insufficient' },
+    needs_review: { badge: 'yellow', label: 'Suggests: human review' },
+  };
+
+  // Stable pseudo-SHA chip per evidence id
+  function shaChipFor(name) {
+    if (window.Flow && typeof window.Flow.shaChip === 'function') {
+      try { return window.Flow.shaChip(name); } catch(e) {}
+    }
+    // Deterministic fallback so the UI shows the pattern even without flow.js
+    let h = 0;
+    for (let i = 0; i < name.length; i++) { h = ((h<<5)-h) + name.charCodeAt(i); h |= 0; }
+    const hex = (Math.abs(h).toString(16) + '00000000').slice(0, 8);
+    const tail = (Math.abs(h*2654435761).toString(16) + '00000000').slice(0, 8);
+    return '<span class="flow-sha-chip" title="Content-addressed evidence hash">sha256 · ' + hex + '…' + tail + '</span>';
+  }
+
+  let expandedRow = null;
+  let reversedRows = new Set();
+
+  function confBar(c) {
+    const cls = c >= 0.85 ? 'high' : (c >= 0.72 ? 'med' : 'low');
+    return `<div class="conf-bar ${cls}"><span style="width: ${Math.round(c*100)}%;"></span></div>`;
+  }
+
+  function renderLog() {
+    const body = document.getElementById('logBody');
+    body.innerHTML = AUTO_LOG.map((e, i) => {
+      const d = decisionColors[e.decision];
+      const reversed = reversedRows.has(i) ? ' reversed' : '';
+      const expanded = expandedRow === i ? ' expanded' : '';
+      const detail = expandedRow === i ? renderDetail(e, i) : '';
+      const linked = e.decision === 'sufficient'
+        ? `<div style="margin-top:4px;"><span class="flow-link-control">Linked to ${e.control} · sample row ${100 + i}</span></div>`
+        : '';
+      return `
+        <tr class="row-main${expanded}${reversed}" onclick="toggleRow(${i})">
+          <td class="col-ts">${e.ts}</td>
+          <td class="col-ctrl">${e.control}</td>
+          <td class="col-ev">
+            <div>${e.evidence}</div>
+            ${shaChipFor(e.evidence)}
+            ${linked}
+          </td>
+          <td class="col-dec"><span class="badge ${d.badge}"><span class="badge-dot"></span>${d.label}</span></td>
+          <td class="col-conf">
+            <div class="tabular" style="font-weight:600;">${e.confidence.toFixed(2)}</div>
+            ${confBar(e.confidence)}
+          </td>
+          <td class="col-rat">${e.rationale}</td>
+          <td class="col-action" style="white-space:nowrap;">
+            <button class="btn small" onclick="event.stopPropagation(); confirmDecision(${i})">Confirm</button>
+            <button class="btn small flow-reject-btn" data-flow-reject data-assignee="Marcus Chen" onclick="event.stopPropagation(); reverseDecision(${i})">Send back</button>
+          </td>
+        </tr>
+        ${detail ? `<tr class="row-detail-wrap"><td colspan="7" style="padding:0;">${detail}</td></tr>` : ''}
+      `;
+    }).join('');
+  }
+
+  function renderDetail(e, idx) {
+    const d = decisionColors[e.decision];
+    const reasoning = e.rationale;
+    const checks = e.decision === 'sufficient' ?
+      ['Period coverage confirmed', 'Required fields populated', 'Approver-preparer separation', 'Cross-system reconciliation', 'No anomalous patterns'] :
+      e.decision === 'insufficient' ?
+      ['Required fields populated', 'Period coverage gap detected', 'No anomalous patterns'] :
+      ['Period coverage', 'Required fields populated', 'Ambiguity in approver assertion', 'Confidence below threshold'];
+
+    return `
+      <div class="row-detail">
+        <div class="detail-grid">
+          <div class="detail-section">
+            <h4>AI reasoning trace · suggestion only</h4>
+            <div class="reasoning">
+              <p style="margin: 0 0 var(--luna-sp-2);">${reasoning}</p>
+              <p style="margin: 0; font-weight: 600; color: var(--luna-text-subdued); font-size: var(--luna-fs-100); text-transform: uppercase; letter-spacing: 0.04em;">Checks performed</p>
+              <ul>
+                ${checks.map(c => `<li>${c}</li>`).join('')}
+              </ul>
+              <p style="margin: var(--luna-sp-2) 0 0; font-size: var(--luna-fs-100); color: var(--luna-text-subdued);">A human reviewer must confirm or send this back. No row is closed until a person signs.</p>
+            </div>
+            <div class="detail-actions">
+              <button class="btn primary" onclick="event.stopPropagation(); confirmDecision(${idx})">Confirm suggestion</button>
+              <button class="btn danger flow-reject-btn" data-flow-reject data-assignee="Marcus Chen" onclick="event.stopPropagation(); reverseDecision(${idx})">Send back to assignee</button>
+              <button class="btn subtle" onclick="event.stopPropagation(); growl('Reassigned to ' + sampleReviewer() + '.', 'success')">Reassign reviewer</button>
+            </div>
+          </div>
+          <div class="detail-section">
+            <h4>Decision metadata</h4>
+            <div class="meta-list">
+              <dl>
+                <dt>Model</dt><dd>sufficiency-judge-v2.4</dd><br>
+                <dt>Tokens</dt><dd>1,842 in · 312 out</dd><br>
+                <dt>Latency</dt><dd>1.4s</dd><br>
+                <dt>Confidence</dt><dd>${e.confidence.toFixed(3)}</dd><br>
+                <dt>Threshold</dt><dd>0.82 (current setting)</dd><br>
+                <dt>Decision</dt><dd>${d.label.toLowerCase()}</dd><br>
+                <dt>Source rules</dt><dd>5 control attributes</dd>
+              </dl>
+            </div>
+            <div style="font-size: var(--luna-fs-50); color: var(--luna-text-muted); margin-top: var(--luna-sp-3); line-height: 1.5;">
+              Decision is logged immutably to the audit ledger. Reversals create a new entry, never overwrite.
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleRow(i) {
+    expandedRow = (expandedRow === i ? null : i);
+    renderLog();
+  }
+  function bumpHumanBurndown() {
+    const el = document.getElementById('humanQueueBurndown');
+    if (el && window.UX && typeof window.UX.bumpBurndown === 'function') {
+      try { window.UX.bumpBurndown(el, 1); } catch(e) {}
+    }
+  }
+  function confirmDecision(i) {
+    growl('<b>Confirmed.</b> AI judgment for ' + AUTO_LOG[i].evidence + ' co-signed by reviewer.', 'success');
+    bumpHumanBurndown();
+    expandedRow = null;
+    renderLog();
+  }
+  function reverseDecision(i) {
+    reversedRows.add(i);
+    growl('<b>Reversed.</b> ' + AUTO_LOG[i].evidence + ' re-queued. Audit-ledger entry created.', 'success');
+    bumpHumanBurndown();
+    expandedRow = null;
+    renderLog();
+  }
+  function sampleReviewer() {
+    const r = REVIEWERS[Math.floor((Date.now()/1000) % REVIEWERS.length)];
+    return r.name;
+  }
+
+  // Threshold slider — live update
+  const slider = document.getElementById('threshSlider');
+  const threshVal = document.getElementById('threshVal');
+  function updateSplit() {
+    const t = parseInt(slider.value, 10) / 100;
+    threshVal.textContent = t.toFixed(2);
+
+    // Higher threshold → less auto-judged, more human review.
+    // 82 → ~80% auto. Use a simple curve: human% rises sharply above 0.85.
+    const above = Math.max(0, t - 0.5);
+    const humanFrac = Math.min(0.85, 0.05 + above * 1.05);
+    const total = 2847;
+    const human = Math.round(total * humanFrac);
+    const auto  = total - human;
+    // Within auto, ~83% sufficient / 17% insufficient
+    const suff   = Math.round(auto * 0.832);
+    const insuff = auto - suff;
+
+    document.getElementById('segSuff').textContent   = suff.toLocaleString() + ' sufficient';
+    document.getElementById('segInsuff').textContent = insuff.toLocaleString() + ' insufficient';
+    document.getElementById('segReview').textContent = human.toLocaleString() + ' human-only';
+
+    const pSuff   = suff / total * 100;
+    const pInsuff = insuff / total * 100;
+    const pHuman  = human / total * 100;
+    document.getElementById('segSuff').style.flexBasis   = pSuff + '%';
+    document.getElementById('segInsuff').style.flexBasis = pInsuff + '%';
+    document.getElementById('segReview').style.flexBasis = pHuman + '%';
+
+    document.getElementById('legSuff').textContent   = suff.toLocaleString();
+    document.getElementById('legInsuff').textContent = insuff.toLocaleString();
+    document.getElementById('legReview').textContent = human.toLocaleString();
+
+    document.getElementById('splitAuto').textContent  = Math.round((1-humanFrac)*100) + '%';
+    document.getElementById('splitHuman').textContent = Math.round(humanFrac*100) + '%';
+  }
+  slider.addEventListener('input', updateSplit);
+
+  // Growl
+  function growl(html, kind) {
+    const host = document.getElementById('growlHost');
+    const g = document.createElement('div');
+    g.className = 'growl' + (kind ? ' ' + kind : '');
+    g.innerHTML = '<div class="growl-icon"></div><div>' + html + '</div>';
+    host.appendChild(g);
+    setTimeout(() => { g.style.transition = 'opacity 200ms, transform 200ms'; g.style.opacity = '0'; g.style.transform = 'translateY(8px)'; }, 3800);
+    setTimeout(() => g.remove(), 4100);
+  }
+
+  // Boot
+  renderLog();
+  updateSplit();
+</script>
+
+<script>window.TOUR = {
+  title: 'AI suggests · reviewer confirms or reverses',
+  intro: 'You are the reviewer at the Submitted gate. 2,283 AI suggestions sit between Open and Accepted, none closed until you sign.',
+  steps: [
+    { selector: '.flow-state-badge',
+      title: 'Submitted: 2,283 waiting',
+      body: 'Every row sits at Submitted. AI suggests a verdict; nothing advances to Accepted until a reviewer confirms or reverses.',
+      position: 'bottom' },
+    { selector: '.flow-pill',
+      title: 'Reviewer is up next',
+      body: 'Auditor scoped, assignee collected, reviewer (you) decides. The handoff is named — no anonymous AI accepts.',
+      position: 'bottom' },
+    { selector: '#splitBar',
+      title: 'One bar, one cycle',
+      body: '1,899 suggested sufficient, 384 suggested insufficient, 564 routed to humans. Read the cycle in one line.',
+      position: 'bottom' },
+    { selector: '.threshold-slider',
+      title: 'Retune the split',
+      body: 'Drag to 0.90 and the human queue grows; drop to 0.75 and AI suggests on nearly everything. Pick where model confidence stops.',
+      position: 'bottom' },
+    { selector: '.audit-table tbody tr:first-child',
+      title: 'Open a suggestion',
+      body: 'Click any row to see the AI reasoning trace, checks performed, model version, and the threshold at decision time.',
+      position: 'top' },
+    { selector: '.flow-sha-chip',
+      title: 'Hash binds row to file',
+      body: 'SHA-256 chip pins this evidence to the exact bytes scored. Swap the file, the hash changes, the suggestion invalidates.',
+      position: 'right' },
+    { selector: '.flow-reject-btn',
+      title: 'Send back with a reason',
+      body: 'Reverse opens a 7-template reason modal and routes the row back to the assignee. The reversal writes a new ledger entry, never overwrites.',
+      position: 'left' },
+    { selector: '.right-rail .panel:first-child .btn',
+      title: 'Spot-check before sign-off',
+      body: 'Pulls 20 random auto-judged rows for blind review. Yesterday: 19 of 20 confirmed, one reversed on PRC-04 — accuracy proof for the auditor.',
+      position: 'left' }
+  ]
+};</script>
+<script src="tour.js"></script>
+
+<script src="nav-routing.js"></script>
+<script src="ds-toggle.js"></script>
+<script src="flow.js"></script>
+<script src="ux-fixes.js"></script>
+<script src="provenance.js"></script>
+<script src="sources-link.js"></script>
+<script src="sources-strip.js"></script>
+</body>
+</html>
