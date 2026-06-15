@@ -73,21 +73,12 @@
   .landing-hero h1 {
     font-size: var(--luna-fs-600); font-weight: 600; letter-spacing: -0.02em;
     margin: var(--luna-sp-2) 0 var(--luna-sp-3); color: var(--luna-text);
+    max-width: 880px;
   }
   .landing-hero p.lede {
     font-size: var(--luna-fs-300); color: var(--luna-text-subdued);
     max-width: 760px; margin: 0; line-height: 1.55;
   }
-  .cull-card {
-    margin-top: var(--luna-sp-6);
-    background: var(--luna-bg-surface);
-    border: 1px solid var(--luna-border);
-    border-left: 3px solid var(--luna-teal-400);
-    border-radius: var(--luna-radius-md);
-    padding: var(--luna-sp-4) var(--luna-sp-5);
-    font-size: var(--luna-fs-150); color: var(--luna-text); line-height: 1.55;
-  }
-  .cull-card .muted { color: var(--luna-text-subdued); }
 
   .section-head { margin: var(--luna-sp-10) 0 var(--luna-sp-4); }
   .section-head .family-label {
@@ -104,7 +95,8 @@
     margin: 0; max-width: 720px; line-height: 1.55;
   }
 
-  .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--luna-sp-4); }
+  /* ---------- Top-3 hero cards ---------- */
+  .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--luna-sp-5); }
   .option-card {
     background: var(--luna-bg-surface);
     border: 1px solid var(--luna-border);
@@ -120,7 +112,7 @@
     border-color: var(--luna-teal-300);
   }
   .option-card .opt-thumb {
-    height: 132px;
+    height: 168px;
     background: var(--luna-bg-sunken);
     border-bottom: 1px solid var(--luna-border);
     padding: var(--luna-sp-4);
@@ -131,15 +123,51 @@
     padding: var(--luna-sp-4) var(--luna-sp-5) var(--luna-sp-5);
     flex: 1; display: flex; flex-direction: column;
   }
-  .option-card .opt-num {
-    font-size: var(--luna-fs-25); letter-spacing: 0.1em;
-    text-transform: uppercase; font-weight: 700;
-    color: var(--luna-teal-500);
+  .option-card .opt-header-row {
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    margin-bottom: var(--luna-sp-2);
   }
+  .rank-chip {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    background: var(--luna-teal-500); color: var(--luna-white);
+    font-size: var(--luna-fs-100); font-weight: 700;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
+  }
+  .option-card .opt-composite {
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    font-weight: 600; font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .score-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .score-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px;
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: 999px;
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .score-pill .score-sym {
+    font-size: 11px; color: var(--luna-teal-500); font-weight: 700;
+  }
+  .score-pill .score-label {
+    color: var(--luna-text-subdued); font-weight: 500;
+  }
+  .score-pill .score-val {
+    font-weight: 700; color: var(--luna-text);
+  }
+
   .option-card .opt-title {
-    font-size: var(--luna-fs-300); font-weight: 600;
-    color: var(--luna-text); margin: var(--luna-sp-1) 0 var(--luna-sp-2);
-    letter-spacing: -0.005em;
+    font-size: var(--luna-fs-450); font-weight: 600;
+    color: var(--luna-text); margin: 0 0 var(--luna-sp-2);
+    letter-spacing: -0.01em; line-height: 1.2;
   }
   .option-card .opt-acv {
     display: inline-block;
@@ -148,17 +176,20 @@
     border: 1px solid var(--luna-teal-200);
     padding: 1px var(--luna-sp-2);
     border-radius: 999px;
-    margin-bottom: var(--luna-sp-2);
+    margin-bottom: var(--luna-sp-3);
     font-variant-numeric: tabular-nums; font-weight: 600;
+    width: fit-content;
   }
   .option-card .opt-desc {
     font-size: var(--luna-fs-150); color: var(--luna-text-subdued);
-    margin: 0 0 var(--luna-sp-3); flex: 1; line-height: 1.5;
+    margin: 0 0 var(--luna-sp-4); flex: 1; line-height: 1.55;
   }
   .option-card a.opt-cta {
     display: inline-flex; align-items: center; gap: var(--luna-sp-2);
-    color: var(--luna-teal-500); font-weight: 500;
-    font-size: var(--luna-fs-150); text-decoration: none;
+    color: var(--luna-teal-500); font-weight: 600;
+    font-size: var(--luna-fs-200); text-decoration: none;
+    padding: var(--luna-sp-2) 0 0;
+    border-top: 1px solid var(--luna-border);
   }
   .option-card a.opt-cta::after { content: '→'; }
 
@@ -167,7 +198,7 @@
     border-radius: 4px;
     background: var(--luna-bg-surface);
     border: 1px solid var(--luna-border);
-    padding: 6px;
+    padding: 8px;
     display: flex; align-items: center; justify-content: center;
     font-size: 11px; font-weight: 600;
     color: var(--luna-text-subdued); letter-spacing: 0.02em;
@@ -183,6 +214,110 @@
   .thumb .cell.y { background: var(--luna-yellow-400); }
   .thumb .cell.o { background: var(--luna-orange-400); }
   .thumb .cell.r { background: var(--luna-red-500); }
+
+  /* ---------- Runners-up dense list ---------- */
+  .runners-up-list {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    background: var(--luna-bg-surface);
+    overflow: hidden;
+  }
+  .runner-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 132px 64px 1fr 56px;
+    align-items: center;
+    gap: var(--luna-sp-4);
+    padding: 0 var(--luna-sp-5);
+    min-height: 56px;
+    border-bottom: 1px solid var(--luna-border);
+    text-decoration: none; color: inherit;
+    transition: background 100ms, transform 100ms;
+  }
+  .runner-row:last-child { border-bottom: none; }
+  .runner-row:nth-child(even) { background: var(--luna-bg-sunken); }
+  .runner-row:hover {
+    background: var(--luna-teal-50);
+    transform: translateX(2px);
+  }
+  .runner-row .rr-rank {
+    font-size: var(--luna-fs-150); font-weight: 700;
+    color: var(--luna-text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+  .runner-row .rr-title {
+    font-size: var(--luna-fs-200); font-weight: 600;
+    color: var(--luna-text); letter-spacing: -0.005em;
+  }
+  .runner-row .rr-acv {
+    font-size: var(--luna-fs-100); color: var(--luna-text);
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-200);
+    padding: 1px var(--luna-sp-2);
+    border-radius: 999px;
+    text-align: center;
+    font-variant-numeric: tabular-nums; font-weight: 600;
+    width: fit-content;
+  }
+  .runner-row .rr-score {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 2px 8px;
+    background: var(--luna-bg-canvas);
+    border: 1px solid var(--luna-border-strong);
+    border-radius: var(--luna-radius-sm);
+    font-size: var(--luna-fs-150); font-weight: 700;
+    color: var(--luna-teal-600);
+    font-variant-numeric: tabular-nums;
+  }
+  .runner-row .rr-why {
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    line-height: 1.45;
+  }
+  .runner-row .rr-cta {
+    text-align: right;
+    color: var(--luna-teal-500);
+    font-size: var(--luna-fs-150); font-weight: 600;
+  }
+  .runner-row:hover .rr-cta { color: var(--luna-teal-700); }
+
+  /* ---------- Also-in-the-family accordion ---------- */
+  .also-accordion {
+    margin-top: var(--luna-sp-6);
+    border-top: 1px solid var(--luna-border);
+    padding-top: var(--luna-sp-6);
+  }
+  .also-accordion details {
+    background: transparent;
+  }
+  .also-accordion summary {
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    cursor: pointer;
+    list-style: none;
+    padding: var(--luna-sp-2) 0;
+    font-size: var(--luna-fs-200); font-weight: 600;
+    color: var(--luna-text-subdued);
+    user-select: none;
+  }
+  .also-accordion summary::-webkit-details-marker { display: none; }
+  .also-accordion summary::before {
+    content: '▸';
+    display: inline-block;
+    font-size: 10px;
+    color: var(--luna-text-muted);
+    transition: transform 120ms;
+    width: 12px;
+  }
+  .also-accordion details[open] summary::before { transform: rotate(90deg); }
+  .also-accordion summary .also-count {
+    color: var(--luna-text-muted);
+    font-weight: 500;
+  }
+  .also-accordion .runners-up-list {
+    margin-top: var(--luna-sp-3);
+    opacity: 0.85;
+  }
+  .also-accordion .runner-row .rr-title { color: var(--luna-text-subdued); }
+  .also-accordion .runner-row:hover .rr-title { color: var(--luna-text); }
 
   .footnote {
     margin-top: var(--luna-sp-12);
@@ -215,200 +350,81 @@
   </div>
 
   <div class="landing-hero">
-    <div class="eyebrow">Reliance-grade SOX</div>
-    <h1>13 prototypes that print money against the audit fee</h1>
-    <p class="lede">Lead with <b>Prospectus</b> — the only wedge that raids the $4M–$8M external audit-fee budget. Beneath it: a Bayesian reasoning engine, an AI-suggest audit trail, and a cryptographic substrate competitors can't fast-follow.</p>
+    <div class="eyebrow">Reliance-grade SOX · The Top 3</div>
+    <h1>3 prototypes that win across money, usability, and market</h1>
+    <p class="lede">Each owns a position no incumbent can clone in two quarters: the audit-fee budget, the crypto-plus-sampling stack, or the reviewer surface that ships now.</p>
   </div>
 
-  <!-- LEAD WEDGE -->
-  <div class="section-head">
-    <span class="family-label">Lead wedge</span>
-    <h2>Productize the Big-4 reliance memo</h2>
-    <p>The only surface that talks directly to the external audit-fee line. A 2-3pp reliance lift returns $80–$240K/yr — a Controller computes payback before the demo ends.</p>
-  </div>
+  <!-- ===== TOP 3 HERO CARDS ===== -->
   <div class="option-grid">
+
+    <!-- #1 Prospectus -->
     <a href="option-12-prospectus.html" style="text-decoration:none;color:inherit;">
       <div class="option-card">
         <div class="opt-thumb">
-          <div class="thumb"><div style="text-align:center;"><div style="font-size:22px;font-weight:600;color:var(--luna-text);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;">317<span style="color:var(--luna-text-subdued);font-size:14px;font-weight:500;"> in scope</span></div><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;margin-top:6px;">RELIANCE DOSSIER</div><div style="display:flex;gap:6px;margin-top:8px;justify-content:center;font-size:9px;color:var(--luna-text-subdued);"><span>184 sampled</span><span>·</span><span>133 census</span></div></div></div>
+          <div class="thumb"><div style="text-align:center;"><div style="font-size:24px;font-weight:600;color:var(--luna-text);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;">317<span style="color:var(--luna-text-subdued);font-size:14px;font-weight:500;"> in scope</span></div><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;margin-top:8px;">RELIANCE DOSSIER</div><div style="display:flex;gap:6px;margin-top:10px;justify-content:center;font-size:9px;color:var(--luna-text-subdued);"><span>184 sampled</span><span>·</span><span>133 census</span></div><div style="margin-top:10px;display:flex;gap:3px;justify-content:center;"><span style="display:inline-block;width:18px;height:4px;background:var(--luna-teal-500);border-radius:1px;"></span><span style="display:inline-block;width:14px;height:4px;background:var(--luna-teal-300);border-radius:1px;"></span><span style="display:inline-block;width:10px;height:4px;background:var(--luna-teal-200);border-radius:1px;"></span></div></div></div>
         </div>
         <div class="opt-body">
-          <div class="opt-num">Option 12 · Wedge #1</div>
+          <div class="opt-header-row">
+            <span class="rank-chip">Rank #1</span>
+            <span class="opt-composite">Composite 8.3</span>
+          </div>
+          <div class="score-row">
+            <span class="score-pill"><span class="score-sym">$</span><span class="score-label">Money</span><span class="score-val">9.0</span></span>
+            <span class="score-pill"><span class="score-sym">✦</span><span class="score-label">Usability</span><span class="score-val">7.0</span></span>
+            <span class="score-pill"><span class="score-sym">◎</span><span class="score-label">Market</span><span class="score-val">9.0</span></span>
+          </div>
           <div class="opt-title">Prospectus</div>
-          <span class="opt-acv">$120-300K · pre-IPO</span>
-          <p class="opt-desc">External-auditor reliance dossier with PCAOB citations per control. Sample-N + method + justification rendered as a defensible artifact. Lands at the audit-fee budget line; pulls the external auditor into the sale.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-  </div>
-
-  <!-- REASONING + LABOR -->
-  <div class="section-head">
-    <span class="family-label">Reasoning + labor wedges</span>
-    <h2>The engine + the proof point</h2>
-    <p>Differential is the Bayesian engine behind Prospectus. Auto-disposition converts the SOX PMO with 60-70% reviewer-hour displacement in the first 90 seconds of demo.</p>
-  </div>
-  <div class="option-grid">
-
-    <a href="option-4-differential.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="text-align:center;width:100%;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">DIFFERENTIAL</div><div style="display:flex;flex-direction:column;gap:3px;margin-top:8px;font-size:10px;color:var(--luna-text);"><div style="background:var(--luna-teal-100);padding:2px 6px;border-radius:3px;font-weight:600;">Missing approver · 81%</div><div style="background:var(--luna-teal-50);padding:2px 6px;border-radius:3px;">Wrong period · 62%</div><div style="background:var(--luna-bg-sunken);padding:2px 6px;border-radius:3px;">Stale evidence · 41%</div></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 4 · Wedge #2</div>
-          <div class="opt-title">Differential</div>
-          <span class="opt-acv">$80-180K</span>
-          <p class="opt-desc">Bayesian prior × likelihood × posterior with confirmatory re-ranking. Auditor-grade reasoning incumbents structurally cannot produce. The engine behind the reliance dossier.</p>
+          <span class="opt-acv">$120-300K · up to $500K accel</span>
+          <p class="opt-desc">External auditor reliance dossier built for the S-1 moment. 317 controls, each with per-control PCAOB AS 2201/1105 citations and ASA 530 / MUS / stratified sampling math shown inline. The 10-page premium PDF drawer is what Deloitte hands to the engagement partner. ACV $120-300K with a $500K accelerated tier, raiding the audit-fee pool rather than SOX tooling. Neither AuditBoard, Workiva, nor Vanta ships a per-control PCAOB-cited dossier — the moat is methodology depth and Big-4 channel pull.</p>
           <span class="opt-cta">Open prototype</span>
         </div>
       </div>
     </a>
 
-    <a href="option-2-auto.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="width:100%;display:flex;flex-direction:column;gap:4px;padding:8px;"><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-green-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:4px;border-radius:1px;"></span><span style="color:var(--luna-text-subdued);">94%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-yellow-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:4px;border-radius:1px;"></span><span style="color:var(--luna-text-subdued);">71%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-orange-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:4px;border-radius:1px;"></span><span style="color:var(--luna-text-subdued);">88%</span></div><div style="font-size:9px;color:var(--luna-text-subdued);text-align:center;margin-top:4px;">AI suggests · human confirms</div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 2 · Wedge #3</div>
-          <div class="opt-title">Auto-disposition + audit trail</div>
-          <span class="opt-acv">$90-180K</span>
-          <p class="opt-desc">60-70% of IA reviewer hours displaced ($400-500K) for $120K ACV. AI suggests, human confirms. Immutable co-sign ledger. Demos to a Controller in 90 seconds.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-    <a href="option-5-assertion-tracer.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div class="grid" style="grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr);"><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell y"></div><div class="cell r"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell r"></div><div class="cell o"></div><div class="cell g"></div><div class="cell y"></div><div class="cell g"></div><div class="cell g"></div><div class="cell r"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell o"></div><div class="cell r"></div><div class="cell g"></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 5 · Wedge #4</div>
-          <div class="opt-title">Assertion Tracer</div>
-          <span class="opt-acv">$75-180K · up to $250K</span>
-          <p class="opt-desc">Re-anchors the unit of work from control completeness to assertion sufficiency — what external auditors actually ask. ASA 530 N=60 stratified sampling rendered in-product.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-    <a href="option-1-clusters.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div class="bars"><div class="bar bad" style="height:80%"></div><div class="bar warn" style="height:60%"></div><div class="bar" style="height:50%;background:var(--luna-yellow-400);"></div><div class="bar warn" style="height:70%"></div><div class="bar bad" style="height:65%"></div><div class="bar" style="height:40%;background:var(--luna-yellow-400);"></div><div class="bar warn" style="height:55%"></div><div class="bar lighter" style="height:35%"></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 1 · Wedge #5</div>
-          <div class="opt-title">Pattern-cluster triage</div>
-          <span class="opt-acv">$60-120K · $30-50K standalone</span>
-          <p class="opt-desc">Clearest "AI sufficiency at population scale" demo: 2,847 items collapse to 14 patterns, one click drains 287. Editable cluster rationale + reversal log.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-  </div>
-
-  <!-- SPECIALTY -->
-  <div class="section-head">
-    <span class="family-label">Specialty wedges</span>
-    <h2>Expand by filer profile</h2>
-    <p>Ship after at least one wedge has landed. Each addresses a specific buyer pain — CCM volume, estimates, hard controls, controls-as-code monitoring, high-volume estates.</p>
-  </div>
-  <div class="option-grid">
-
-    <a href="option-16-referee.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="text-align:center;width:100%;"><div style="display:flex;height:24px;border-radius:3px;overflow:hidden;border:1px solid var(--luna-border);"><div style="flex:255;background:var(--luna-green-400);"></div><div style="flex:1;background:var(--luna-red-500);"></div></div><div style="display:flex;justify-content:space-between;margin-top:4px;font-size:8px;color:var(--luna-text-subdued);"><span><b style="color:var(--luna-text);">10,247</b> AI-cleared</span><span><b style="color:var(--luna-text);">41</b> human</span></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 16</div>
-          <div class="opt-title">Referee — CCM at scale</div>
-          <span class="opt-acv">$120-280K</span>
-          <p class="opt-desc">Inverts the AI value prop — the AI's job is to NOT bother the human. 10,247 machine results filtered down to 41 the human must see. 1.5-2.5 FTE displaced.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-    <a href="option-15-stress-test.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="text-align:center;width:100%;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">FRAGILITY RANK</div><div style="display:flex;flex-direction:column;gap:2px;margin-top:8px;font-size:9px;"><div style="display:flex;align-items:center;gap:4px;"><span style="width:36px;background:var(--luna-red-500);height:6px;border-radius:1px;"></span><span style="color:var(--luna-text);">Warranty · 94</span></div><div style="display:flex;align-items:center;gap:4px;"><span style="width:28px;background:var(--luna-orange-400);height:6px;border-radius:1px;"></span><span style="color:var(--luna-text);">Tax accrual · 78</span></div><div style="display:flex;align-items:center;gap:4px;"><span style="width:18px;background:var(--luna-yellow-400);height:6px;border-radius:1px;"></span><span style="color:var(--luna-text);">Bad debt · 52</span></div></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 15</div>
-          <div class="opt-title">Stress Test — Estimate fragility</div>
-          <span class="opt-acv">$60-140K</span>
-          <p class="opt-desc">AU-C 540 / CAM enforcement zone where restatement risk is highest. Population-scale brittleness scoring no incumbent ships. Latin-hypercube N=2,000 with auditor citations.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-    <a href="option-13-tumor-board.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="text-align:center;width:100%;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">PANEL QUEUE</div><div style="display:flex;flex-direction:column;gap:3px;margin-top:8px;font-size:9px;"><div style="background:var(--luna-bg-sunken);border-left:3px solid var(--luna-red-500);padding:2px 6px;color:var(--luna-text);">15 of 812 paneled</div><div style="background:var(--luna-bg-sunken);border-left:3px solid var(--luna-orange-400);padding:2px 6px;color:var(--luna-text-subdued);">797 stratified-sampled</div><div style="font-size:8px;color:var(--luna-text-subdued);margin-top:2px;">3-lens specialist vote</div></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 13</div>
-          <div class="opt-title">Hard-Control Panel</div>
-          <span class="opt-acv">$60-140K · $25-45K standalone</span>
-          <p class="opt-desc">Two-lane assurance design: 15 paneled + 797 stratified-sampled. Three named lenses (correctness, defensibility, repro) with dissent voting. What Big-4 re-performs.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-    <a href="option-17-drift.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="text-align:center;width:100%;padding:8px;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">SPC · 6 of 214</div><svg viewBox="0 0 100 30" style="margin-top:6px;width:100%;height:32px;"><line x1="0" y1="6" x2="100" y2="6" stroke="var(--luna-red-300)" stroke-width="0.5" stroke-dasharray="2,1"/><line x1="0" y1="24" x2="100" y2="24" stroke="var(--luna-red-300)" stroke-width="0.5" stroke-dasharray="2,1"/><line x1="0" y1="15" x2="100" y2="15" stroke="var(--luna-gray-300)" stroke-width="0.4"/><polyline points="0,16 12,14 24,17 36,12 48,18 60,11 72,22 84,8 96,20" fill="none" stroke="var(--luna-teal-500)" stroke-width="1"/><circle cx="72" cy="22" r="2" fill="var(--luna-red-500)"/></svg></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 17</div>
-          <div class="opt-title">Drift — Monitor the monitors</div>
-          <span class="opt-acv">$60-140K · $30-60K mid-market</span>
-          <p class="opt-desc">SPC + stratified weekly N=60 validation sample. Controls-as-code creates hundreds of monitors; nobody has a credible "are the monitors working" answer.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-    <a href="option-18-surveillance.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div class="grid" style="grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(5, 1fr);"><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell y"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell o"></div><div class="cell r"></div><div class="cell r"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell o"></div><div class="cell o"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div><div class="cell g"></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 18</div>
-          <div class="opt-title">Surveillance — Estate health</div>
-          <span class="opt-acv">$80-180K · $40-70K standalone</span>
-          <p class="opt-desc">Heat-grid of 1,000+ controls with failure clusters ranked by spread rate. Shifts the SOX PMO from chasing 232 broken controls to killing 11 upstream sources.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
-    </a>
-
-  </div>
-
-  <!-- CRYPTOGRAPHIC SUBSTRATE -->
-  <div class="section-head">
-    <span class="family-label">Cryptographic substrate</span>
-    <h2>The audit-defense layer beneath the platform</h2>
-    <p>Ed25519 + Merkle ledger with AI-as-recorded-actor. An immutability commitment, not a UI tab. Pairs underneath every wedge for reliance-grade defensibility.</p>
-  </div>
-  <div class="option-grid">
-
+    <!-- #2 Oracle -->
     <a href="option-19-oracle.html" style="text-decoration:none;color:inherit;">
       <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="text-align:center;width:100%;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">NOTARIZED TODAY</div><div style="font-size:24px;font-weight:600;color:var(--luna-text);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;margin-top:4px;">4,712</div><div style="font-size:9px;color:var(--luna-text-subdued);margin-top:2px;">Ed25519 · Merkle anchored</div><div style="display:flex;gap:6px;justify-content:center;margin-top:6px;font-size:8px;color:var(--luna-text-subdued);"><span>355 queued</span><span>·</span><span style="color:var(--luna-red-700);"><b>217 held</b></span></div></div></div></div>
+        <div class="opt-thumb">
+          <div class="thumb"><div style="text-align:center;width:100%;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">NOTARIZED TODAY</div><div style="font-size:28px;font-weight:600;color:var(--luna-text);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;margin-top:6px;">5,284</div><div style="font-size:9px;color:var(--luna-text-subdued);margin-top:2px;">Ed25519 · Merkle anchored · 0.6s seal</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;font-size:9px;color:var(--luna-text-subdued);"><span>Sealed</span><span>·</span><span>Held</span><span>·</span><span>Recon</span><span>·</span><span>Done</span></div><div style="margin-top:6px;display:flex;gap:3px;justify-content:center;"><span style="display:inline-block;width:24px;height:5px;background:var(--luna-green-400);border-radius:1px;"></span><span style="display:inline-block;width:8px;height:5px;background:var(--luna-red-500);border-radius:1px;"></span><span style="display:inline-block;width:14px;height:5px;background:var(--luna-yellow-400);border-radius:1px;"></span><span style="display:inline-block;width:18px;height:5px;background:var(--luna-teal-300);border-radius:1px;"></span></div></div></div>
+        </div>
         <div class="opt-body">
-          <div class="opt-num">Option 19 · Wedge #6</div>
+          <div class="opt-header-row">
+            <span class="rank-chip">Rank #2</span>
+            <span class="opt-composite">Composite 8.0</span>
+          </div>
+          <div class="score-row">
+            <span class="score-pill"><span class="score-sym">$</span><span class="score-label">Money</span><span class="score-val">8.0</span></span>
+            <span class="score-pill"><span class="score-sym">✦</span><span class="score-label">Usability</span><span class="score-val">8.0</span></span>
+            <span class="score-pill"><span class="score-sym">◎</span><span class="score-label">Market</span><span class="score-val">8.0</span></span>
+          </div>
           <div class="opt-title">Oracle — Notarization</div>
           <span class="opt-acv">$120-280K mid · $300-650K $1B+</span>
-          <p class="opt-desc">Hash-chained ledger + embedded sample plan + 11-source reconciliation. 2-3× year-one ROI from 4-6% audit-fee reliance uplift. Category-defining for controls-as-code era.</p>
+          <p class="opt-desc">Notarization at 5,284/day with 0.6-second seal time, hash-chained to a tamper-evident ledger and reconciled across 11 sources. The 4-column kanban surfaces Sealed vs Held above the fold; the drawer walks a 5-step recon flow with an embedded PCAOB AS 2315 sample plan. Batch-seal carries a confirm-with-impact modal and 10-second undo. ACV $120-280K mid and $300-650K at $1B+, displacing audit-fee labor. Crypto plus sampling math is hard for incumbents to fast-follow without both.</p>
           <span class="opt-cta">Open prototype</span>
         </div>
       </div>
     </a>
 
-    <a href="option-7-black-box.html" style="text-decoration:none;color:inherit;">
+    <!-- #3 Auto-disposition -->
+    <a href="option-2-auto.html" style="text-decoration:none;color:inherit;">
       <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div style="text-align:center;width:100%;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">HASH CHAIN</div><div style="font-family:var(--luna-font-mono);font-size:9px;color:var(--luna-text);margin-top:8px;line-height:1.5;"><div>5f4dcc3b…3d3c7f7d</div><div>91a8b0c2…f47de8a1</div><div>2c5e7f08…6b1a9e4c</div></div><div style="font-size:8px;color:var(--luna-text-subdued);margin-top:4px;">41,247 events · 0 breaks</div></div></div></div>
+        <div class="opt-thumb">
+          <div class="thumb"><div style="width:100%;display:flex;flex-direction:column;gap:6px;padding:8px;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;text-align:center;">2,847 · AUTO-DISPOSED</div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-green-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:5px;border-radius:1px;position:relative;"><span style="position:absolute;left:0;top:0;bottom:0;width:94%;background:var(--luna-green-400);border-radius:1px;"></span></span><span style="color:var(--luna-text-subdued);font-variant-numeric:tabular-nums;">94%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-yellow-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:5px;border-radius:1px;position:relative;"><span style="position:absolute;left:0;top:0;bottom:0;width:71%;background:var(--luna-yellow-400);border-radius:1px;"></span></span><span style="color:var(--luna-text-subdued);font-variant-numeric:tabular-nums;">71%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-orange-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:5px;border-radius:1px;position:relative;"><span style="position:absolute;left:0;top:0;bottom:0;width:88%;background:var(--luna-orange-400);border-radius:1px;"></span></span><span style="color:var(--luna-text-subdued);font-variant-numeric:tabular-nums;">88%</span></div><div style="font-size:9px;color:var(--luna-text-subdued);text-align:center;margin-top:4px;">spot-check 19 / 20 · SHA-chained</div></div></div>
+        </div>
         <div class="opt-body">
-          <div class="opt-num">Option 7 · Expand</div>
-          <div class="opt-title">Black Box — Lifecycle ledger</div>
-          <span class="opt-acv">Substrate (bundled with #19)</span>
-          <p class="opt-desc">Merkle-anchored AI-actor-aware ledger. No PO line for "hash-chained ledger" — pairs as audit-defense substrate. Cuts auditor walkthroughs 30-50%.</p>
+          <div class="opt-header-row">
+            <span class="rank-chip">Rank #3</span>
+            <span class="opt-composite">Composite 7.7</span>
+          </div>
+          <div class="score-row">
+            <span class="score-pill"><span class="score-sym">$</span><span class="score-label">Money</span><span class="score-val">8.0</span></span>
+            <span class="score-pill"><span class="score-sym">✦</span><span class="score-label">Usability</span><span class="score-val">8.0</span></span>
+            <span class="score-pill"><span class="score-sym">◎</span><span class="score-label">Market</span><span class="score-val">7.0</span></span>
+          </div>
+          <div class="opt-title">Auto-disposition + audit trail</div>
+          <span class="opt-acv">$90-180K</span>
+          <p class="opt-desc">Auto-disposition with human co-sign on 2,847 evidences, displacing 60-70% of reviewer hours against an audit-fee / IA-headcount pool. The 3-column layout reads in under 3 seconds: threshold + split bar, immutable log with SHA chip, spot-check (19/20). Two actions — Confirm, Send back — with honest reversal counts (4 today) build auditor trust. ACV $90-180K. Buyer-pulled and ships now; moat is execution craft incumbents copy in two quarters.</p>
           <span class="opt-cta">Open prototype</span>
         </div>
       </div>
@@ -416,27 +432,119 @@
 
   </div>
 
-  <!-- PENDING EVAL -->
+  <!-- ===== STRONG RUNNERS-UP ===== -->
   <div class="section-head">
-    <span class="family-label">Pending evaluation</span>
-    <h2>One more to grade</h2>
-    <p>Option 6 didn't finish its Blue-Ocean evaluation in the last run (transient API timeout). Kept conservatively; assess on the next pass.</p>
+    <span class="family-label">Runners-up</span>
+    <h2>Strong wedges that didn't make the top</h2>
+    <p>Each scores well on craft and dollar math but loses to the top 3 on contention, comprehension, or fast-follow risk.</p>
   </div>
-  <div class="option-grid">
 
-    <a href="option-6-evidence-score.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb"><div class="thumb"><div class="bars"><div class="bar bad" style="height:75%"></div><div class="bar warn" style="height:65%"></div><div class="bar warn" style="height:60%"></div><div class="bar" style="height:55%;background:var(--luna-yellow-400);"></div><div class="bar" style="height:50%;background:var(--luna-yellow-400);"></div><div class="bar lighter" style="height:45%"></div><div class="bar lighter" style="height:40%"></div><div class="bar lighter" style="height:35%"></div></div></div></div>
-        <div class="opt-body">
-          <div class="opt-num">Option 6 · Pending</div>
-          <div class="opt-title">Evidence Score — Portfolio</div>
-          <span class="opt-acv">Pending eval</span>
-          <p class="opt-desc">Portfolio dashboard scoring 812 controls' predicted first-pass sufficiency. Worst 20 first. Hover any row for score drivers. Eval re-run pending.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
-      </div>
+  <div class="runners-up-list">
+
+    <a href="option-5-assertion-tracer.html" class="runner-row">
+      <div class="rr-rank">#4</div>
+      <div class="rr-title">Assertion Tracer</div>
+      <div class="rr-acv">$75-180K</div>
+      <div class="rr-score">7.7</div>
+      <div class="rr-why">ASA 530 sampling in-product across 3,072 assertions × 512 controls is the unfakeable Big-4 credibility moat; jargon density raises sales-cycle drag.</div>
+      <div class="rr-cta">Open →</div>
     </a>
 
+    <a href="option-13-tumor-board.html" class="runner-row">
+      <div class="rr-rank">#5</div>
+      <div class="rr-title">Hard-Control Panel</div>
+      <div class="rr-acv">$60-140K</div>
+      <div class="rr-score">7.7</div>
+      <div class="rr-why">"Panel the 15, sample the 797" with Cochran-justified stratification is a PCAOB-shaped category name; ACV mid and ROI still narrative.</div>
+      <div class="rr-cta">Open →</div>
+    </a>
+
+    <a href="option-16-referee.html" class="runner-row">
+      <div class="rr-rank">#6</div>
+      <div class="rr-title">Referee — CCM at scale</div>
+      <div class="rr-acv">$120-280K</div>
+      <div class="rr-score">7.7</div>
+      <div class="rr-why">10,247-to-41 throughput funnel and 1.5-2.5 FTE displacement is the cleanest dollar story, but CCM is a red-ocean wedge vs Workiva/CrossComply.</div>
+      <div class="rr-cta">Open →</div>
+    </a>
+
+    <a href="option-1-clusters.html" class="runner-row">
+      <div class="rr-rank">#7</div>
+      <div class="rr-title">Pattern-cluster triage</div>
+      <div class="rr-acv">$60-120K</div>
+      <div class="rr-score">7.3</div>
+      <div class="rr-why">2,847 items collapse to 14 patterns with 70% bulk-fixable — strong UX and hard-ROI math, but embeddings+LLM is a 1-2 quarter fast-follow.</div>
+      <div class="rr-cta">Open →</div>
+    </a>
+
+    <a href="option-6-evidence-score.html" class="runner-row">
+      <div class="rr-rank">#8</div>
+      <div class="rr-title">Evidence Score</div>
+      <div class="rr-acv">$60-140K</div>
+      <div class="rr-score">7.3</div>
+      <div class="rr-why">Brier 0.073 model card + stratified N=200 over 812 controls is audit-grade defensible, but adjacent to AuditBoard's existing risk-rating surface.</div>
+      <div class="rr-cta">Open →</div>
+    </a>
+
+  </div>
+
+  <!-- ===== ALSO IN THE FAMILY (collapsed) ===== -->
+  <div class="also-accordion">
+    <details>
+      <summary>
+        Also in the family
+        <span class="also-count">· 5 options</span>
+      </summary>
+
+      <div class="runners-up-list">
+
+        <a href="option-15-stress-test.html" class="runner-row">
+          <div class="rr-rank">#9</div>
+          <div class="rr-title">Stress Test — Estimate fragility</div>
+          <div class="rr-acv">$60-140K</div>
+          <div class="rr-score">7.3</div>
+          <div class="rr-why">Owns AU-C 540 / CAM but narrow to estimates-only — reads as a feature inside a sufficiency platform, not a $100K standalone SKU.</div>
+          <div class="rr-cta">Open →</div>
+        </a>
+
+        <a href="option-17-drift.html" class="runner-row">
+          <div class="rr-rank">#10</div>
+          <div class="rr-title">Drift — Monitor the monitors</div>
+          <div class="rr-acv">$60-140K</div>
+          <div class="rr-score">7.0</div>
+          <div class="rr-why">SPC + Western Electric run-rules is defensible vocabulary, but requires 214 instrumented feeds before value lands — long ramp, CCM fast-follow risk.</div>
+          <div class="rr-cta">Open →</div>
+        </a>
+
+        <a href="option-18-surveillance.html" class="runner-row">
+          <div class="rr-rank">#11</div>
+          <div class="rr-title">Surveillance — Estate health</div>
+          <div class="rr-acv">$80-180K</div>
+          <div class="rr-score">7.0</div>
+          <div class="rr-why">Epidemiology framing (R0, generations, propagation graph) is memorable but it's an expansion play presuming 1,248 wired controls — can't land standalone.</div>
+          <div class="rr-cta">Open →</div>
+        </a>
+
+        <a href="option-4-differential.html" class="runner-row">
+          <div class="rr-rank">#12</div>
+          <div class="rr-title">Differential</div>
+          <div class="rr-acv">$80-180K</div>
+          <div class="rr-score">6.7</div>
+          <div class="rr-why">Prior × likelihood × posterior across 4 alternatives × 14 clusters blows Miller's-law on every card — category-defining but exhausting to non-CPA buyers.</div>
+          <div class="rr-cta">Open →</div>
+        </a>
+
+        <a href="option-7-black-box.html" class="runner-row">
+          <div class="rr-rank">#13</div>
+          <div class="rr-title">Black Box — Lifecycle ledger</div>
+          <div class="rr-acv">Substrate (bundled)</div>
+          <div class="rr-score">6.0</div>
+          <div class="rr-why">41,247 hash-chained events is impressive plumbing but zero standalone ACV; multiplies others, can't headline a deal.</div>
+          <div class="rr-cta">Open →</div>
+        </a>
+
+      </div>
+    </details>
   </div>
 
   <div class="footnote">
