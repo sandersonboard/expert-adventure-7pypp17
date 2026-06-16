@@ -14,19 +14,16 @@
 <link rel="stylesheet" href="sources-strip.css" />
 <link rel="stylesheet" href="tour.css">
 <style>
-  /* ----------------- Compact prospectus summary row ----------------- */
+  /* ----------------- Band 1 · Audit-fee defense ----------------- */
   .prospectus-summary {
     display: flex;
     align-items: stretch;
-    gap: var(--luna-sp-6);
-    padding: var(--luna-sp-3) 0 var(--luna-sp-4);
-    margin-bottom: var(--luna-sp-4);
+    gap: var(--luna-sp-7);
+    padding: var(--luna-sp-3) 0 var(--luna-sp-5);
     border-bottom: 1px solid var(--luna-border);
   }
   .ps-stat {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: flex; flex-direction: column; justify-content: center;
     min-width: 0;
   }
   .ps-stat .ps-label {
@@ -35,26 +32,27 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-weight: 600;
-    margin-bottom: 2px;
+    margin-bottom: 6px;
   }
   .ps-stat .ps-value {
-    font-size: var(--luna-fs-400);
+    font-size: 30px;
     font-weight: 600;
     color: var(--luna-text);
-    line-height: 1.1;
+    line-height: 1;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.018em;
   }
   .ps-stat .ps-value .small {
-    font-size: var(--luna-fs-150);
+    font-size: 15px;
     color: var(--luna-text-subdued);
     font-weight: 500;
-    margin-left: 3px;
+    margin-left: 2px;
+    letter-spacing: 0;
   }
   .ps-stat .ps-meta {
     font-size: var(--luna-fs-50);
     color: var(--luna-text-subdued);
-    margin-top: 2px;
+    margin-top: 6px;
   }
   .ps-stat.accent .ps-value { color: var(--luna-teal-600); }
   .ps-stat.warn .ps-value { color: var(--luna-orange-500); }
@@ -63,6 +61,160 @@
     background: var(--luna-border);
     align-self: stretch;
   }
+
+  /* S-1 timeline strip */
+  .s1-timeline {
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    padding: var(--luna-sp-3) 0 var(--luna-sp-4);
+    border-bottom: 1px solid var(--luna-border);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-muted);
+    flex-wrap: wrap;
+  }
+  .s1-step { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .s1-step .s1-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--luna-gray-300);
+    display: inline-block;
+  }
+  .s1-step.past { color: var(--luna-text-subdued); }
+  .s1-step.past .s1-dot { background: var(--luna-teal-300); }
+  .s1-step.current { color: var(--luna-text); font-weight: 600; }
+  .s1-step.current .s1-dot { background: var(--luna-teal-500); box-shadow: 0 0 0 3px var(--luna-teal-50); }
+  .s1-sep {
+    flex: 0 0 28px;
+    height: 1px; background: var(--luna-border);
+  }
+
+  /* ----------------- Band 2 · Methodology depth ----------------- */
+  .method-band {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--luna-sp-7);
+    padding: var(--luna-sp-4) 0;
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .mb-label {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .citation-list {
+    display: flex; flex-wrap: wrap; gap: var(--luna-sp-3) var(--luna-sp-5);
+    align-items: baseline;
+  }
+  .cit { font-size: var(--luna-fs-150); color: var(--luna-text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cit .cit-std {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-right: 6px;
+  }
+  .cit .cit-x { color: var(--luna-text-muted); margin-right: 1px; font-size: var(--luna-fs-100); }
+  .cit .cit-n { font-weight: 600; }
+
+  .sampling-mix-bar {
+    display: flex; height: 6px; border-radius: 3px; overflow: hidden;
+    background: var(--luna-gray-100);
+  }
+  .sampling-mix-bar > span { display: block; height: 100%; }
+  .smb-legend {
+    display: flex; gap: var(--luna-sp-3) var(--luna-sp-4); flex-wrap: wrap;
+    margin-top: var(--luna-sp-2);
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .smb-leg { display: inline-flex; align-items: center; gap: 5px; }
+  .smb-swatch { width: 7px; height: 7px; border-radius: 1px; display: inline-block; }
+  .smb-leg b { color: var(--luna-text); font-weight: 600; font-variant-numeric: tabular-nums; margin-left: 2px; }
+
+  /* ----------------- Band 3 · Deloitte engagement activity ----------------- */
+  .engagement-band {
+    padding: var(--luna-sp-4) 0 var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+    margin-bottom: var(--luna-sp-4);
+  }
+  .eb-head {
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    margin-bottom: var(--luna-sp-3);
+  }
+  .eb-label {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .eb-live {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-teal-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .eb-live::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--luna-teal-500);
+    animation: ebPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes ebPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .eb-feed { display: flex; flex-direction: column; gap: var(--luna-sp-2); }
+  .eb-row {
+    display: grid; grid-template-columns: 56px 1fr;
+    gap: var(--luna-sp-3); align-items: baseline;
+    font-size: var(--luna-fs-150);
+  }
+  .eb-time {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .eb-text { color: var(--luna-text); line-height: 1.5; }
+  .eb-text .eb-muted { color: var(--luna-text-subdued); }
+  .eb-text b { font-weight: 600; }
+  .eb-tag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 6px;
+    font-size: var(--luna-fs-50);
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    vertical-align: 1px;
+  }
+  .eb-tag.accept { background: var(--luna-green-50); color: var(--luna-green-700); }
+  .eb-tag.challenge { background: var(--luna-orange-50); color: var(--luna-orange-700); }
+  .eb-tag.received { background: var(--luna-gray-100); color: var(--luna-text-subdued); }
+
+  /* Drawer · Deloitte review status pill */
+  .dossier-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .dossier-status .ds-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dossier-status.accepted { background: var(--luna-green-50); color: var(--luna-green-700); }
+  .dossier-status.accepted .ds-dot { background: var(--luna-green-500); }
+  .dossier-status.challenged { background: var(--luna-orange-50); color: var(--luna-orange-700); }
+  .dossier-status.challenged .ds-dot { background: var(--luna-orange-500); }
+  .dossier-status.pending { background: var(--luna-gray-100); color: var(--luna-text-subdued); }
+  .dossier-status.pending .ds-dot { background: var(--luna-gray-300); }
+  .dossier-status.substantive { background: var(--luna-red-50); color: var(--luna-red-700); }
+  .dossier-status.substantive .ds-dot { background: var(--luna-red-500); }
 
   /* ----------------- Filter bar ----------------- */
   .filter-bar {
@@ -651,30 +803,82 @@
         </div>
       </div>
 
-      <!-- Compact prospectus summary (replaces hero + 4 scope tiles) -->
+      <!-- Band 1 · Audit-fee defense (buyer story) -->
       <div class="prospectus-summary">
         <div class="ps-stat accent">
+          <div class="ps-label">Audit fees defended</div>
+          <div class="ps-value">$2.4<span class="small">M</span></div>
+          <div class="ps-meta">vs. Deloitte engagement budget · Q3 cycle</div>
+        </div>
+        <div class="ps-divider"></div>
+        <div class="ps-stat">
+          <div class="ps-label">Big-4 hours displaced</div>
+          <div class="ps-value">4,820<span class="small">hrs</span></div>
+          <div class="ps-meta">avg $250/hr · per-control pre-test</div>
+        </div>
+        <div class="ps-divider"></div>
+        <div class="ps-stat">
           <div class="ps-label">Reliance coverage</div>
           <div class="ps-value">92<span class="small">%</span></div>
-          <div class="ps-meta">317 of 342 controls · AS 2201 / AS 1105</div>
-        </div>
-        <div class="ps-divider"></div>
-        <div class="ps-stat">
-          <div class="ps-label">Sampling</div>
-          <div class="ps-value">184<span class="small">ctrls · 11,824 items</span></div>
-          <div class="ps-meta">avg N=64 · ASA 530 / MUS / stratified</div>
-        </div>
-        <div class="ps-divider"></div>
-        <div class="ps-stat">
-          <div class="ps-label">Full population</div>
-          <div class="ps-value">133<span class="small">ctrls</span></div>
-          <div class="ps-meta">pop ≤ 25 · 100% coverage</div>
+          <div class="ps-meta">317 of 342 controls · 25 to substantive</div>
         </div>
         <div class="ps-divider"></div>
         <div class="ps-stat warn">
-          <div class="ps-label">Exceptions</div>
-          <div class="ps-value">47<span class="small">· 0.40%</span></div>
-          <div class="ps-meta">3 deficiencies · 44 to owner remediation</div>
+          <div class="ps-label">Days to S-1 close</div>
+          <div class="ps-value">18</div>
+          <div class="ps-meta">target file date 2026-10-15</div>
+        </div>
+      </div>
+
+      <!-- S-1 milestone timeline -->
+      <div class="s1-timeline">
+        <span class="s1-step past"><span class="s1-dot"></span>S-1 filed Sep 14</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step past"><span class="s1-dot"></span>Engagement open</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step current"><span class="s1-dot"></span>Reliance review</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step"><span class="s1-dot"></span>Comfort letter</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step"><span class="s1-dot"></span>Pricing &amp; close</span>
+      </div>
+
+      <!-- Band 2 · Methodology depth -->
+      <div class="method-band">
+        <div>
+          <div class="mb-label">Standards citation density</div>
+          <div class="citation-list" id="citationList"></div>
+        </div>
+        <div>
+          <div class="mb-label">Sampling method mix · 317 controls</div>
+          <div class="sampling-mix-bar" id="samplingMixBar"></div>
+          <div class="smb-legend" id="samplingMixLegend"></div>
+        </div>
+      </div>
+
+      <!-- Band 3 · Deloitte engagement activity feed -->
+      <div class="engagement-band">
+        <div class="eb-head">
+          <span class="eb-label">Deloitte engagement room</span>
+          <span class="eb-live">Live</span>
+        </div>
+        <div class="eb-feed">
+          <div class="eb-row">
+            <span class="eb-time">10:42</span>
+            <span class="eb-text">Engagement partner accepted <b>12 ITGC controls</b><span class="eb-muted"> · ITGC-014, ITGC-021, ITGC-033, +9</span><span class="eb-tag accept">Accepted</span></span>
+          </div>
+          <div class="eb-row">
+            <span class="eb-time">10:38</span>
+            <span class="eb-text">Partner flagged <b>REV-021</b><span class="eb-muted"> · requesting expanded sample (N 84 → 124)</span><span class="eb-tag challenge">Challenge</span></span>
+          </div>
+          <div class="eb-row">
+            <span class="eb-time">09:55</span>
+            <span class="eb-text">Engagement partner accepted <b>26 financial-reporting controls</b><span class="eb-tag accept">Accepted</span></span>
+          </div>
+          <div class="eb-row">
+            <span class="eb-time">09:12</span>
+            <span class="eb-text">Dossier received by engagement team<span class="eb-muted"> · Sarah Kim, CPA · S-1 cycle Q3 2026</span><span class="eb-tag received">Received</span></span>
+          </div>
         </div>
       </div>
 
@@ -759,14 +963,18 @@
   <div class="drawer-foot">
     <button class="btn subtle" style="color: var(--luna-gray-300); border-color: transparent;" onclick="closeDrawer()">Close</button>
     <button class="btn" style="background: rgba(255,255,255,0.06); color: var(--luna-white); border-color: rgba(255,255,255,0.15);" onclick="growl('Sample re-pulled with new seed. N preserved.')">Re-pull sample</button>
+    <div style="flex:1;"></div>
+    <span style="font-size: var(--luna-fs-50); color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; align-self: center; margin-right: var(--luna-sp-2);">Partner actions</span>
+    <button class="btn" style="background: rgba(255,255,255,0.06); color: var(--luna-white); border-color: rgba(255,255,255,0.15);" onclick="growl('Challenge logged. Dossier preparer notified.', 'warn')">Challenge sample</button>
+    <button class="btn" style="background: rgba(255,255,255,0.06); color: var(--luna-white); border-color: rgba(255,255,255,0.15);" onclick="growl('Expanded sample requested. N raised; preparer notified.', 'warn')">Request expanded sample</button>
     <button class="btn primary"
       data-ux-confirm
       data-ux-confirm-title="Accept reliance on this control?"
-      data-ux-confirm-body="Recording auditor reliance marks this control as audit-supported for the Q3 close. The decision is logged to the audit trail with your acceptance notes."
-      data-ux-confirm-impact="1 control · sample N preserved · auditor signed-off marker recorded"
+      data-ux-confirm-body="Recording partner reliance marks this control as audit-supported for the Q3 close. The decision is logged to the audit trail with your acceptance notes."
+      data-ux-confirm-impact="1 control · sample N preserved · partner signed-off marker recorded"
       data-ux-confirm-reason="true"
       data-ux-confirm-undo="6"
-      onclick="growl('Reliance accepted for this control. Auditor signed-off marker recorded.', 'success'); closeDrawer();">Auditor accept reliance</button>
+      onclick="growl('Reliance accepted by partner. Audit-trail entry recorded.', 'success'); closeDrawer();">Accept reliance</button>
   </div>
 </aside>
 
@@ -1033,6 +1241,42 @@
   // ============================================================
   // Domain rollup
   // ============================================================
+  // ============================================================
+  // Methodology band — citation density + sampling-method mix
+  // ============================================================
+  function renderMethodologyBand() {
+    const sampleCount = ALL_CONTROLS.filter(c => c.method.pillClass === 'sample').length;
+    const citations = [
+      { std: 'PCAOB AS 2201', n: ALL_CONTROLS.length },
+      { std: 'PCAOB AS 1105', n: ALL_CONTROLS.length },
+      { std: 'PCAOB AS 2315', n: sampleCount },
+      { std: 'AICPA AU-C §530', n: sampleCount },
+    ];
+    document.getElementById('citationList').innerHTML = citations.map(c => `
+      <span class="cit"><span class="cit-std">${c.std}</span><span class="cit-x">×</span><span class="cit-n">${c.n.toLocaleString()}</span></span>
+    `).join('');
+
+    const METHOD_KEYS = [
+      { id: 'stratified', label: 'Stratified', color: 'var(--luna-teal-500)' },
+      { id: 'mus',        label: 'MUS',        color: 'var(--luna-teal-400)' },
+      { id: 'attribute',  label: 'Attribute',  color: 'var(--luna-teal-300)' },
+      { id: 'full-pop',   label: 'Full pop.',  color: 'var(--luna-green-400)' },
+      { id: 'walkthrough',label: 'Walkthrough',color: 'var(--luna-gray-300)' },
+      { id: 'inquiry',    label: 'Inquiry',    color: 'var(--luna-gray-200)' },
+    ];
+    const total = ALL_CONTROLS.length;
+    const mixCounts = METHOD_KEYS
+      .map(k => ({ ...k, count: ALL_CONTROLS.filter(c => c.method.id === k.id).length }))
+      .filter(k => k.count > 0);
+
+    document.getElementById('samplingMixBar').innerHTML = mixCounts.map(k =>
+      `<span style="width:${(k.count / total * 100).toFixed(2)}%;background:${k.color};" title="${k.label} · ${k.count}"></span>`
+    ).join('');
+    document.getElementById('samplingMixLegend').innerHTML = mixCounts.map(k =>
+      `<span class="smb-leg"><span class="smb-swatch" style="background:${k.color};"></span>${k.label} <b>${k.count}</b></span>`
+    ).join('');
+  }
+
   function renderDomainRollup() {
     const host = document.getElementById('domainRollup');
     const rolled = DOMAIN_DEFS.slice(0, 10).map(d => {
@@ -1226,10 +1470,19 @@
     return items;
   }
 
+  function partnerStatus(c) {
+    if (c.status === 'deficient') return { id: 'substantive', label: 'Routed to substantive' };
+    if (c.status === 'borderline') return { id: 'challenged', label: 'Under partner challenge' };
+    const r = (c.seed & 0xFF) % 4;
+    if (r === 0) return { id: 'pending', label: 'Awaiting partner review' };
+    return { id: 'accepted', label: 'Reliance accepted by partner' };
+  }
+
   function openDossier(ctrlId) {
     const c = ALL_CONTROLS.find(x => x.id === ctrlId);
     if (!c) return;
     activeControl = c;
+    const ps = partnerStatus(c);
 
     document.getElementById('dossier-toolbar-title').textContent = `${c.id} · ${c.name}`;
     document.getElementById('dossier-toolbar-pages').textContent = `10 pages · Premium dossier · ${c.reliancePct}% reliance`;
@@ -1258,6 +1511,7 @@
           <span>Helios Robotics, Inc.</span>
           <span>External Auditor Reliance Dossier · Q3 2026</span>
         </div>
+        <span class="dossier-status ${ps.id}"><span class="ds-dot"></span>${ps.label}</span>
         <h1>${c.id} — ${c.name}</h1>
         <p style="font-size: var(--luna-fs-100); color: var(--luna-text-subdued); margin-bottom: var(--luna-sp-5);">
           Cover · Issued ${new Date().toISOString().slice(0,10)} · For Deloitte &amp; Touche LLP
@@ -1563,14 +1817,15 @@
   // ============================================================
   // Boot
   // ============================================================
+  renderMethodologyBand();
   renderDomainRollup();
   renderScopeTable();
 </script>
 
 <script>
 window.TOUR = {
-  title: 'Dossier built from accepted evidence',
-  intro: 'Read the Q3 prospectus the way Deloitte will — scope, sampling, justification, and the audit trail behind every linked artifact.',
+  title: 'The dossier Deloitte hands to the engagement partner',
+  intro: 'Three bands tell the story: audit-fee defense for the buyer, methodology depth for the auditor, and a live partner-review feed showing the workflow in motion.',
   steps: [
     {
       selector: '.flow-pill',
@@ -1580,27 +1835,33 @@ window.TOUR = {
     },
     {
       selector: '.prospectus-summary .ps-stat.accent',
-      title: '317 controls, 92% reliance',
-      body: '187 SOX controls plus 130 ITGC bridged from the integrated audit. 25 controls drop to substantive procedures.',
-      position: 'bottom'
-    },
-    {
-      selector: '.prospectus-summary .ps-stat:nth-of-type(2)',
-      title: '11,824 sampled items',
-      body: 'Sampling covers 184 controls at avg N=64. Full-population testing kicks in only below 25 occurrences.',
+      title: '$2.4M in audit fees defended',
+      body: 'Raids the Deloitte engagement-fee budget — not the SOX-tooling budget. Per-control pre-test at $250/hr displaces ~4,820 Big-4 hours this quarter.',
       position: 'bottom'
     },
     {
       selector: '.prospectus-summary .ps-stat.warn',
-      title: '47 exceptions, 3 deficiencies',
-      body: '0.40% exception rate. Three rise to auditor-visible deficiencies; 44 route to control owners before close.',
+      title: '18 days to S-1 close',
+      body: 'Target file date 2026-10-15. The prospectus exists because the timeline does — Deloitte cannot bill discovery hours into a dated S-1 cycle.',
       position: 'bottom'
     },
     {
-      selector: '.domain-rollup summary',
-      title: 'Domain rollup is one click away',
-      body: 'Collapsed by default to keep the table above the fold. Expand to see all 10 domains and click any one to filter.',
+      selector: '.s1-timeline',
+      title: 'Where we are in the S-1 cycle',
+      body: 'Reliance review is the current gate — the bottleneck between an open engagement and the comfort letter. This page is the artifact the gate runs on.',
       position: 'bottom'
+    },
+    {
+      selector: '.method-band',
+      title: 'Methodology depth — the moat',
+      body: 'Citation density (PCAOB AS 2201 / AS 1105 / AS 2315, AICPA AU-C §530) and the sampling-method mix sit on the page. Neither AuditBoard nor Workiva ships per-control citations.',
+      position: 'bottom'
+    },
+    {
+      selector: '.engagement-band',
+      title: 'Live partner-review feed',
+      body: 'The Deloitte engagement room shows acceptance, challenges, and expanded-sample requests as they happen. Two-way workflow, not a one-shot export.',
+      position: 'top'
     },
     {
       selector: 'table.scope thead th:nth-child(6)',
@@ -1611,13 +1872,13 @@ window.TOUR = {
     {
       selector: 'table.scope tbody tr:first-child',
       title: 'Open a control dossier',
-      body: 'Click any row to drill into the 10-page premium dossier — sample items, SHA-256 chips, and acceptance chain per evidence id.',
+      body: 'Click any row to drill into the 10-page premium dossier — sample items, citations, partner-side actions, and a chain-of-custody SHA-256.',
       position: 'top'
     },
     {
       selector: '.page-actions',
       title: 'Ship to Deloitte portal',
-      body: 'Export renders a 1,247-page PDF; Send to auditor pushes the prospectus to the Deloitte secure portal and notifies the engagement team.',
+      body: 'Send to auditor pushes the prospectus to the Deloitte secure portal and notifies the engagement team. The feed above lights up when they start reviewing.',
       position: 'left'
     }
   ]

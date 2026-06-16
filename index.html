@@ -96,8 +96,10 @@
   }
 
   /* ---------- Top-3 hero cards ---------- */
-  .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--luna-sp-5); }
+  .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--luna-sp-5); align-items: stretch; }
+  .option-grid > a { display: flex; height: 100%; }
   .option-card {
+    width: 100%;
     background: var(--luna-bg-surface);
     border: 1px solid var(--luna-border);
     border-radius: var(--luna-radius-lg);
@@ -351,8 +353,6 @@
 
   <div class="landing-hero">
     <div class="eyebrow">Reliance-grade SOX · The Top 3</div>
-    <h1>3 prototypes that win across money, usability, and market</h1>
-    <p class="lede">Each owns a position no incumbent can clone in two quarters: the audit-fee budget, the crypto-plus-sampling stack, or the reviewer surface that ships now.</p>
   </div>
 
   <!-- ===== TOP 3 HERO CARDS ===== -->
@@ -460,65 +460,6 @@
       <div class="rr-cta">Open →</div>
     </a>
 
-  </div>
-
-  <!-- ===== ALSO IN THE FAMILY (collapsed) ===== -->
-  <div class="also-accordion">
-    <details>
-      <summary>
-        Also in the family
-        <span class="also-count">· 5 options</span>
-      </summary>
-
-      <div class="runners-up-list">
-
-        <a href="option-15-stress-test.html" class="runner-row">
-          <div class="rr-rank">#9</div>
-          <div class="rr-title">Stress Test — Estimate fragility</div>
-          <div class="rr-acv">$60-140K</div>
-          <div class="rr-why">Owns AU-C 540 / CAM but narrow to estimates-only — reads as a feature inside a sufficiency platform, not a $100K standalone SKU.</div>
-          <div class="rr-cta">Open →</div>
-        </a>
-
-        <a href="option-17-drift.html" class="runner-row">
-          <div class="rr-rank">#10</div>
-          <div class="rr-title">Drift — Monitor the monitors</div>
-          <div class="rr-acv">$60-140K</div>
-          <div class="rr-why">SPC + Western Electric run-rules is defensible vocabulary, but requires 214 instrumented feeds before value lands — long ramp, CCM fast-follow risk.</div>
-          <div class="rr-cta">Open →</div>
-        </a>
-
-        <a href="option-18-surveillance.html" class="runner-row">
-          <div class="rr-rank">#11</div>
-          <div class="rr-title">Surveillance — Estate health</div>
-          <div class="rr-acv">$80-180K</div>
-          <div class="rr-why">Epidemiology framing (R0, generations, propagation graph) is memorable but it's an expansion play presuming 1,248 wired controls — can't land standalone.</div>
-          <div class="rr-cta">Open →</div>
-        </a>
-
-        <a href="option-4-differential.html" class="runner-row">
-          <div class="rr-rank">#12</div>
-          <div class="rr-title">Differential</div>
-          <div class="rr-acv">$80-180K</div>
-          <div class="rr-why">Prior × likelihood × posterior across 4 alternatives × 14 clusters blows Miller's-law on every card — category-defining but exhausting to non-CPA buyers.</div>
-          <div class="rr-cta">Open →</div>
-        </a>
-
-        <a href="option-7-black-box.html" class="runner-row">
-          <div class="rr-rank">#13</div>
-          <div class="rr-title">Black Box — Lifecycle ledger</div>
-          <div class="rr-acv">Substrate (bundled)</div>
-          <div class="rr-why">41,247 hash-chained events is impressive plumbing but zero standalone ACV; multiplies others, can't headline a deal.</div>
-          <div class="rr-cta">Open →</div>
-        </a>
-
-      </div>
-    </details>
-  </div>
-
-  <div class="footnote">
-    <div>Helios Robotics is a fictional pre-IPO customer used across this prototype family.</div>
-    <div style="margin-left:auto;">Archive at <code>_archive/</code> · 8 bundle-only options preserved, not deleted</div>
   </div>
 
 </div>
