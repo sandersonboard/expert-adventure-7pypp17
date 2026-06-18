@@ -1050,22 +1050,12 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 /* Color discipline (from D's principle) */
-/* Color discipline: gray chrome, blue accent.
-   All signal badges + object-type colors neutralized. */
-.sigb.coso, .sigb.add, .sigb.rem, .sigb.mod, .sigb.elem {
+/* Change-type badges (add/rem/mod) keep semantic color — reviewers
+   need pre-attentive removal detection in a triage scan. */
+.sigb.coso,
+.sigb.elem {
   color: var(--luna-gray-500) !important;
   background: var(--luna-gray-100) !important;
-  border-color: var(--luna-gray-200) !important;
-}
-.impact.narrative, .impact.control, .impact.risk, .impact.match {
-  border-left-color: var(--luna-gray-300) !important;
-}
-.impact.narrative .impact-badge,
-.impact.control   .impact-badge,
-.impact.risk      .impact-badge,
-.impact.match     .impact-badge {
-  background: var(--luna-gray-100) !important;
-  color: var(--luna-gray-600) !important;
   border-color: var(--luna-gray-200) !important;
 }
 
@@ -3816,27 +3806,25 @@ if (location.hash === "#demo-control") window.addEventListener("load", () => sho
     card.appendChild(frame);
   }
 
-  /* Enhance every card in the AI Review panel (both Narrative + Control tabs,
-     both List + Focus modes). The HCAI frame is a universal treatment. */
+  /* Enhance any card currently inside a [data-focusbody] element */
   function enhanceFocusBodies() {
-    document.querySelectorAll('.panel-scroll .card').forEach(injectFrame);
+    document.querySelectorAll('[data-focusbody] .card').forEach(injectFrame);
   }
 
-  /* Watch BOTH focusbody and panel-scroll containers so dynamically injected
-     cards (cascade, screen switch, focus nav) get the frame */
+  /* Watch for cards being moved into each focusbody (MutationObserver) */
   function watchFocusBodies() {
-    document.querySelectorAll('[data-focusbody], .panel-scroll').forEach(function (body) {
+    document.querySelectorAll('[data-focusbody]').forEach(function (body) {
       var obs = new MutationObserver(function () {
         clearTimeout(obs._t);
         obs._t = setTimeout(enhanceFocusBodies, 80);
       });
-      obs.observe(body, { childList: true, subtree: true });
+      obs.observe(body, { childList: true });
     });
   }
 
-  /* Re-enhance on any panel click (focus nav prev/next, tab switch, etc) */
+  /* Re-enhance on any panel click (focus nav prev/next) */
   document.addEventListener('click', function (e) {
-    if (e.target.closest('.panel-scroll') || e.target.closest('.tab[data-screen]')) {
+    if (e.target.closest('.panel-scroll')) {
       setTimeout(enhanceFocusBodies, 80);
     }
   });

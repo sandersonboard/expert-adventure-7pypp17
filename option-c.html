@@ -194,29 +194,6 @@
   .mf-clear{ background:none; border:none; cursor:pointer; font-size:10.5px; color:var(--text-muted); padding:1px 4px; margin-left:auto; }
   .mf-clear:hover{ color:var(--text); text-decoration:underline; }
   .reason-grp.mf-hidden{ display:none; }
-
-  /* ── Brand-color discipline: gray chrome, blue accent ──
-     Object-type chrome (narrative/control/risk/match) reads as one calm
-     palette; the label + icon convey type, not color. Green stays for the
-     hero Apply / Applied; red/green stay inside the redline diff. */
-  .nbadge.narrative, .nbadge.control, .nbadge.risk, .nbadge.match {
-    background: var(--luna-gray-200) !important; color: var(--luna-gray-600) !important;
-  }
-  .cv-badge.narrative, .cv-badge.control, .cv-badge.risk, .cv-badge.match {
-    background: var(--luna-gray-200) !important; color: var(--luna-gray-600) !important;
-  }
-  .gapbox, .matchbox { border-left-color: var(--luna-gray-300) !important; }
-  /* Reason "purple" eyebrow → quiet gray */
-  .map-root .rt-k, .ctx-k { color: var(--luna-gray-500) !important; }
-  /* Reason summary chip / spark accent → blue brand */
-  .fc-spark { color: var(--blue) !important; }
-  /* Selected map node — single blue accent for "this is the current object" */
-  .node.sel .nbadge { background: var(--blue) !important; color: #fff !important; }
-  /* COSO/elem badges → gray (was purple) */
-  .sigb.coso { color: var(--luna-gray-500) !important; background: var(--luna-gray-100) !important; border-color: var(--luna-gray-200) !important; }
-  /* Source icon "audio" was purple-pink — neutralize */
-  .src-ic.audio { background: var(--luna-gray-500) !important; }
-  /* Tour highlight: the column ring stays blue. Step bars unified below. */
 </style>
 </head>
 <body>
@@ -558,13 +535,13 @@ renderMap(); renderCanvas(); renderCtx(); updateProgress();
   var C_MAP='#map', C_CANVAS='#canvas', C_CTX='#ctx';
   /* Each step: col = column to highlight; anchor = element to position near (defaults to col) */
   var STEPS=[
-    { col:C_MAP,    bar:'var(--blue)',
+    { col:C_MAP,    bar:'var(--c-narr)',
       title:'Option C · side panel → workspace',
       body:'The bold bet: when a process change hits a dozen-plus objects, a 372px side panel is a soda straw. Option C makes reconciliation a <strong>full-screen workspace</strong>. Each step shows one delta vs Baseline.' },
-    { col:C_MAP,    bar:'var(--blue)',
+    { col:C_MAP,    bar:'var(--c-narr)',
       title:'Impact map — the full blast radius',
       body:'Every object touched by this process change, grouped by reason. The dot color tracks progress: gray = pending, green = applied, strikethrough = dismissed. Baseline has no impact map — discovery is entirely on the reviewer.' },
-    { col:C_MAP,    bar:'var(--blue)', anchor:'#mapFilters',
+    { col:C_MAP,    bar:'var(--c-narr)', anchor:'#mapFilters',
       title:'Filter chips (new)',
       body:'Filter the map by <strong>object type</strong> (Narrative / Control / Risk / Match) and <strong>confidence tier</strong> (High / Medium). Lets a reviewer process the high-confidence batch first, or focus on a single object type for a sub-session.' },
     { col:C_CANVAS, bar:'var(--blue)',
@@ -576,13 +553,13 @@ renderMap(); renderCanvas(); renderCtx(); updateProgress();
     { col:C_CANVAS, bar:'var(--blue)', anchor:'.fieldcard',
       title:'Edit in context',
       body:'Switch to <strong>Final</strong> to refine the suggestion before applying — the editor is a contenteditable surface inline with the diff. The Apply commits the refined text, not the AI\'s raw output. Baseline does this in a cramped right-rail card.' },
-    { col:C_CTX,    bar:'var(--blue)',
+    { col:C_CTX,    bar:'var(--purple)',
       title:'Context rail — always visible',
       body:'<strong>Reason</strong>, <strong>sources</strong>, and the <strong>session record</strong> sit permanently in the right column for the currently selected object. The audit lead can inspect provenance for any object while the canvas shows the diff — no popovers, no click round-trips. Baseline gates source attribution behind a popover.' },
-    { col:C_MAP,    bar:'var(--blue)', anchor:'.topbar .prog',
+    { col:C_MAP,    bar:'var(--green)', anchor:'.topbar .prog',
       title:'Reconciliation as a first-class session',
       body:'<strong>N of M reconciled</strong> with a topbar progress bar; auto-advance after each decision; explicit &ldquo;queue clear&rdquo; end state. The session itself is the audit object — assignees, progress, completeness become defensible deliverables instead of inferred from a queue.' },
-    { col:C_CANVAS, bar:'var(--blue)',
+    { col:C_CANVAS, bar:'var(--green)',
       title:'Non-destructive resolve (only option that nails it)',
       body:'Apply and Dismiss <strong>never destroy content</strong>. Every resolved object shows a permanent <strong>Reopen</strong> link — no Undo timer, no 5-second window. C is the only option where the architecture itself guarantees recovery. Baseline destroys DOM nodes on resolve.' }
   ];

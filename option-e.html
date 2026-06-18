@@ -1048,22 +1048,13 @@
    Nothing structural changes — purely re-presentation.
    ────────────────────────────────────────────────────────────────────────── */
 
-/* 1. Color discipline: gray chrome, blue accent.
-      All signal badges + object-type colors neutralized. */
-.sigb.coso, .sigb.add, .sigb.rem, .sigb.mod, .sigb.elem {
+/* 1. Color discipline: neutralise COSO/element/lifecycle badges only.
+      Change-type badges (add/rem/mod) keep semantic color — reviewers
+      need pre-attentive removal detection in a triage scan. */
+.sigb.coso,
+.sigb.elem {
   color: var(--luna-gray-500) !important;
   background: var(--luna-gray-100) !important;
-  border-color: var(--luna-gray-200) !important;
-}
-.impact.narrative, .impact.control, .impact.risk, .impact.match {
-  border-left-color: var(--luna-gray-300) !important;
-}
-.impact.narrative .impact-badge,
-.impact.control   .impact-badge,
-.impact.risk      .impact-badge,
-.impact.match     .impact-badge {
-  background: var(--luna-gray-100) !important;
-  color: var(--luna-gray-600) !important;
   border-color: var(--luna-gray-200) !important;
 }
 
