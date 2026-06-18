@@ -1149,6 +1149,24 @@
   color: var(--luna-gray-600) !important; background: var(--luna-gray-50) !important;
   border-color: var(--luna-gray-200) !important;
 }
+
+/* ── Brand-color discipline: gray chrome, blue accent ── */
+.impact.narrative, .impact.control, .impact.risk, .impact.match {
+  border-left-color: var(--luna-gray-300) !important;
+}
+.impact.narrative .impact-badge,
+.impact.control   .impact-badge,
+.impact.risk      .impact-badge,
+.impact.match     .impact-badge {
+  background: var(--luna-gray-100) !important;
+  color: var(--luna-gray-600) !important;
+  border-color: var(--luna-gray-200) !important;
+}
+.sigb.coso, .sigb.add, .sigb.rem, .sigb.mod, .sigb.elem {
+  background: var(--luna-gray-100) !important;
+  color: var(--luna-gray-500) !important;
+  border-color: var(--luna-gray-200) !important;
+}
 </style>
 </head>
 <body id="artifacts-component-root-html">
@@ -3945,7 +3963,7 @@ if (location.hash === "#demo-control") window.addEventListener("load", () => sho
     const b=e.target.closest("[data-ux2]");
     if(b){
       const p=visiblePage(), act=b.dataset.ux2;
-      if(act==="triage") triage(p);
+      if(act==="triage"){ triage("narrative"); triage("control"); }
       else if(act==="applyRec") applyRecommended(p);
       else if(act==="applyRecConfirm") applyRecommended(p);
       else if(act==="closeSweep"){ const s=b.closest("[data-sweep]"); delete s.dataset.confirming; s.classList.add("v2hide"); }
