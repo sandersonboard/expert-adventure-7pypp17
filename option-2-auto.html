@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sufficiency · Auto-disposition · Helios Robotics Q3 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="gate.js"></script>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="chrome.css" />
+<link rel="stylesheet" href="chrome-midship.css" />
+<link rel="stylesheet" href="flow.css" />
+<link rel="stylesheet" href="ux-fixes.css" />
+<link rel="stylesheet" href="provenance.css" />
+<link rel="stylesheet" href="sources-strip.css" />
+<link rel="stylesheet" href="tour.css">
+<style>
+  /* ---------- Chunk 2: Status bar (collapsed by default) ---------- */
+  .auto-status-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--luna-sp-4);
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-sm);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    min-height: 48px;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .auto-status-bar .status-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--luna-sp-1);
+    white-space: nowrap;
+  }
+  .auto-status-bar .status-item b {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .auto-status-bar .status-sep {
+    color: var(--luna-border);
+    user-select: none;
+  }
+  .auto-status-bar .status-spacer { flex: 1; }
+  .auto-status-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: 4px 10px;
+    font-size: var(--luna-fs-100);
+    font-weight: 600;
+    color: var(--luna-text);
+    cursor: pointer;
+  }
+  .auto-status-trigger:hover { background: var(--luna-gray-50); }
+  .auto-status-trigger .caret { transition: transform 160ms ease; font-size: 10px; }
+  .auto-status-trigger[aria-expanded="true"] .caret { transform: rotate(180deg); }
+
+  /* Threshold panel — now lives inside a disclosure container */
+  .threshold-disclose {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 220ms ease;
+    margin-bottom: 0;
+  }
+  .threshold-disclose.open {
+    max-height: 320px;
+    margin-bottom: var(--luna-sp-4);
+  }
+  .threshold-panel {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-sm);
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+  }
+  .threshold-panel .panel-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: var(--luna-sp-5);
+    align-items: center;
+  }
+  .threshold-panel .auto-toggle {
+    display: flex; align-items: center; gap: var(--luna-sp-3);
+    font-size: var(--luna-fs-150);
+  }
+  .threshold-panel .auto-toggle .toggle-label {
+    font-weight: 600; color: var(--luna-text);
+  }
+  .threshold-slider {
+    display: flex; flex-direction: column; gap: var(--luna-sp-2);
+  }
+  .threshold-slider .ts-label {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .threshold-slider .ts-value {
+    font-size: var(--luna-fs-200);
+    color: var(--luna-text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .threshold-slider .ts-ticks {
+    display: flex; justify-content: space-between;
+    font-size: var(--luna-fs-50); color: var(--luna-text-muted);
+  }
+  .split-bar {
+    height: 24px;
+    border-radius: var(--luna-radius-md);
+    overflow: hidden;
+    display: flex;
+    border: 1px solid var(--luna-border);
+    font-size: var(--luna-fs-100);
+    font-weight: 600;
+  }
+  .split-bar .split-seg {
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    transition: flex-basis 200ms ease;
+  }
+  .split-bar .seg-suff      { background: var(--luna-green-500); }
+  .split-bar .seg-insuff    { background: var(--luna-orange-500); }
+  .split-bar .seg-review    { background: var(--luna-yellow-500); color: var(--luna-yellow-900); }
+  .split-legend {
+    display: flex; gap: var(--luna-sp-3); flex-wrap: wrap;
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    margin-top: var(--luna-sp-2);
+  }
+
+  /* ---------- Chunk 3: Filter bar + log toolbar ---------- */
+  .auto-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--luna-sp-3);
+    padding: var(--luna-sp-2) 0;
+    margin-bottom: var(--luna-sp-2);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    flex-wrap: wrap;
+  }
+  .auto-filter-bar .label {
+    font-weight: 600;
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--luna-fs-50);
+  }
+  .auto-filter-bar .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--luna-teal-50);
+    color: var(--luna-teal-800);
+    border: 1px solid var(--luna-teal-200);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: var(--luna-fs-100);
+    font-weight: 500;
+  }
+  .auto-filter-bar .chip .chip-x {
+    cursor: pointer;
+    color: var(--luna-teal-700);
+    font-weight: 600;
+    margin-left: 2px;
+  }
+  .auto-filter-bar .chip .chip-x:hover { color: var(--luna-teal-900); }
+  .auto-filter-bar .filter-trigger {
+    background: transparent;
+    border: 1px dashed var(--luna-border);
+    border-radius: 999px;
+    padding: 2px 12px;
+    color: var(--luna-text);
+    font-size: var(--luna-fs-100);
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .auto-filter-bar .filter-trigger:hover { background: var(--luna-gray-50); border-style: solid; }
+  .auto-filter-bar .toolbar-sep { color: var(--luna-border); }
+  .auto-filter-bar .toolbar-meta {
+    color: var(--luna-text-subdued);
+    font-size: var(--luna-fs-100);
+  }
+  .auto-filter-bar .toolbar-meta b {
+    color: var(--luna-text);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  /* Filter sheet (slide-down) */
+  .auto-filter-sheet {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 220ms ease;
+  }
+  .auto-filter-sheet.open {
+    max-height: 480px;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .auto-filter-sheet .sheet-inner {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-sm);
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+  }
+  .auto-filter-sheet .sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--luna-sp-5);
+  }
+  .auto-filter-sheet h3 {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--luna-text-subdued);
+    margin: 0 0 var(--luna-sp-2);
+  }
+  .auto-filter-sheet .facet-list { display: flex; flex-direction: column; }
+  .auto-filter-sheet .facet {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 3px 0;
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    cursor: pointer;
+  }
+  .auto-filter-sheet .facet:hover { color: var(--luna-teal-700); }
+  .auto-filter-sheet .facet.active { font-weight: 600; color: var(--luna-teal-700); }
+  .auto-filter-sheet .facet .facet-count {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    font-variant-numeric: tabular-nums;
+  }
+  .auto-filter-sheet .facet input { margin-right: var(--luna-sp-2); accent-color: var(--luna-teal-500); }
+  .auto-filter-sheet .sheet-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--luna-sp-2);
+    border-top: 1px solid var(--luna-border);
+    padding-top: var(--luna-sp-3);
+    margin-top: var(--luna-sp-4);
+  }
+
+  /* ---------- Chunk 4: Audit log (full width) ---------- */
+  .audit-log {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    box-shadow: var(--luna-shadow-sm);
+    overflow: hidden;
+  }
+
+  table.audit-table {
+    width: 100%; border-collapse: collapse;
+  }
+  table.audit-table th {
+    text-align: left;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--luna-text-subdued);
+    padding: var(--luna-sp-2) var(--luna-sp-4);
+    background: var(--luna-bg-sunken);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  table.audit-table td {
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    border-bottom: 1px solid var(--luna-border);
+    vertical-align: middle;
+  }
+  table.audit-table tr.row-main { cursor: pointer; }
+  table.audit-table tr.row-main:hover { background: var(--luna-gray-50); }
+  table.audit-table tr.row-main.expanded { background: var(--luna-teal-50); }
+  table.audit-table tr.row-main.reversed td { opacity: 0.55; text-decoration: line-through; }
+
+  td.col-ts     { color: var(--luna-text-subdued); font-family: var(--luna-font-mono); font-size: var(--luna-fs-100); white-space: nowrap; width: 86px; }
+  td.col-ctrl   { font-family: var(--luna-font-mono); font-size: var(--luna-fs-100); color: var(--luna-text); white-space: nowrap; width: 90px; }
+  td.col-ev     { font-family: var(--luna-font-mono); font-size: var(--luna-fs-100); color: var(--luna-text-subdued); white-space: nowrap; width: 140px; }
+  td.col-dec    { width: 160px; }
+  td.col-conf   { font-variant-numeric: tabular-nums; width: 96px; text-align: right; }
+  td.col-rat    { color: var(--luna-text); line-height: 1.5; }
+
+  .conf-bar {
+    width: 60px; height: 5px;
+    background: var(--luna-gray-200);
+    border-radius: 999px;
+    margin-top: 2px;
+    margin-left: auto;
+    overflow: hidden;
+  }
+  .conf-bar span { display: block; height: 100%; }
+  .conf-bar.high span { background: var(--luna-green-500); }
+  .conf-bar.med span  { background: var(--luna-yellow-500); }
+  .conf-bar.low span  { background: var(--luna-red-500); }
+
+  .row-detail {
+    background: var(--luna-bg-sunken);
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .row-detail .detail-grid {
+    display: grid; grid-template-columns: 1fr 240px;
+    gap: var(--luna-sp-4);
+  }
+  .row-detail .detail-section h4 {
+    margin: 0 0 var(--luna-sp-2);
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--luna-text-subdued);
+  }
+  .row-detail .detail-section .reasoning {
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    line-height: 1.55;
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+  }
+  .row-detail .reasoning ul { margin: var(--luna-sp-2) 0 0; padding-left: var(--luna-sp-4); }
+  .row-detail .reasoning li { margin: 2px 0; }
+  .row-detail .meta-list { font-size: var(--luna-fs-100); color: var(--luna-text-subdued); line-height: 1.7; }
+  .row-detail .meta-list dt { display: inline-block; min-width: 100px; color: var(--luna-text-muted); font-weight: 500; }
+  .row-detail .meta-list dd { display: inline-block; margin: 0; color: var(--luna-text); }
+  .row-detail .meta-list dl { margin: 0; }
+  .row-detail .detail-actions {
+    display: flex; gap: var(--luna-sp-2);
+    margin-top: var(--luna-sp-3);
+  }
+
+  /* ---------- Chunk 5: Pagination ---------- */
+  .audit-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    border-top: 1px solid var(--luna-border);
+    background: var(--luna-bg-surface);
+  }
+  .audit-foot b {
+    color: var(--luna-text);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .audit-foot .pager-link {
+    color: var(--luna-teal-700);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .audit-foot .pager-link:hover { text-decoration: underline; }
+
+  /* ---------- Chunk 6: Activity foot link + drawer ---------- */
+  .auto-activity-foot {
+    margin-top: var(--luna-sp-4);
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: var(--luna-fs-150);
+  }
+  .auto-activity-foot:hover { background: var(--luna-gray-50); }
+  .auto-activity-foot .foot-summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--luna-sp-2);
+    color: var(--luna-text);
+  }
+  .auto-activity-foot .foot-summary b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .auto-activity-foot .foot-summary .sep { color: var(--luna-border); }
+  .auto-activity-foot .foot-link {
+    color: var(--luna-teal-700);
+    font-weight: 600;
+  }
+
+  /* Activity drawer (reuses .drawer pattern from existing styles) */
+  .auto-activity-drawer {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 420px;
+    max-width: 92vw;
+    background: var(--luna-bg-surface);
+    border-left: 1px solid var(--luna-border);
+    box-shadow: -8px 0 32px rgba(0,0,0,0.10);
+    transform: translateX(100%);
+    transition: transform 240ms ease;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+  }
+  .auto-activity-drawer.open { transform: translateX(0); }
+  .auto-activity-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.32);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms ease;
+    z-index: 79;
+  }
+  .auto-activity-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .auto-activity-drawer .drawer-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .auto-activity-drawer .drawer-head h2 {
+    margin: 0;
+    font-size: var(--luna-fs-300);
+    font-weight: 600;
+  }
+  .auto-activity-drawer .drawer-close {
+    background: transparent; border: none; cursor: pointer;
+    font-size: 20px; color: var(--luna-text-subdued); line-height: 1;
+  }
+  .auto-activity-drawer .drawer-body {
+    padding: var(--luna-sp-4) var(--luna-sp-5);
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+    gap: var(--luna-sp-4);
+  }
+  .auto-activity-drawer .panel {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-4);
+  }
+  .auto-activity-drawer .panel h3 {
+    margin: 0 0 var(--luna-sp-3);
+    font-size: var(--luna-fs-150);
+    font-weight: 600;
+  }
+  .auto-activity-drawer .panel .sub {
+    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
+    line-height: 1.5;
+    margin: 0 0 var(--luna-sp-3);
+  }
+  .auto-activity-drawer .summary-row {
+    display: flex; justify-content: space-between;
+    padding: var(--luna-sp-2) 0;
+    font-size: var(--luna-fs-150);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .auto-activity-drawer .summary-row:last-child { border-bottom: none; }
+  .auto-activity-drawer .summary-row .label { color: var(--luna-text-subdued); }
+  .auto-activity-drawer .summary-row .val { color: var(--luna-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .auto-activity-drawer .reason-list { display: flex; flex-direction: column; }
+  .auto-activity-drawer .reason-list .reason-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: var(--luna-sp-2) 0;
+    font-size: var(--luna-fs-150);
+    border-bottom: 1px dashed var(--luna-border);
+  }
+  .auto-activity-drawer .reason-list .reason-item:last-child { border-bottom: none; }
+  .auto-activity-drawer .reason-list .reason-bar {
+    height: 6px; background: var(--luna-gray-100); border-radius: 999px; overflow: hidden;
+    width: 60px;
+  }
+  .auto-activity-drawer .reason-list .reason-bar span { display: block; height: 100%; background: var(--luna-teal-400); }
+</style>
+</head>
+<body data-ds="luna" data-flow-category="flow-native" data-flow-step="submitted" data-flow-count="2283">
+<script>(function(){try{var d=localStorage.getItem("sufficiency-ds");if(d==="midship"||d==="luna")document.body.dataset.ds=d;}catch(e){}})();</script>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-wordmark">Optro</span>
+    </div>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Controls</a>
+      <a href="#" class="active">Evidence</a>
+      <a href="#">Cycles</a>
+      <a href="#">Reports</a>
+    </nav>
+    <div class="sidebar-footer">Q3 2026 · 18 days to close</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <!-- Topbar -->
+    <div class="app-topbar"><a href="index.html" class="back-to-options" title="All options"><span class="arrow">←</span><span>Back to options</span></a>
+      <button class="customer-switch">
+        <span>Helios Robotics</span>
+        <span class="caret">▾</span>
+      </button>
+      <div class="topbar-spacer"></div>
+      <div class="close-countdown">
+        <span>Q3 close:</span> <b>2026-10-15</b> <span>(18 days)</span>
+      </div>
+      <div class="avatar" title="Sarah Kim">SK</div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="app-breadcrumb">
+      <a href="index.html">Sufficiency</a>
+      <span class="crumb-sep">›</span>
+      <a href="#">Evidence</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">Auto-disposition log · Q3 2026</span>
+    </div>
+
+    <!-- Body -->
+    <div class="app-body padded-wide">
+
+      <!-- CHUNK 1 · Page head (compact) -->
+      <div class="page-head">
+        <div>
+          <span class="eyebrow">Auto-disposition · needs confirm</span>
+          <h1>AI suggests dispositions on 2,283 of 2,847 evidences · 80%</h1>
+          <p class="page-sub">Every row is a suggestion. A reviewer confirms or reverses; nothing auto-accepts.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn" onclick="growl('20 items pulled to your spot-check queue.', 'success')">Pull spot-check sample</button>
+          <button class="btn primary">Export decisions to auditor</button>
+        </div>
+      </div>
+
+      <!-- CHUNK 2 · Status bar (collapsed by default; Adjust opens threshold panel) -->
+      <div class="auto-status-bar" id="autoStatusBar">
+        <span class="status-item">Auto-judged <b id="statusAuto">2,283</b> / 2,847</span>
+        <span class="status-sep">·</span>
+        <span class="status-item">Routed to human <b id="statusHuman">564</b></span>
+        <span class="status-sep">·</span>
+        <span class="status-item">Threshold ≥ <b id="statusThresh">0.82</b></span>
+        <span class="status-spacer"></span>
+        <button class="auto-status-trigger" id="thresholdTrigger" aria-expanded="false" aria-controls="thresholdDisclose">
+          Adjust <span class="caret">▾</span>
+        </button>
+      </div>
+
+      <!-- Threshold disclosure (full panel reveals when Adjust is clicked) -->
+      <div class="threshold-disclose" id="thresholdDisclose">
+        <div class="threshold-panel">
+          <div class="panel-row">
+            <div class="auto-toggle">
+              <div class="toggle on" id="autoToggle" onclick="this.classList.toggle('on'); this.classList.toggle('off');"></div>
+              <div class="toggle-label">Auto-disposition <span style="color: var(--luna-green-700);">ON</span></div>
+            </div>
+
+            <div class="threshold-slider">
+              <div class="ts-label">
+                <span>Confidence threshold</span>
+                <span class="ts-value" id="threshVal">0.82</span>
+              </div>
+              <input type="range" class="luna-range" id="threshSlider" min="50" max="99" step="1" value="82" />
+              <div class="ts-ticks"><span>0.50</span><span>0.75</span><span>1.00</span></div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: var(--luna-sp-4); font-size: var(--luna-fs-200); font-weight: 600;">
+              <span style="color: var(--luna-green-700);">Auto <span class="tabular" id="splitAuto">80%</span></span>
+              <span style="color: var(--luna-yellow-700);">Human <span class="tabular" id="splitHuman">20%</span></span>
+            </div>
+          </div>
+
+          <div style="margin-top: var(--luna-sp-3);">
+            <div class="split-bar" id="splitBar">
+              <div class="split-seg seg-suff"   id="segSuff"   style="flex-basis: 67%;">1,899 sufficient</div>
+              <div class="split-seg seg-insuff" id="segInsuff" style="flex-basis: 13%;">384 insufficient</div>
+              <div class="split-seg seg-review" id="segReview" style="flex-basis: 20%;">564 human-only</div>
+            </div>
+            <div class="split-legend" style="justify-content: flex-end;">
+              <span id="legSuff" style="display:none;">1,899</span><span id="legInsuff" style="display:none;">384</span><span id="legReview" style="display:none;">564</span>
+              <span style="color: var(--luna-text-subdued);">4 reversed by reviewer today</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Burn-down meter (kept; thin and unobtrusive) -->
+      <div class="ux-burndown" id="humanQueueBurndown" data-total="564" data-cleared="13" data-label="of 564 routed-to-human reviewed today"></div>
+
+      <!-- CHUNK 3 · Filter chips + log toolbar -->
+      <div class="auto-filter-bar" id="filterBar">
+        <span class="label">Filters:</span>
+        <span class="chip-host" id="chipHost"></span>
+        <button class="filter-trigger" id="filterTrigger" aria-expanded="false" aria-controls="filterSheet">+ All filters</button>
+        <span class="toolbar-sep">·</span>
+        <span class="toolbar-meta">Sort: Time ▾</span>
+        <span class="toolbar-sep">·</span>
+        <span class="toolbar-meta">Show: <b id="toolbarShow">20</b> / <b id="toolbarTotal">2,283</b></span>
+      </div>
+
+      <!-- Filter sheet (slide-down; contains original 4 facet groups) -->
+      <div class="auto-filter-sheet" id="filterSheet">
+        <div class="sheet-inner">
+          <div class="sheet-grid">
+            <div>
+              <h3>Decision</h3>
+              <div class="facet-list" data-facet-group="decision">
+                <label class="facet active"><span><input type="checkbox" checked data-facet="decision" data-value="all" />All</span><span class="facet-count">2,847</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="decision" data-value="sufficient" />Sufficient</span><span class="facet-count">1,899</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="decision" data-value="insufficient" />Insufficient</span><span class="facet-count">384</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="decision" data-value="needs_review" />Needs review</span><span class="facet-count">564</span></label>
+              </div>
+            </div>
+
+            <div>
+              <h3>Confidence</h3>
+              <div class="facet-list" data-facet-group="confidence">
+                <label class="facet"><span><input type="checkbox" data-facet="confidence" data-value=">=0.90" />≥ 0.90</span><span class="facet-count">1,612</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="confidence" data-value="0.80-0.89" />0.80 – 0.89</span><span class="facet-count">671</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="confidence" data-value="0.70-0.79" />0.70 – 0.79</span><span class="facet-count">312</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="confidence" data-value="<0.70" />&lt; 0.70</span><span class="facet-count">252</span></label>
+              </div>
+            </div>
+
+            <div>
+              <h3>Domain</h3>
+              <div class="facet-list" data-facet-group="domain">
+                <label class="facet"><span><input type="checkbox" data-facet="domain" data-value="IT General" />IT General</span><span class="facet-count">487</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="domain" data-value="Revenue" />Revenue</span><span class="facet-count">412</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="domain" data-value="Financial Reporting" />Financial Reporting</span><span class="facet-count">365</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="domain" data-value="Payroll" />Payroll</span><span class="facet-count">274</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="domain" data-value="Procurement" />Procurement</span><span class="facet-count">289</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="domain" data-value="Treasury" />Treasury</span><span class="facet-count">212</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="domain" data-value="Other" />Other</span><span class="facet-count">808</span></label>
+              </div>
+            </div>
+
+            <div>
+              <h3>Reviewer</h3>
+              <div class="facet-list" data-facet-group="reviewer">
+                <label class="facet"><span><input type="checkbox" data-facet="reviewer" data-value="Sarah Kim" />Sarah Kim</span><span class="facet-count">512</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="reviewer" data-value="David Park" />David Park</span><span class="facet-count">418</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="reviewer" data-value="Priya Anand" />Priya Anand</span><span class="facet-count">387</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="reviewer" data-value="Tomás Rivera" />Tomás Rivera</span><span class="facet-count">214</span></label>
+                <label class="facet"><span><input type="checkbox" data-facet="reviewer" data-value="Unassigned" />Unassigned</span><span class="facet-count">1,316</span></label>
+              </div>
+            </div>
+          </div>
+          <div class="sheet-foot">
+            <button class="btn subtle" id="filterClear">Clear all</button>
+            <button class="btn primary" id="filterApply">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHUNK 4 · Audit log (full width) -->
+      <div class="audit-log">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Control</th>
+              <th>Evidence</th>
+              <th>AI suggests</th>
+              <th>Confidence</th>
+              <th>Rationale</th>
+              <th>Reviewer action</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+
+        <!-- CHUNK 5 · Pagination -->
+        <div class="audit-foot">
+          <span>Showing <b id="footShow">20</b> of <b id="footTotal">2,283</b></span>
+          <a class="pager-link" href="#" onclick="event.preventDefault(); growl('Loaded next 20 suggestions.', 'success');">Older ›</a>
+        </div>
+      </div>
+
+      <!-- CHUNK 6 · Activity foot link (opens drawer) -->
+      <div class="auto-activity-foot" id="activityFoot" role="button" tabindex="0">
+        <span class="foot-summary">
+          <b>Today's activity</b>
+          <span class="sep">·</span>
+          <span><b>142</b> decisions</span>
+          <span class="sep">·</span>
+          <span><b>4</b> reversed</span>
+        </span>
+        <span class="foot-link">Open ↗</span>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Activity drawer (right-rail content reused inside) -->
+<div class="auto-activity-backdrop" id="activityBackdrop"></div>
+<aside class="auto-activity-drawer" id="activityDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Today's activity</h2>
+    <button class="drawer-close" id="activityClose" aria-label="Close">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="panel">
+      <h3>Spot-check sample</h3>
+      <p class="sub">Pull a random 20-item sample across all auto-judged evidence to validate the model's accuracy this cycle.</p>
+      <button class="btn primary" style="width: 100%;" onclick="growl('20 items pulled to your spot-check queue.', 'success')">Pull 20-item sample</button>
+      <div style="font-size: var(--luna-fs-50); color: var(--luna-text-muted); margin-top: var(--luna-sp-3); line-height: 1.5;">
+        <b>Last spot-check:</b> Yesterday at 16:42 by Sarah Kim · 20 items · 19 confirmed · 1 reversed (PRC-04).
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Today's activity</h3>
+      <div class="summary-row"><span class="label">AI suggestions made</span><span class="val tabular">142</span></div>
+      <div class="summary-row"><span class="label">Suggested sufficient</span><span class="val tabular">98</span></div>
+      <div class="summary-row"><span class="label">Suggested insufficient</span><span class="val tabular">31</span></div>
+      <div class="summary-row"><span class="label">Routed to human-only</span><span class="val tabular">13</span></div>
+      <div class="summary-row"><span class="label">Reviewer sent back</span><span class="val tabular" style="color: var(--luna-orange-700);">4</span></div>
+      <div class="summary-row"><span class="label">Avg confidence</span><span class="val tabular">0.88</span></div>
+    </div>
+
+    <div class="panel">
+      <h3>Top insufficient reasons</h3>
+      <div class="reason-list">
+        <div class="reason-item">
+          <span>Coverage period gap</span>
+          <div class="hstack" style="gap: var(--luna-sp-2);">
+            <div class="reason-bar"><span style="width: 100%;"></span></div>
+            <b class="tabular">24</b>
+          </div>
+        </div>
+        <div class="reason-item">
+          <span>Missing supporting attach</span>
+          <div class="hstack" style="gap: var(--luna-sp-2);">
+            <div class="reason-bar"><span style="width: 75%;"></span></div>
+            <b class="tabular">18</b>
+          </div>
+        </div>
+        <div class="reason-item">
+          <span>Approver field blank</span>
+          <div class="hstack" style="gap: var(--luna-sp-2);">
+            <div class="reason-bar"><span style="width: 62%;"></span></div>
+            <b class="tabular">15</b>
+          </div>
+        </div>
+        <div class="reason-item">
+          <span>SOD violation</span>
+          <div class="hstack" style="gap: var(--luna-sp-2);">
+            <div class="reason-bar"><span style="width: 38%;"></span></div>
+            <b class="tabular">9</b>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="growl-host" id="growlHost"></div>
+
+<script src="data.js"></script>
+<script>
+  const decisionColors = {
+    sufficient:   { badge: 'green',  label: 'Suggests: sufficient' },
+    insufficient: { badge: 'orange', label: 'Suggests: insufficient' },
+    needs_review: { badge: 'yellow', label: 'Suggests: human review' },
+  };
+
+  // Stable pseudo-SHA chip per evidence id
+  function shaChipFor(name) {
+    if (window.Flow && typeof window.Flow.shaChip === 'function') {
+      try { return window.Flow.shaChip(name); } catch(e) {}
+    }
+    let h = 0;
+    for (let i = 0; i < name.length; i++) { h = ((h<<5)-h) + name.charCodeAt(i); h |= 0; }
+    const hex = (Math.abs(h).toString(16) + '00000000').slice(0, 8);
+    const tail = (Math.abs(h*2654435761).toString(16) + '00000000').slice(0, 8);
+    return '<span class="flow-sha-chip" title="Content-addressed evidence hash">sha256 · ' + hex + '…' + tail + '</span>';
+  }
+
+  let expandedRow = null;
+  let reversedRows = new Set();
+
+  function confBar(c) {
+    const cls = c >= 0.85 ? 'high' : (c >= 0.72 ? 'med' : 'low');
+    return `<div class="conf-bar ${cls}"><span style="width: ${Math.round(c*100)}%;"></span></div>`;
+  }
+
+  function renderLog() {
+    const body = document.getElementById('logBody');
+    body.innerHTML = AUTO_LOG.map((e, i) => {
+      const d = decisionColors[e.decision];
+      const reversed = reversedRows.has(i) ? ' reversed' : '';
+      const expanded = expandedRow === i ? ' expanded' : '';
+      const detail = expandedRow === i ? renderDetail(e, i) : '';
+      const linked = e.decision === 'sufficient'
+        ? `<div style="margin-top:4px;"><span class="flow-link-control">Linked to ${e.control} · sample row ${100 + i}</span></div>`
+        : '';
+      return `
+        <tr class="row-main${expanded}${reversed}" onclick="toggleRow(${i})">
+          <td class="col-ts">${e.ts}</td>
+          <td class="col-ctrl">${e.control}</td>
+          <td class="col-ev">
+            <div>${e.evidence}</div>
+            ${shaChipFor(e.evidence)}
+            ${linked}
+          </td>
+          <td class="col-dec"><span class="badge ${d.badge}"><span class="badge-dot"></span>${d.label}</span></td>
+          <td class="col-conf">
+            <div class="tabular" style="font-weight:600;">${e.confidence.toFixed(2)}</div>
+            ${confBar(e.confidence)}
+          </td>
+          <td class="col-rat">${e.rationale}</td>
+          <td class="col-action" style="white-space:nowrap;">
+            <button class="btn small" onclick="event.stopPropagation(); confirmDecision(${i})">Confirm</button>
+            <button class="btn small flow-reject-btn" data-flow-reject data-assignee="Marcus Chen" onclick="event.stopPropagation(); reverseDecision(${i})">Send back</button>
+          </td>
+        </tr>
+        ${detail ? `<tr class="row-detail-wrap"><td colspan="7" style="padding:0;">${detail}</td></tr>` : ''}
+      `;
+    }).join('');
+  }
+
+  function renderDetail(e, idx) {
+    const d = decisionColors[e.decision];
+    const reasoning = e.rationale;
+    const checks = e.decision === 'sufficient' ?
+      ['Period coverage confirmed', 'Required fields populated', 'Approver-preparer separation', 'Cross-system reconciliation', 'No anomalous patterns'] :
+      e.decision === 'insufficient' ?
+      ['Required fields populated', 'Period coverage gap detected', 'No anomalous patterns'] :
+      ['Period coverage', 'Required fields populated', 'Ambiguity in approver assertion', 'Confidence below threshold'];
+
+    return `
+      <div class="row-detail">
+        <div class="detail-grid">
+          <div class="detail-section">
+            <h4>AI reasoning trace · suggestion only</h4>
+            <div class="reasoning">
+              <p style="margin: 0 0 var(--luna-sp-2);">${reasoning}</p>
+              <p style="margin: 0; font-weight: 600; color: var(--luna-text-subdued); font-size: var(--luna-fs-100); text-transform: uppercase; letter-spacing: 0.04em;">Checks performed</p>
+              <ul>
+                ${checks.map(c => `<li>${c}</li>`).join('')}
+              </ul>
+              <p style="margin: var(--luna-sp-2) 0 0; font-size: var(--luna-fs-100); color: var(--luna-text-subdued);">A human reviewer must confirm or send this back. No row is closed until a person signs.</p>
+            </div>
+            <div class="detail-actions">
+              <button class="btn primary" onclick="event.stopPropagation(); confirmDecision(${idx})">Confirm suggestion</button>
+              <button class="btn danger flow-reject-btn" data-flow-reject data-assignee="Marcus Chen" onclick="event.stopPropagation(); reverseDecision(${idx})">Send back to assignee</button>
+              <button class="btn subtle" onclick="event.stopPropagation(); growl('Reassigned to ' + sampleReviewer() + '.', 'success')">Reassign reviewer</button>
+            </div>
+          </div>
+          <div class="detail-section">
+            <h4>Decision metadata</h4>
+            <div class="meta-list">
+              <dl>
+                <dt>Model</dt><dd>sufficiency-judge-v2.4</dd><br>
+                <dt>Tokens</dt><dd>1,842 in · 312 out</dd><br>
+                <dt>Latency</dt><dd>1.4s</dd><br>
+                <dt>Confidence</dt><dd>${e.confidence.toFixed(3)}</dd><br>
+                <dt>Threshold</dt><dd>0.82 (current setting)</dd><br>
+                <dt>Decision</dt><dd>${d.label.toLowerCase()}</dd><br>
+                <dt>Source rules</dt><dd>5 control attributes</dd>
+              </dl>
+            </div>
+            <div style="font-size: var(--luna-fs-50); color: var(--luna-text-muted); margin-top: var(--luna-sp-3); line-height: 1.5;">
+              Decision is logged immutably to the audit ledger. Reversals create a new entry, never overwrite.
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function toggleRow(i) {
+    expandedRow = (expandedRow === i ? null : i);
+    renderLog();
+  }
+  function bumpHumanBurndown() {
+    const el = document.getElementById('humanQueueBurndown');
+    if (el && window.UX && typeof window.UX.bumpBurndown === 'function') {
+      try { window.UX.bumpBurndown(el, 1); } catch(e) {}
+    }
+  }
+  function confirmDecision(i) {
+    growl('<b>Confirmed.</b> AI judgment for ' + AUTO_LOG[i].evidence + ' co-signed by reviewer.', 'success');
+    bumpHumanBurndown();
+    expandedRow = null;
+    renderLog();
+  }
+  function reverseDecision(i) {
+    reversedRows.add(i);
+    growl('<b>Reversed.</b> ' + AUTO_LOG[i].evidence + ' re-queued. Audit-ledger entry created.', 'success');
+    bumpHumanBurndown();
+    expandedRow = null;
+    renderLog();
+  }
+  function sampleReviewer() {
+    const r = REVIEWERS[Math.floor((Date.now()/1000) % REVIEWERS.length)];
+    return r.name;
+  }
+
+  // -------- Threshold disclose toggle --------
+  const thresholdTrigger = document.getElementById('thresholdTrigger');
+  const thresholdDisclose = document.getElementById('thresholdDisclose');
+  thresholdTrigger.addEventListener('click', () => {
+    const open = thresholdDisclose.classList.toggle('open');
+    thresholdTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  // -------- Threshold slider — live update --------
+  const slider = document.getElementById('threshSlider');
+  const threshVal = document.getElementById('threshVal');
+  function updateSplit() {
+    const t = parseInt(slider.value, 10) / 100;
+    threshVal.textContent = t.toFixed(2);
+
+    const above = Math.max(0, t - 0.5);
+    const humanFrac = Math.min(0.85, 0.05 + above * 1.05);
+    const total = 2847;
+    const human = Math.round(total * humanFrac);
+    const auto  = total - human;
+    const suff   = Math.round(auto * 0.832);
+    const insuff = auto - suff;
+
+    document.getElementById('segSuff').textContent   = suff.toLocaleString() + ' sufficient';
+    document.getElementById('segInsuff').textContent = insuff.toLocaleString() + ' insufficient';
+    document.getElementById('segReview').textContent = human.toLocaleString() + ' human-only';
+
+    const pSuff   = suff / total * 100;
+    const pInsuff = insuff / total * 100;
+    const pHuman  = human / total * 100;
+    document.getElementById('segSuff').style.flexBasis   = pSuff + '%';
+    document.getElementById('segInsuff').style.flexBasis = pInsuff + '%';
+    document.getElementById('segReview').style.flexBasis = pHuman + '%';
+
+    document.getElementById('legSuff').textContent   = suff.toLocaleString();
+    document.getElementById('legInsuff').textContent = insuff.toLocaleString();
+    document.getElementById('legReview').textContent = human.toLocaleString();
+
+    document.getElementById('splitAuto').textContent  = Math.round((1-humanFrac)*100) + '%';
+    document.getElementById('splitHuman').textContent = Math.round(humanFrac*100) + '%';
+
+    // Mirror into status bar
+    const statusAuto = document.getElementById('statusAuto');
+    const statusHuman = document.getElementById('statusHuman');
+    const statusThresh = document.getElementById('statusThresh');
+    if (statusAuto) statusAuto.textContent = auto.toLocaleString();
+    if (statusHuman) statusHuman.textContent = human.toLocaleString();
+    if (statusThresh) statusThresh.textContent = t.toFixed(2);
+
+    const toolbarTotal = document.getElementById('toolbarTotal');
+    const footTotal = document.getElementById('footTotal');
+    if (toolbarTotal) toolbarTotal.textContent = auto.toLocaleString();
+    if (footTotal) footTotal.textContent = auto.toLocaleString();
+  }
+  slider.addEventListener('input', updateSplit);
+
+  // -------- Filter sheet toggle + chip sync --------
+  const filterTrigger = document.getElementById('filterTrigger');
+  const filterSheet = document.getElementById('filterSheet');
+  const filterApply = document.getElementById('filterApply');
+  const filterClear = document.getElementById('filterClear');
+  const chipHost = document.getElementById('chipHost');
+
+  filterTrigger.addEventListener('click', () => {
+    const open = filterSheet.classList.toggle('open');
+    filterTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  filterApply.addEventListener('click', () => {
+    filterSheet.classList.remove('open');
+    filterTrigger.setAttribute('aria-expanded', 'false');
+    syncChips();
+    growl('Filters applied.', 'success');
+  });
+  filterClear.addEventListener('click', () => {
+    filterSheet.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+    filterSheet.querySelectorAll('.facet').forEach(f => f.classList.remove('active'));
+    syncChips();
+  });
+
+  // Live facet active state + chip sync as user toggles inside the sheet
+  filterSheet.addEventListener('change', (ev) => {
+    const cb = ev.target.closest('input[type="checkbox"]');
+    if (!cb) return;
+    const label = cb.closest('.facet');
+    if (label) label.classList.toggle('active', cb.checked);
+    syncChips();
+  });
+
+  function syncChips() {
+    const groups = { decision: [], confidence: [], domain: [], reviewer: [] };
+    filterSheet.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+      const g = cb.dataset.facet;
+      const v = cb.dataset.value;
+      if (!g || !v || v === 'all') return;
+      groups[g].push(v);
+    });
+    const labelMap = { decision: 'Decision', confidence: 'Confidence', domain: 'Domain', reviewer: 'Reviewer' };
+    const chips = [];
+    Object.keys(groups).forEach(g => {
+      if (groups[g].length === 0) return;
+      const display = groups[g].length === 1 ? groups[g][0] : groups[g].length + ' selected';
+      chips.push(
+        `<span class="chip" data-group="${g}">${labelMap[g]}: ${display}<span class="chip-x" data-clear-group="${g}" title="Clear ${labelMap[g]}">✕</span></span>`
+      );
+    });
+    chipHost.innerHTML = chips.join(' ');
+  }
+
+  chipHost.addEventListener('click', (ev) => {
+    const x = ev.target.closest('[data-clear-group]');
+    if (!x) return;
+    const g = x.dataset.clearGroup;
+    filterSheet.querySelectorAll(`input[data-facet="${g}"]`).forEach(cb => {
+      cb.checked = false;
+      const label = cb.closest('.facet');
+      if (label) label.classList.remove('active');
+    });
+    syncChips();
+  });
+
+  // -------- Activity drawer --------
+  const activityFoot = document.getElementById('activityFoot');
+  const activityDrawer = document.getElementById('activityDrawer');
+  const activityBackdrop = document.getElementById('activityBackdrop');
+  const activityClose = document.getElementById('activityClose');
+
+  function openActivity() {
+    activityDrawer.classList.add('open');
+    activityBackdrop.classList.add('open');
+    activityDrawer.setAttribute('aria-hidden', 'false');
+  }
+  function closeActivity() {
+    activityDrawer.classList.remove('open');
+    activityBackdrop.classList.remove('open');
+    activityDrawer.setAttribute('aria-hidden', 'true');
+  }
+  activityFoot.addEventListener('click', openActivity);
+  activityFoot.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openActivity(); }
+  });
+  activityClose.addEventListener('click', closeActivity);
+  activityBackdrop.addEventListener('click', closeActivity);
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape' && activityDrawer.classList.contains('open')) closeActivity();
+  });
+
+  // Growl
+  function growl(html, kind) {
+    const host = document.getElementById('growlHost');
+    const g = document.createElement('div');
+    g.className = 'growl' + (kind ? ' ' + kind : '');
+    g.innerHTML = '<div class="growl-icon"></div><div>' + html + '</div>';
+    host.appendChild(g);
+    setTimeout(() => { g.style.transition = 'opacity 200ms, transform 200ms'; g.style.opacity = '0'; g.style.transform = 'translateY(8px)'; }, 3800);
+    setTimeout(() => g.remove(), 4100);
+  }
+
+  // Boot
+  renderLog();
+  updateSplit();
+  syncChips();
+</script>
+
+<script>window.TOUR = {
+  title: 'AI suggests · reviewer confirms or reverses',
+  intro: '2,283 AI suggestions sit between Open and Accepted. No row closes until a reviewer signs.',
+  steps: [
+    { selector: '.flow-state-badge',
+      title: 'Submitted: 2,283',
+      body: 'Every row sits at Submitted. AI suggests; reviewer signs. No anonymous accepts.',
+      position: 'bottom' },
+    { selector: '#autoStatusBar',
+      title: 'Cycle in one line',
+      body: '2,283 auto-judged, 564 routed to a human, threshold 0.82. Click Adjust to retune the split.',
+      position: 'bottom' },
+    { selector: '#thresholdTrigger',
+      title: 'Retune the split',
+      body: 'Opens the threshold panel. Drag higher to grow the human queue, lower to widen AI coverage.',
+      position: 'bottom' },
+    { selector: '#filterTrigger',
+      title: 'All filters',
+      body: 'Opens a sheet with Decision, Confidence, Domain, and Reviewer facets. Apply commits the chips.',
+      position: 'bottom' },
+    { selector: '.audit-table tbody tr:first-child',
+      title: 'Open a suggestion',
+      body: 'Click a row for the AI reasoning trace, checks performed, model version, and threshold at decision time.',
+      position: 'top' },
+    { selector: '.flow-sha-chip',
+      title: 'Hash binds row to file',
+      body: 'SHA-256 pins the evidence to the exact bytes scored. Swap the file, the suggestion invalidates.',
+      position: 'right' },
+    { selector: '.flow-reject-btn',
+      title: 'Send back with reason',
+      body: 'Reverse opens a 7-template reason modal and routes the row back. The reversal writes a new ledger entry.',
+      position: 'left' },
+    { selector: '#activityFoot',
+      title: 'Today and spot-check',
+      body: 'Opens a drawer with 142 decisions today, top insufficient reasons, and the 20-item spot-check action.',
+      position: 'top' }
+  ]
+};</script>
+<script src="tour.js"></script>
+
+<script src="nav-routing.js"></script>
+<script src="ds-toggle.js"></script>
+<script src="flow.js"></script>
+<script src="ux-fixes.js"></script>
+<script src="provenance.js"></script>
+<script src="sources-link.js"></script>
+<script src="sources-strip.js"></script>
+</body>
+</html>

@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sufficiency · Reliance Prospectus · Helios Robotics Q3 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="gate.js"></script>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="chrome.css" />
+<link rel="stylesheet" href="chrome-midship.css" />
+<link rel="stylesheet" href="flow.css" />
+<link rel="stylesheet" href="ux-fixes.css" />
+<link rel="stylesheet" href="provenance.css" />
+<link rel="stylesheet" href="sources-strip.css" />
+<link rel="stylesheet" href="tour.css">
+<style>
+  /* ----------------- Band 1 · Audit-fee defense ----------------- */
+  .prospectus-summary {
+    display: flex;
+    align-items: stretch;
+    gap: var(--luna-sp-7);
+    padding: var(--luna-sp-3) 0 var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .ps-stat {
+    display: flex; flex-direction: column; justify-content: center;
+    min-width: 0;
+  }
+  .ps-stat .ps-label {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .ps-stat .ps-value {
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--luna-text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.018em;
+  }
+  .ps-stat .ps-value .small {
+    font-size: 15px;
+    color: var(--luna-text-subdued);
+    font-weight: 500;
+    margin-left: 2px;
+    letter-spacing: 0;
+  }
+  .ps-stat .ps-meta {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    margin-top: 6px;
+  }
+  .ps-stat.accent .ps-value { color: var(--luna-teal-600); }
+  .ps-stat.warn .ps-value { color: var(--luna-orange-500); }
+  .ps-divider {
+    width: 1px;
+    background: var(--luna-border);
+    align-self: stretch;
+  }
+
+  /* S-1 timeline strip */
+  .s1-timeline {
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    padding: var(--luna-sp-3) 0 var(--luna-sp-4);
+    border-bottom: 1px solid var(--luna-border);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-muted);
+    flex-wrap: wrap;
+  }
+  .s1-step { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .s1-step .s1-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--luna-gray-300);
+    display: inline-block;
+  }
+  .s1-step.past { color: var(--luna-text-subdued); }
+  .s1-step.past .s1-dot { background: var(--luna-teal-300); }
+  .s1-step.current { color: var(--luna-text); font-weight: 600; }
+  .s1-step.current .s1-dot { background: var(--luna-teal-500); box-shadow: 0 0 0 3px var(--luna-teal-50); }
+  .s1-sep {
+    flex: 0 0 28px;
+    height: 1px; background: var(--luna-border);
+  }
+
+  /* ----------------- Band 2 · Methodology depth ----------------- */
+  .method-band {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--luna-sp-7);
+    padding: var(--luna-sp-4) 0;
+    border-bottom: 1px solid var(--luna-border);
+  }
+  .mb-label {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .citation-list {
+    display: flex; flex-wrap: wrap; gap: var(--luna-sp-3) var(--luna-sp-5);
+    align-items: baseline;
+  }
+  .cit { font-size: var(--luna-fs-150); color: var(--luna-text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cit .cit-std {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-right: 6px;
+  }
+  .cit .cit-x { color: var(--luna-text-muted); margin-right: 1px; font-size: var(--luna-fs-100); }
+  .cit .cit-n { font-weight: 600; }
+
+  .sampling-mix-bar {
+    display: flex; height: 6px; border-radius: 3px; overflow: hidden;
+    background: var(--luna-gray-100);
+  }
+  .sampling-mix-bar > span { display: block; height: 100%; }
+  .smb-legend {
+    display: flex; gap: var(--luna-sp-3) var(--luna-sp-4); flex-wrap: wrap;
+    margin-top: var(--luna-sp-2);
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .smb-leg { display: inline-flex; align-items: center; gap: 5px; }
+  .smb-swatch { width: 7px; height: 7px; border-radius: 1px; display: inline-block; }
+  .smb-leg b { color: var(--luna-text); font-weight: 600; font-variant-numeric: tabular-nums; margin-left: 2px; }
+
+  /* ----------------- Band 3 · Deloitte engagement activity ----------------- */
+  .engagement-band {
+    padding: var(--luna-sp-4) 0 var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+    margin-bottom: var(--luna-sp-4);
+  }
+  .eb-head {
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    margin-bottom: var(--luna-sp-3);
+  }
+  .eb-label {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .eb-live {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-teal-600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .eb-live::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--luna-teal-500);
+    animation: ebPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes ebPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .eb-feed { display: flex; flex-direction: column; gap: var(--luna-sp-2); }
+  .eb-row {
+    display: grid; grid-template-columns: 56px 1fr;
+    gap: var(--luna-sp-3); align-items: baseline;
+    font-size: var(--luna-fs-150);
+  }
+  .eb-time {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .eb-text { color: var(--luna-text); line-height: 1.5; }
+  .eb-text .eb-muted { color: var(--luna-text-subdued); }
+  .eb-text b { font-weight: 600; }
+  .eb-tag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 6px;
+    font-size: var(--luna-fs-50);
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    vertical-align: 1px;
+  }
+  .eb-tag.accept { background: var(--luna-green-50); color: var(--luna-green-700); }
+  .eb-tag.challenge { background: var(--luna-orange-50); color: var(--luna-orange-700); }
+  .eb-tag.received { background: var(--luna-gray-100); color: var(--luna-text-subdued); }
+
+  /* Drawer · Deloitte review status pill */
+  .dossier-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    margin-bottom: var(--luna-sp-3);
+  }
+  .dossier-status .ds-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dossier-status.accepted { background: var(--luna-green-50); color: var(--luna-green-700); }
+  .dossier-status.accepted .ds-dot { background: var(--luna-green-500); }
+  .dossier-status.challenged { background: var(--luna-orange-50); color: var(--luna-orange-700); }
+  .dossier-status.challenged .ds-dot { background: var(--luna-orange-500); }
+  .dossier-status.pending { background: var(--luna-gray-100); color: var(--luna-text-subdued); }
+  .dossier-status.pending .ds-dot { background: var(--luna-gray-300); }
+  .dossier-status.substantive { background: var(--luna-red-50); color: var(--luna-red-700); }
+  .dossier-status.substantive .ds-dot { background: var(--luna-red-500); }
+
+  /* ----------------- Filter bar ----------------- */
+  .filter-bar {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    display: flex; gap: var(--luna-sp-2); align-items: center;
+    margin-bottom: var(--luna-sp-4);
+    font-size: var(--luna-fs-150);
+    flex-wrap: wrap;
+  }
+  .filter-bar .fb-label {
+    color: var(--luna-text-subdued); font-size: var(--luna-fs-100);
+    text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+  }
+  .filter-chip {
+    padding: var(--luna-sp-1) var(--luna-sp-3);
+    border-radius: 999px;
+    font-size: var(--luna-fs-100);
+    background: var(--luna-bg-sunken);
+    color: var(--luna-text-subdued);
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .filter-chip.active {
+    background: var(--luna-teal-50);
+    color: var(--luna-teal-700);
+    border-color: var(--luna-teal-200);
+    font-weight: 500;
+  }
+  .filter-chip:hover:not(.active) { background: var(--luna-gray-200); color: var(--luna-text); }
+  .search-input {
+    border: 1px solid var(--luna-border-strong);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-1) var(--luna-sp-3);
+    font-family: var(--luna-font-family);
+    font-size: var(--luna-fs-150);
+    background: var(--luna-bg-surface);
+    color: var(--luna-text);
+    width: 240px;
+  }
+  .search-input:focus { outline: none; border-color: var(--luna-teal-500); box-shadow: 0 0 0 3px var(--luna-teal-50); }
+
+  /* ----------------- Scope table ----------------- */
+  .scope-table-wrap {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--luna-shadow-sm);
+  }
+  .scope-table-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--luna-sp-3) var(--luna-sp-5);
+    border-bottom: 1px solid var(--luna-border);
+    background: var(--luna-bg-sunken);
+  }
+  .scope-table-head h2 {
+    font-size: var(--luna-fs-300);
+    font-weight: 600;
+    margin: 0;
+  }
+  .scope-table-head .showing {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+  .scope-table-head .showing b { color: var(--luna-text); }
+
+  table.scope {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--luna-fs-150);
+  }
+  table.scope thead th {
+    text-align: left;
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--luna-text-subdued);
+    padding: var(--luna-sp-2) var(--luna-sp-4);
+    background: var(--luna-bg-sunken);
+    border-bottom: 1px solid var(--luna-border);
+    white-space: nowrap;
+  }
+  table.scope tbody td {
+    padding: var(--luna-sp-3) var(--luna-sp-4);
+    border-bottom: 1px solid var(--luna-border);
+    color: var(--luna-text);
+    vertical-align: middle;
+  }
+  table.scope tbody tr { cursor: pointer; transition: background 80ms; }
+  table.scope tbody tr:hover { background: var(--luna-teal-50); }
+  table.scope tbody tr:last-child td { border-bottom: none; }
+  td.ctrl-id { font-family: var(--luna-font-mono); font-size: var(--luna-fs-100); color: var(--luna-teal-700); font-weight: 600; white-space: nowrap; }
+  td.ctrl-name { max-width: 280px; }
+  td.ctrl-name .nm { font-weight: 500; line-height: 1.35; }
+  td.ctrl-name .own { font-size: var(--luna-fs-100); color: var(--luna-text-subdued); margin-top: 2px; }
+  td.sample-cell .sample-n {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-150);
+    font-weight: 600;
+    color: var(--luna-text);
+    font-variant-numeric: tabular-nums;
+  }
+  td.sample-cell .sample-n .of { color: var(--luna-text-muted); font-weight: 400; }
+  td.sample-cell .sample-method {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+  td.justify { max-width: 320px; }
+  td.justify .just-chip {
+    display: inline-block;
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-100);
+    color: var(--luna-teal-700);
+    border-radius: 4px;
+    padding: 2px var(--luna-sp-2);
+    font-size: var(--luna-fs-50);
+    font-family: var(--luna-font-mono);
+    margin-bottom: 2px;
+  }
+  td.justify .just-text {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    line-height: 1.45;
+  }
+  td.status-cell { white-space: nowrap; text-align: right; }
+  td.status-cell .pct {
+    font-size: var(--luna-fs-200);
+    font-weight: 600;
+    color: var(--luna-text);
+    font-variant-numeric: tabular-nums;
+  }
+  td.status-cell .pct-meta {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  .pager {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--luna-sp-3) var(--luna-sp-5);
+    border-top: 1px solid var(--luna-border);
+    background: var(--luna-bg-sunken);
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+  }
+  .pager .pg-controls { display: flex; gap: var(--luna-sp-1); }
+  .pager .pg-controls button {
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border-strong);
+    border-radius: var(--luna-radius-sm);
+    font-size: var(--luna-fs-100);
+    padding: 2px var(--luna-sp-3);
+    cursor: pointer;
+    color: var(--luna-text);
+    font-family: inherit;
+  }
+  .pager .pg-controls button:hover { background: var(--luna-gray-50); }
+  .pager .pg-controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pager .pg-controls button.active {
+    background: var(--luna-teal-500);
+    border-color: var(--luna-teal-500);
+    color: var(--luna-white);
+  }
+
+  /* ----------------- Domain rollup (collapsible) ----------------- */
+  .domain-rollup {
+    margin-bottom: var(--luna-sp-4);
+  }
+  .domain-rollup summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex; align-items: center; gap: var(--luna-sp-2);
+    padding: var(--luna-sp-2) 0;
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    user-select: none;
+  }
+  .domain-rollup summary::-webkit-details-marker { display: none; }
+  .domain-rollup summary::before {
+    content: '▸';
+    font-size: 10px;
+    color: var(--luna-text-muted);
+    transition: transform 120ms;
+    display: inline-block;
+  }
+  .domain-rollup[open] summary::before { transform: rotate(90deg); }
+  .domain-rollup summary b { color: var(--luna-text); font-weight: 600; }
+  .domain-rollup summary:hover { color: var(--luna-text); }
+  .domain-rollup .rollup-body {
+    padding: var(--luna-sp-3) 0 var(--luna-sp-2);
+  }
+  .domain-rollup-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--luna-sp-3);
+  }
+  .domain-card {
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    padding: var(--luna-sp-3);
+    cursor: pointer;
+    transition: background 80ms, border-color 80ms;
+  }
+  .domain-card:hover { background: var(--luna-teal-50); border-color: var(--luna-teal-200); }
+  .domain-card .dc-name {
+    font-size: var(--luna-fs-100);
+    font-weight: 600;
+    color: var(--luna-text);
+  }
+  .domain-card .dc-counts {
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-subdued);
+    margin: var(--luna-sp-1) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .domain-card .dc-pct {
+    font-size: var(--luna-fs-300);
+    font-weight: 600;
+    color: var(--luna-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .domain-card .dc-bar {
+    height: 4px;
+    background: var(--luna-gray-200);
+    border-radius: 999px;
+    margin-top: var(--luna-sp-1);
+    overflow: hidden;
+  }
+  .domain-card .dc-bar span {
+    display: block; height: 100%;
+    background: var(--luna-teal-500);
+  }
+
+  /* ----------------- Dossier drawer (premium PDF) ----------------- */
+  .dossier-drawer {
+    width: min(820px, 96vw);
+  }
+  .dossier-pages {
+    background: var(--luna-gray-100);
+    padding: var(--luna-sp-5) var(--luna-sp-4);
+    flex: 1;
+    overflow: auto;
+  }
+  .dossier-page {
+    background: var(--luna-white);
+    box-shadow: 0 2px 8px rgba(15,23,42,0.10), 0 0 0 1px rgba(15,23,42,0.04);
+    border-radius: 2px;
+    padding: var(--luna-sp-8) var(--luna-sp-8);
+    margin: 0 auto var(--luna-sp-5);
+    max-width: 720px;
+    font-size: var(--luna-fs-150);
+    line-height: 1.55;
+    color: var(--luna-gray-800);
+    position: relative;
+  }
+  .dossier-page::after {
+    content: 'Page ' attr(data-page) ' of ' attr(data-total);
+    position: absolute;
+    bottom: var(--luna-sp-3);
+    right: var(--luna-sp-5);
+    font-size: var(--luna-fs-50);
+    color: var(--luna-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .dossier-page .dp-header {
+    display: flex; justify-content: space-between;
+    border-bottom: 2px solid var(--luna-teal-600);
+    padding-bottom: var(--luna-sp-2);
+    margin-bottom: var(--luna-sp-5);
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--luna-teal-700);
+    font-weight: 700;
+  }
+  .dossier-page h1 {
+    font-size: var(--luna-fs-500);
+    font-weight: 600;
+    color: var(--luna-text);
+    margin: 0 0 var(--luna-sp-2);
+    letter-spacing: -0.01em;
+  }
+  .dossier-page h2 {
+    font-size: var(--luna-fs-300);
+    font-weight: 600;
+    color: var(--luna-text);
+    margin: var(--luna-sp-5) 0 var(--luna-sp-2);
+    border-bottom: 1px solid var(--luna-border);
+    padding-bottom: var(--luna-sp-1);
+  }
+  .dossier-page h3 {
+    font-size: var(--luna-fs-200);
+    font-weight: 600;
+    color: var(--luna-text);
+    margin: var(--luna-sp-4) 0 var(--luna-sp-2);
+  }
+  .dossier-page p { margin: 0 0 var(--luna-sp-3); }
+  .dossier-page .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--luna-sp-2) var(--luna-sp-5);
+    font-size: var(--luna-fs-100);
+    background: var(--luna-bg-sunken);
+    border: 1px solid var(--luna-border);
+    padding: var(--luna-sp-4);
+    border-radius: var(--luna-radius-md);
+    margin-bottom: var(--luna-sp-4);
+  }
+  .dossier-page .meta-grid dt {
+    color: var(--luna-text-subdued);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: var(--luna-fs-50);
+    font-weight: 600;
+  }
+  .dossier-page .meta-grid dd {
+    margin: 0 0 var(--luna-sp-2);
+    color: var(--luna-text);
+    font-weight: 500;
+  }
+
+  .dossier-sampling {
+    background: var(--luna-teal-50);
+    border: 1px solid var(--luna-teal-200);
+    border-left: 3px solid var(--luna-teal-500);
+    padding: var(--luna-sp-4);
+    border-radius: var(--luna-radius-md);
+    margin-bottom: var(--luna-sp-4);
+  }
+  .dossier-sampling .ds-label {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--luna-teal-700);
+    margin-bottom: var(--luna-sp-2);
+  }
+  .dossier-sampling .ds-formula {
+    font-family: var(--luna-font-mono);
+    font-size: var(--luna-fs-150);
+    color: var(--luna-text);
+    margin-bottom: var(--luna-sp-2);
+    background: var(--luna-white);
+    border: 1px solid var(--luna-teal-100);
+    border-radius: var(--luna-radius-sm);
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+  }
+  .dossier-sampling .ds-explainer {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-gray-700);
+    line-height: 1.55;
+  }
+
+  .sample-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--luna-fs-100);
+    margin-bottom: var(--luna-sp-3);
+  }
+  .sample-table th, .sample-table td {
+    text-align: left;
+    padding: var(--luna-sp-2);
+    border-bottom: 1px solid var(--luna-border);
+    vertical-align: top;
+  }
+  .sample-table th {
+    background: var(--luna-bg-sunken);
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--luna-text-subdued);
+    font-weight: 600;
+    border-bottom: 2px solid var(--luna-border);
+  }
+  .sample-table td.id-col { font-family: var(--luna-font-mono); white-space: nowrap; color: var(--luna-teal-700); }
+  .sample-table tr.exc { background: var(--luna-orange-50); }
+  .sample-table .ok-mark { color: var(--luna-green-500); font-weight: 700; }
+  .sample-table .exc-mark { color: var(--luna-orange-500); font-weight: 700; }
+
+  .signoff-line {
+    display: flex; justify-content: space-between; gap: var(--luna-sp-6);
+    margin-top: var(--luna-sp-6);
+    font-size: var(--luna-fs-100);
+  }
+  .signoff-line .so-block {
+    flex: 1;
+    border-top: 1px solid var(--luna-gray-800);
+    padding-top: var(--luna-sp-2);
+  }
+  .signoff-line .so-name { font-weight: 600; color: var(--luna-text); }
+  .signoff-line .so-role { color: var(--luna-text-subdued); }
+
+  .opinion-block {
+    background: var(--luna-green-50);
+    border: 1px solid var(--luna-green-100);
+    border-left: 3px solid var(--luna-green-500);
+    padding: var(--luna-sp-4);
+    border-radius: var(--luna-radius-md);
+    margin-top: var(--luna-sp-4);
+    margin-bottom: var(--luna-sp-3);
+  }
+  .opinion-block .op-label {
+    font-size: var(--luna-fs-50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--luna-green-700);
+    margin-bottom: var(--luna-sp-2);
+  }
+  .opinion-block.borderline { background: var(--luna-yellow-50); border-color: var(--luna-yellow-100); border-left-color: var(--luna-yellow-500); }
+  .opinion-block.borderline .op-label { color: var(--luna-yellow-700); }
+  .opinion-block.insufficient { background: var(--luna-orange-50); border-color: var(--luna-orange-100); border-left-color: var(--luna-orange-500); }
+  .opinion-block.insufficient .op-label { color: var(--luna-orange-700); }
+
+  /* Dossier toolbar */
+  .dossier-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--luna-sp-3) var(--luna-sp-5);
+    background: var(--luna-gray-900);
+    color: var(--luna-gray-200);
+    font-size: var(--luna-fs-100);
+    border-bottom: 1px solid var(--luna-gray-800);
+  }
+  .dossier-toolbar .dt-left { display: flex; align-items: center; gap: var(--luna-sp-3); }
+  .dossier-toolbar .dt-title {
+    font-weight: 600;
+    color: var(--luna-white);
+  }
+  .dossier-toolbar .dt-right { display: flex; align-items: center; gap: var(--luna-sp-2); }
+  .dossier-toolbar button {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--luna-white);
+    border-radius: var(--luna-radius-sm);
+    padding: 2px var(--luna-sp-3);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--luna-fs-100);
+  }
+  .dossier-toolbar button:hover { background: rgba(255,255,255,0.12); }
+
+  /* Special drawer override */
+  .drawer.dossier-drawer .drawer-head { padding: 0; border: none; }
+  .drawer.dossier-drawer .drawer-body { padding: 0; }
+  .drawer.dossier-drawer .drawer-foot {
+    background: var(--luna-gray-900);
+    border-top: 1px solid var(--luna-gray-800);
+  }
+
+  /* Reliance-method legend */
+  .method-pill {
+    display: inline-flex; align-items: center;
+    padding: 2px var(--luna-sp-2);
+    border-radius: 999px;
+    font-size: var(--luna-fs-50);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-family: var(--luna-font-mono);
+  }
+  .method-pill.sample { background: var(--luna-teal-50); color: var(--luna-teal-700); border: 1px solid var(--luna-teal-100); }
+  .method-pill.full { background: var(--luna-purple-50); color: var(--luna-purple-500); border: 1px solid var(--luna-purple-50); }
+  .method-pill.walk { background: var(--luna-gray-100); color: var(--luna-gray-700); border: 1px solid var(--luna-gray-200); }
+  .method-pill.inquiry { background: var(--luna-yellow-50); color: var(--luna-yellow-700); border: 1px solid var(--luna-yellow-100); }
+
+  /* Page-action cluster */
+  .right-meta-tag {
+    font-size: var(--luna-fs-100);
+    color: var(--luna-text-subdued);
+    margin-right: var(--luna-sp-3);
+  }
+  .right-meta-tag b { color: var(--luna-text); }
+
+  /* Overflow menu for secondary page actions */
+  .pa-more { position: relative; display: inline-block; }
+  .pa-more > button.btn {
+    padding-left: var(--luna-sp-2);
+    padding-right: var(--luna-sp-2);
+    min-width: 32px;
+  }
+  .pa-more-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--luna-bg-surface);
+    border: 1px solid var(--luna-border);
+    border-radius: var(--luna-radius-md);
+    box-shadow: var(--luna-shadow-md);
+    min-width: 220px;
+    padding: var(--luna-sp-1);
+    z-index: 50;
+    display: none;
+  }
+  .pa-more.open .pa-more-menu { display: block; }
+  .pa-more-menu button {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: var(--luna-sp-2) var(--luna-sp-3);
+    font-size: var(--luna-fs-150);
+    font-family: inherit;
+    color: var(--luna-text);
+    border-radius: var(--luna-radius-sm);
+    cursor: pointer;
+  }
+  .pa-more-menu button:hover { background: var(--luna-gray-100); }
+</style>
+</head>
+<body data-ds="luna" data-flow-category="downstream" data-sources-strip="off">
+<script>(function(){try{var d=localStorage.getItem("sufficiency-ds");if(d==="midship"||d==="luna")document.body.dataset.ds=d;}catch(e){}})();</script>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-wordmark">Optro</span>
+    </div>
+    <nav>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M3 13h2v8H3zm6-4h2v12H9zm6-4h2v16h-2zm6-3h2v19h-2z%22/></svg>') no-repeat center/contain;"></span>Dashboard</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/><path d=%22M9 3v18M3 9h18%22/></svg>') no-repeat center/contain;"></span>Controls</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22/><polyline points=%2214 2 14 8 20 8%22/></svg>') no-repeat center/contain;"></span>Evidence</a>
+      <a href="#"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><circle cx=%2212%22 cy=%2212%22 r=%2210%22/><polyline points=%2212 6 12 12 16 14%22/></svg>') no-repeat center/contain;"></span>Cycles</a>
+      <a href="#" class="active"><span class="nav-icon" style="-webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22><path d=%22M9 17V7a5 5 0 0 1 10 0v10a5 5 0 0 1-10 0z%22/><line x1=%2214%22 y1=%2210%22 x2=%2214%22 y2=%2214%22/></svg>') no-repeat center/contain;"></span>Reports</a>
+    </nav>
+    <div class="sidebar-footer">Q3 2026 · 18 days to close</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="app-main">
+
+    <!-- Topbar -->
+    <div class="app-topbar"><a href="index.html" class="back-to-options" title="All options"><span class="arrow">←</span><span>Back to options</span></a>
+      <button class="customer-switch">
+        <span>Helios Robotics</span>
+        <span class="caret">▾</span>
+      </button>
+      <div class="topbar-spacer"></div>
+      <div class="close-countdown">
+        <span>Q3 close:</span> <b>2026-10-15</b> <span>(18 days)</span>
+      </div>
+      <div class="avatar" title="Sarah Kim">SK</div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="app-breadcrumb">
+      <a href="index.html">Sufficiency</a>
+      <span class="crumb-sep">›</span>
+      <a href="#">Reports</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">External Auditor Reliance Prospectus · Q3 2026</span>
+    </div>
+
+    <!-- Body -->
+    <div class="app-body padded-wide">
+
+      <!-- Page head -->
+      <div class="page-head">
+        <div>
+          <span class="eyebrow">Reliance Prospectus · Deloitte &amp; Touche LLP · S-1 audit support</span>
+          <h1>External Auditor Reliance Dossier · Q3 2026</h1>
+        </div>
+        <div class="page-actions">
+          <button class="btn primary"
+            data-ux-confirm
+            data-ux-confirm-title="Send reliance dossier to Deloitte?"
+            data-ux-confirm-body="The prospectus will be transmitted to the Deloitte secure portal and the engagement team will be notified. A signed audit-trail entry is recorded against your name."
+            data-ux-confirm-impact="317 controls · 11,824 sampled items · 1,247-page PDF · Deloitte &amp; Touche LLP"
+            data-ux-confirm-reason="true"
+            data-ux-confirm-undo="8"
+            onclick="growl('Reliance dossier sent to Deloitte secure portal. Auditor notified.', 'success')">Send to auditor</button>
+        </div>
+      </div>
+
+      <!-- Band 1 · Audit-fee defense (buyer story) -->
+      <div class="prospectus-summary">
+        <div class="ps-stat accent">
+          <div class="ps-label">Audit fees defended</div>
+          <div class="ps-value">$2.4<span class="small">M</span></div>
+          <div class="ps-meta">vs. Deloitte engagement budget · Q3 cycle</div>
+        </div>
+        <div class="ps-divider"></div>
+        <div class="ps-stat">
+          <div class="ps-label">Big-4 hours displaced</div>
+          <div class="ps-value">4,820<span class="small">hrs</span></div>
+          <div class="ps-meta">avg $250/hr · per-control pre-test</div>
+        </div>
+        <div class="ps-divider"></div>
+        <div class="ps-stat">
+          <div class="ps-label">Reliance coverage</div>
+          <div class="ps-value">92<span class="small">%</span></div>
+          <div class="ps-meta">317 of 342 controls · 25 to substantive</div>
+        </div>
+        <div class="ps-divider"></div>
+        <div class="ps-stat warn">
+          <div class="ps-label">Days to S-1 close</div>
+          <div class="ps-value">18</div>
+          <div class="ps-meta">target file date 2026-10-15</div>
+        </div>
+      </div>
+
+      <!-- S-1 milestone timeline -->
+      <div class="s1-timeline">
+        <span class="s1-step past"><span class="s1-dot"></span>S-1 filed Sep 14</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step past"><span class="s1-dot"></span>Engagement open</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step current"><span class="s1-dot"></span>Reliance review</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step"><span class="s1-dot"></span>Comfort letter</span>
+        <span class="s1-sep"></span>
+        <span class="s1-step"><span class="s1-dot"></span>Pricing &amp; close</span>
+      </div>
+
+      <!-- Band 2 · Methodology depth -->
+      <div class="method-band">
+        <div>
+          <div class="mb-label">Standards citation density</div>
+          <div class="citation-list" id="citationList"></div>
+        </div>
+        <div>
+          <div class="mb-label">Sampling method mix · 317 controls</div>
+          <div class="sampling-mix-bar" id="samplingMixBar"></div>
+          <div class="smb-legend" id="samplingMixLegend"></div>
+        </div>
+      </div>
+
+      <!-- Band 3 · Deloitte engagement activity feed -->
+      <div class="engagement-band">
+        <div class="eb-head">
+          <span class="eb-label">Deloitte engagement room</span>
+          <span class="eb-live">Live</span>
+        </div>
+        <div class="eb-feed">
+          <div class="eb-row">
+            <span class="eb-time">10:42</span>
+            <span class="eb-text">Engagement partner accepted <b>12 ITGC controls</b><span class="eb-muted"> · ITGC-014, ITGC-021, ITGC-033, +9</span><span class="eb-tag accept">Accepted</span></span>
+          </div>
+          <div class="eb-row">
+            <span class="eb-time">10:38</span>
+            <span class="eb-text">Partner flagged <b>REV-021</b><span class="eb-muted"> · requesting expanded sample (N 84 → 124)</span><span class="eb-tag challenge">Challenge</span></span>
+          </div>
+          <div class="eb-row">
+            <span class="eb-time">09:55</span>
+            <span class="eb-text">Engagement partner accepted <b>26 financial-reporting controls</b><span class="eb-tag accept">Accepted</span></span>
+          </div>
+          <div class="eb-row">
+            <span class="eb-time">09:12</span>
+            <span class="eb-text">Dossier received by engagement team<span class="eb-muted"> · Sarah Kim, CPA · S-1 cycle Q3 2026</span><span class="eb-tag received">Received</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Domain rollup (collapsed by default) -->
+      <details class="domain-rollup">
+        <summary>Coverage by domain · <b>10 domains</b> · click to expand and filter</summary>
+        <div class="rollup-body">
+          <div class="domain-rollup-grid" id="domainRollup"></div>
+        </div>
+      </details>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <span class="fb-label">Method</span>
+        <span class="filter-chip active" data-method="all">All · 317</span>
+        <span class="filter-chip" data-method="sampling">Sampling · 184</span>
+        <span class="filter-chip" data-method="full">Full population · 133</span>
+        <span class="filter-chip" data-method="exception">Has exceptions · 39</span>
+        <span style="flex:1;"></span>
+        <input type="text" class="search-input" placeholder="Search control id, name, owner…" id="searchInput" />
+        <select class="search-input" style="width: 200px;" id="sortBy">
+          <option value="id">Sort: Control ID</option>
+          <option value="domain">Sort: Domain</option>
+          <option value="sample">Sort: Sample size (desc)</option>
+          <option value="exc">Sort: Exceptions first</option>
+        </select>
+      </div>
+
+      <!-- Scope table -->
+      <div class="scope-table-wrap">
+        <div class="scope-table-head">
+          <h2>Per-control reliance scope</h2>
+          <div class="showing">Showing <b id="rangeStart">1</b>–<b id="rangeEnd">50</b> of <b id="rangeTotal">317</b> controls</div>
+        </div>
+        <table class="scope">
+          <thead>
+            <tr>
+              <th style="width: 100px;">Control</th>
+              <th style="width: 260px;">Name / owner</th>
+              <th style="width: 80px;">Domain</th>
+              <th style="width: 80px;">Population</th>
+              <th style="width: 180px;">Sample N / method</th>
+              <th>Why N is sufficient</th>
+              <th style="width: 100px; text-align: right;">Reliance</th>
+            </tr>
+          </thead>
+          <tbody id="scopeBody"></tbody>
+        </table>
+        <div class="pager">
+          <div>Page <b id="pgNum">1</b> of <b id="pgTotal">7</b> · 50 rows/page · 317 controls total</div>
+          <div class="pg-controls" id="pgControls"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Premium dossier drawer -->
+<div class="drawer-backdrop" id="backdrop" onclick="closeDrawer()"></div>
+<aside class="drawer dossier-drawer" id="drawer" role="dialog" aria-modal="true">
+
+  <div class="drawer-head">
+    <div class="dossier-toolbar">
+      <div class="dt-left">
+        <button onclick="closeDrawer()" title="Close">←</button>
+        <span class="dt-title" id="dossier-toolbar-title">Control dossier</span>
+        <span class="text-muted" id="dossier-toolbar-pages">10 pages · Premium dossier</span>
+      </div>
+      <div class="dt-right">
+        <button onclick="growl('Adding reviewer note to dossier.')">Annotate</button>
+        <button onclick="growl('Dossier exported as PDF and downloaded.', 'success')">Download PDF</button>
+        <button onclick="closeDrawer()">×</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-body">
+    <div class="dossier-pages" id="dossier-pages"></div>
+  </div>
+
+  <div class="drawer-foot">
+    <button class="btn subtle" style="color: var(--luna-gray-300); border-color: transparent;" onclick="closeDrawer()">Close</button>
+    <button class="btn" style="background: rgba(255,255,255,0.06); color: var(--luna-white); border-color: rgba(255,255,255,0.15);" onclick="growl('Sample re-pulled with new seed. N preserved.')">Re-pull sample</button>
+    <div style="flex:1;"></div>
+    <span style="font-size: var(--luna-fs-50); color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; align-self: center; margin-right: var(--luna-sp-2);">Partner actions</span>
+    <button class="btn" style="background: rgba(255,255,255,0.06); color: var(--luna-white); border-color: rgba(255,255,255,0.15);" onclick="growl('Challenge logged. Dossier preparer notified.', 'warn')">Challenge sample</button>
+    <button class="btn" style="background: rgba(255,255,255,0.06); color: var(--luna-white); border-color: rgba(255,255,255,0.15);" onclick="growl('Expanded sample requested. N raised; preparer notified.', 'warn')">Request expanded sample</button>
+    <button class="btn primary"
+      data-ux-confirm
+      data-ux-confirm-title="Accept reliance on this control?"
+      data-ux-confirm-body="Recording partner reliance marks this control as audit-supported for the Q3 close. The decision is logged to the audit trail with your acceptance notes."
+      data-ux-confirm-impact="1 control · sample N preserved · partner signed-off marker recorded"
+      data-ux-confirm-reason="true"
+      data-ux-confirm-undo="6"
+      onclick="growl('Reliance accepted by partner. Audit-trail entry recorded.', 'success'); closeDrawer();">Accept reliance</button>
+  </div>
+</aside>
+
+<!-- Growl host -->
+<div class="growl-host" id="growlHost"></div>
+
+<script src="data.js"></script>
+<script>
+  // ============================================================
+  // Procedural data: generate 317 controls deterministically
+  // ============================================================
+  function seedRand(seed) {
+    let s = seed | 0;
+    return function() {
+      s = (s * 1664525 + 1013904223) | 0;
+      return ((s >>> 0) % 100000) / 100000;
+    };
+  }
+
+  const DOMAIN_DEFS = [
+    { id: "itgc",      label: "ITGC",         count: 58,  shortLabel: "IT General Controls" },
+    { id: "revenue",   label: "Revenue",      count: 44,  shortLabel: "Revenue" },
+    { id: "payroll",   label: "Payroll",      count: 26,  shortLabel: "Payroll" },
+    { id: "procure",   label: "Procurement",  count: 31,  shortLabel: "Procurement" },
+    { id: "treasury",  label: "Treasury",     count: 22,  shortLabel: "Treasury" },
+    { id: "tax",       label: "Tax",          count: 16,  shortLabel: "Tax" },
+    { id: "inventory", label: "Inventory",    count: 25,  shortLabel: "Inventory" },
+    { id: "finrep",    label: "Fin. Reporting",count: 38, shortLabel: "Financial Reporting" },
+    { id: "entity",    label: "Entity-Level", count: 23,  shortLabel: "Entity-Level" },
+    { id: "hr",        label: "HR",           count: 14,  shortLabel: "HR" },
+    // bridged from integrated audit
+    { id: "appgen",    label: "App General",  count: 20,  shortLabel: "Application General Controls" },
+  ];
+  // Total = 317
+
+  const CTRL_NAME_BANK = {
+    itgc: [
+      "User Access Review", "Privileged Access Review", "Change Approval Evidence",
+      "Backup Restoration Test", "New Hire / Termination Provisioning", "Schema Change Approval",
+      "Production Access Monitoring", "Source Code Repository Access", "Patch Management Cadence",
+      "Encryption Key Rotation", "MFA Enforcement Audit", "Vulnerability Scan Review",
+      "Logging & SIEM Coverage", "DR Failover Test", "Job-Scheduling Audit"
+    ],
+    revenue: [
+      "Revenue Recognition Cutoff", "Contract Modification Approval", "Deferred Revenue Reconciliation",
+      "SSP Allocation Review", "Sales Order Approval", "Pricing Override Review",
+      "Credit Memo Approval", "Customer Master Change", "Commission Calculation Review",
+      "Discount Authorization", "Multi-Element Arrangement"
+    ],
+    payroll: [
+      "Payroll Register vs GL Recon", "Termination Pay Authorization", "Bonus Authorization",
+      "Stock Comp Expense Recon", "PTO Accrual Review", "Tax Withholding Audit",
+      "Headcount Reconciliation", "Time-Card Approval"
+    ],
+    procure: [
+      "Three-Way Match Exception", "Vendor Master Change", "PO Approval Authority",
+      "Receiving Inspection", "Vendor Onboarding KYC", "Supplier Bank-Detail Change",
+      "Expense Report Approval", "P-Card Reconciliation"
+    ],
+    treasury: [
+      "Bank Reconciliation", "Wire Transfer Dual Auth", "Cash Forecasting Review",
+      "Investment Portfolio Recon", "Bank Signatory Audit", "FX Hedge Documentation",
+      "Intercompany Settlement"
+    ],
+    tax: [
+      "Sales Tax Nexus", "Income Tax Provision", "Transfer Pricing Documentation",
+      "VAT Filing Reconciliation", "R&D Credit Substantiation", "Withholding Tax Compliance"
+    ],
+    inventory: [
+      "Cycle Count Variance", "Inventory Obsolescence Reserve", "Standard Cost Roll-Forward",
+      "Inventory Aging Review", "Consignment Inventory Recon", "Inventory In-Transit Review",
+      "Slow-Moving Items Review", "Physical Count Reconciliation"
+    ],
+    finrep: [
+      "Journal Entry Review > $250K", "Balance Sheet Account Recon", "Material Estimate Review",
+      "Intercompany Elimination", "Goodwill Impairment Test", "Lease Accounting Review",
+      "Stock Comp Expense", "FX Remeasurement", "Restricted Cash Classification",
+      "Going Concern Assessment", "Subsequent Events Review"
+    ],
+    entity: [
+      "Audit Committee Minutes", "Whistleblower Hotline Review", "Code of Conduct Attestation",
+      "Tone-at-the-Top Survey", "Disclosure Committee Minutes", "Internal Control Cert (302)",
+      "Sub-Cert Attestations"
+    ],
+    hr: [
+      "Background Check Verification", "I-9 Verification", "Equity Grant Approval",
+      "Termination Checklist", "Performance Review Cadence", "Anti-Harassment Training Completion"
+    ],
+    appgen: [
+      "App Logical Access Review", "App Change Management", "App Data Backup",
+      "App Vendor SOC 1 Reliance", "App Reconciliation Job Audit", "App Interface Reconciliation"
+    ],
+  };
+
+  // Sampling methodology templates
+  const SAMPLING_METHODS = [
+    {
+      id: "asa530-attr",
+      label: "ASA 530 attribute",
+      method: "Attribute sampling",
+      pillClass: "sample",
+      formula: "N = (Z²·p̂·(1-p̂)) / E²",
+      explainer: (n, pop, tdr, cl) =>
+        `${n} items selected per AICPA AU-C §530 attribute sampling. Tolerable deviation rate ${tdr}% at ${cl}% confidence level. Expected population deviation rate 0%. Sample size sufficient to detect deviation rate above the tolerable threshold if it exists in the population of ${pop.toLocaleString()}.`,
+      justifyShort: (n) => `${n} items, ASA 530 attribute, 5% TDR @ 95% CL`,
+    },
+    {
+      id: "monetary-mus",
+      label: "MUS (PPS)",
+      method: "Monetary Unit Sampling",
+      pillClass: "sample",
+      formula: "N = (BV · RF) / (TM - (EM · EF))",
+      explainer: (n, pop, tdr, cl) =>
+        `${n} dollar-weighted items selected via Monetary Unit Sampling. Tolerable misstatement $250K, expected misstatement $0, ${cl}% confidence. Reliability factor 3.00 applied. MUS is appropriate here because monetary value is concentrated in large transactions.`,
+      justifyShort: (n) => `${n} items, MUS (PPS), $250K TM @ ${"95"}% CL`,
+    },
+    {
+      id: "haphazard",
+      label: "Haphazard",
+      method: "Haphazard selection",
+      pillClass: "sample",
+      formula: "N per AS 2315 — non-statistical",
+      explainer: (n, pop, tdr, cl) =>
+        `${n} items selected haphazardly across the period. Non-statistical method appropriate per PCAOB AS 2315 .23 because the auditor judgment is that no item disproportionately influences the population. Coverage spans all months of the period.`,
+      justifyShort: (n) => `${n} items, haphazard, AS 2315 .23`,
+    },
+    {
+      id: "systematic",
+      label: "Systematic interval",
+      method: "Systematic sampling",
+      pillClass: "sample",
+      formula: "k = Pop / N, random start in [1, k]",
+      explainer: (n, pop, tdr, cl) =>
+        `${n} items selected via systematic interval sampling (every k-th item with random start). Population is in chronological order so systematic sampling provides natural period coverage. Tolerable deviation ${tdr}% @ ${cl}% CL.`,
+      justifyShort: (n) => `${n} items, systematic (k=${Math.floor(pop / n) || 1}), ${tdr}% TDR @ 95% CL`,
+    },
+    {
+      id: "stratified",
+      label: "Stratified",
+      method: "Stratified sampling",
+      pillClass: "sample",
+      formula: "N = Σ stratum samples",
+      explainer: (n, pop, tdr, cl) =>
+        `${n} items selected via stratified sampling: high-dollar stratum tested in full, mid-stratum sampled at higher rate, low stratum at base rate. Stratification reduces variance and increases efficiency vs. simple random sampling.`,
+      justifyShort: (n) => `${n} items, stratified by $ value, ${tdr}% TDR @ 95% CL`,
+    },
+    {
+      id: "full-pop",
+      label: "Full",
+      method: "Tested in full",
+      pillClass: "full",
+      formula: "N = Pop",
+      explainer: (n, pop) =>
+        `All ${pop} occurrences tested. Population size ≤25 means sampling provides no efficiency benefit; full testing is the auditor's clear preference. 100% coverage achieved.`,
+      justifyShort: (n, pop) => `All ${pop} occurrences tested (100%)`,
+    },
+    {
+      id: "walkthrough",
+      label: "Walkthrough",
+      method: "Walkthrough + design",
+      pillClass: "walk",
+      formula: "1 end-to-end trace",
+      explainer: (n, pop) =>
+        `Design effectiveness only. Single walkthrough trace through end-to-end control execution, evidenced by inquiry + inspection + reperformance. Operating effectiveness covered by sibling testing controls.`,
+      justifyShort: () => `Walkthrough trace · design only`,
+    },
+    {
+      id: "inquiry",
+      label: "Inquiry",
+      method: "Inquiry + corroboration",
+      pillClass: "inquiry",
+      formula: "Inquiry + 2 corroborating sources",
+      explainer: (n, pop) =>
+        `Subjective control. Tested by inquiry of two independent parties + corroborating documentary evidence. Not amenable to statistical sampling. Auditor concludes design and operating effectiveness based on triangulation.`,
+      justifyShort: () => `Inquiry + 2 corroborating sources`,
+    },
+  ];
+
+  function pickMethod(rand, popSize, freq) {
+    if (popSize <= 25) {
+      if (popSize <= 4) return SAMPLING_METHODS[6]; // walkthrough
+      if (popSize <= 8 && rand() < 0.3) return SAMPLING_METHODS[7]; // inquiry
+      return SAMPLING_METHODS[5]; // full population
+    }
+    const r = rand();
+    if (r < 0.42) return SAMPLING_METHODS[0]; // attribute
+    if (r < 0.58) return SAMPLING_METHODS[1]; // MUS
+    if (r < 0.72) return SAMPLING_METHODS[3]; // systematic
+    if (r < 0.86) return SAMPLING_METHODS[4]; // stratified
+    return SAMPLING_METHODS[2]; // haphazard
+  }
+
+  // Build the 317-control universe
+  const ALL_CONTROLS = [];
+  let idx = 1;
+  DOMAIN_DEFS.forEach((dom, di) => {
+    const bank = CTRL_NAME_BANK[dom.id] || ["Control"];
+    for (let i = 0; i < dom.count; i++) {
+      const rand = seedRand(2026000 + di * 1000 + i);
+      const prefix = dom.id === "appgen" ? "APP" : dom.id.slice(0,3).toUpperCase();
+      const ctrlId = `${prefix}-${String(i + 1).padStart(2, '0')}`;
+      const nm = bank[i % bank.length] + (i >= bank.length ? ` (${dom.shortLabel})` : "");
+      const ownerIdx = Math.floor(rand() * OWNERS.length);
+      const freqs = ["D","D","D","W","M","M","M","M","Q","Q","Y"];
+      const freq = freqs[Math.floor(rand() * freqs.length)];
+      // Population: tied to frequency
+      const popMap = { D: () => 250 + Math.floor(rand() * 95), W: () => 40 + Math.floor(rand() * 12), M: () => 8 + Math.floor(rand() * 6), Q: () => 3 + Math.floor(rand() * 3), Y: () => 1 + Math.floor(rand() * 2) };
+      // Some controls have huge transactional populations
+      let popSize = popMap[freq]();
+      if ((dom.id === "revenue" || dom.id === "procure" || dom.id === "finrep") && rand() < 0.35) {
+        popSize = 800 + Math.floor(rand() * 14500); // transaction-population
+      }
+      if (dom.id === "itgc" && (nm.includes("Change") || nm.includes("Access"))) {
+        popSize = Math.max(popSize, 120 + Math.floor(rand() * 580));
+      }
+
+      const method = pickMethod(rand, popSize, freq);
+
+      // Sample N
+      let sampleN;
+      const tdr = [5, 5, 5, 7, 10][Math.floor(rand() * 5)];
+      const cl = 95;
+      if (method.id === "full-pop") sampleN = popSize;
+      else if (method.id === "walkthrough") sampleN = 1;
+      else if (method.id === "inquiry") sampleN = 2;
+      else if (method.id === "monetary-mus") sampleN = Math.min(popSize, Math.max(25, Math.floor(45 + rand() * 50)));
+      else if (method.id === "asa530-attr") {
+        // approximate AICPA Table 1 for 5% TDR / 95% CL = 60
+        const base = tdr === 5 ? 60 : tdr === 7 ? 42 : 32;
+        sampleN = Math.min(popSize, base + Math.floor(rand() * 8));
+      } else if (method.id === "systematic") sampleN = Math.min(popSize, 40 + Math.floor(rand() * 25));
+      else if (method.id === "stratified") sampleN = Math.min(popSize, 50 + Math.floor(rand() * 30));
+      else sampleN = Math.min(popSize, 30 + Math.floor(rand() * 20));
+
+      // Exceptions: 0 most of the time, occasional 1-3
+      const excR = rand();
+      const exceptions = excR < 0.81 ? 0 : excR < 0.93 ? 1 : excR < 0.985 ? 2 : 3;
+      const reliancePct = exceptions === 0 ? 100 : exceptions === 1 ? 98 : exceptions === 2 ? 88 : 72;
+      const status = exceptions === 0 ? "accepted" : exceptions <= 2 ? "borderline" : "deficient";
+
+      ALL_CONTROLS.push({
+        id: ctrlId,
+        name: nm,
+        domain: dom.id,
+        domainLabel: dom.label,
+        domainShort: dom.shortLabel,
+        owner: OWNERS[ownerIdx].name,
+        ownerTeam: OWNERS[ownerIdx].team,
+        freq: freq,
+        population: popSize,
+        sampleN: sampleN,
+        method: method,
+        tdr: tdr,
+        cl: cl,
+        exceptions: exceptions,
+        reliancePct: reliancePct,
+        status: status,
+        seed: 2026000 + di * 1000 + i,
+      });
+      idx++;
+    }
+  });
+
+  // ============================================================
+  // Domain rollup
+  // ============================================================
+  // ============================================================
+  // Methodology band — citation density + sampling-method mix
+  // ============================================================
+  function renderMethodologyBand() {
+    const sampleCount = ALL_CONTROLS.filter(c => c.method.pillClass === 'sample').length;
+    const citations = [
+      { std: 'PCAOB AS 2201', n: ALL_CONTROLS.length },
+      { std: 'PCAOB AS 1105', n: ALL_CONTROLS.length },
+      { std: 'PCAOB AS 2315', n: sampleCount },
+      { std: 'AICPA AU-C §530', n: sampleCount },
+    ];
+    document.getElementById('citationList').innerHTML = citations.map(c => `
+      <span class="cit"><span class="cit-std">${c.std}</span><span class="cit-x">×</span><span class="cit-n">${c.n.toLocaleString()}</span></span>
+    `).join('');
+
+    const METHOD_KEYS = [
+      { id: 'stratified', label: 'Stratified', color: 'var(--luna-teal-500)' },
+      { id: 'mus',        label: 'MUS',        color: 'var(--luna-teal-400)' },
+      { id: 'attribute',  label: 'Attribute',  color: 'var(--luna-teal-300)' },
+      { id: 'full-pop',   label: 'Full pop.',  color: 'var(--luna-green-400)' },
+      { id: 'walkthrough',label: 'Walkthrough',color: 'var(--luna-gray-300)' },
+      { id: 'inquiry',    label: 'Inquiry',    color: 'var(--luna-gray-200)' },
+    ];
+    const total = ALL_CONTROLS.length;
+    const mixCounts = METHOD_KEYS
+      .map(k => ({ ...k, count: ALL_CONTROLS.filter(c => c.method.id === k.id).length }))
+      .filter(k => k.count > 0);
+
+    document.getElementById('samplingMixBar').innerHTML = mixCounts.map(k =>
+      `<span style="width:${(k.count / total * 100).toFixed(2)}%;background:${k.color};" title="${k.label} · ${k.count}"></span>`
+    ).join('');
+    document.getElementById('samplingMixLegend').innerHTML = mixCounts.map(k =>
+      `<span class="smb-leg"><span class="smb-swatch" style="background:${k.color};"></span>${k.label} <b>${k.count}</b></span>`
+    ).join('');
+  }
+
+  function renderDomainRollup() {
+    const host = document.getElementById('domainRollup');
+    const rolled = DOMAIN_DEFS.slice(0, 10).map(d => {
+      const inDomain = ALL_CONTROLS.filter(c => c.domain === d.id);
+      const sampled = inDomain.filter(c => c.method.pillClass === 'sample').length;
+      const full = inDomain.filter(c => c.method.pillClass === 'full').length;
+      const total = inDomain.length;
+      const exc = inDomain.filter(c => c.exceptions > 0).length;
+      const pct = Math.round(((total - exc) / total) * 1000) / 10;
+      return { d, total, sampled, full, pct };
+    });
+    host.innerHTML = rolled.map(r => `
+      <div class="domain-card" onclick="filterByDomain('${r.d.id}')">
+        <div class="dc-name">${r.d.shortLabel}</div>
+        <div class="dc-counts">${r.total} ctrls · ${r.sampled} smpl · ${r.full} full</div>
+        <div class="dc-pct">${r.pct}<span style="font-size: var(--luna-fs-100); color: var(--luna-text-subdued); font-weight: 500;">%</span></div>
+        <div class="dc-bar"><span style="width:${r.pct}%;"></span></div>
+      </div>
+    `).join('');
+  }
+
+  // ============================================================
+  // Scope table — paginated
+  // ============================================================
+  let currentPage = 1;
+  const PAGE_SIZE = 50;
+  let activeMethod = 'all';
+  let activeDomain = null;
+  let sortBy = 'id';
+  let searchQ = '';
+
+  function filteredControls() {
+    let list = ALL_CONTROLS.slice();
+    if (activeMethod === 'sampling') list = list.filter(c => c.method.pillClass === 'sample');
+    else if (activeMethod === 'full') list = list.filter(c => c.method.pillClass === 'full');
+    else if (activeMethod === 'exception') list = list.filter(c => c.exceptions > 0);
+    if (activeDomain) list = list.filter(c => c.domain === activeDomain);
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      list = list.filter(c => c.id.toLowerCase().includes(q) || c.name.toLowerCase().includes(q) || c.owner.toLowerCase().includes(q));
+    }
+    if (sortBy === 'id') list.sort((a,b) => a.id.localeCompare(b.id));
+    else if (sortBy === 'domain') list.sort((a,b) => a.domainLabel.localeCompare(b.domainLabel) || a.id.localeCompare(b.id));
+    else if (sortBy === 'sample') list.sort((a,b) => b.sampleN - a.sampleN);
+    else if (sortBy === 'exc') list.sort((a,b) => b.exceptions - a.exceptions || a.id.localeCompare(b.id));
+    return list;
+  }
+
+  function renderScopeTable() {
+    const list = filteredControls();
+    const total = list.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const end = Math.min(start + PAGE_SIZE, total);
+    const slice = list.slice(start, end);
+
+    document.getElementById('rangeStart').textContent = total === 0 ? 0 : (start + 1).toString();
+    document.getElementById('rangeEnd').textContent = end.toString();
+    document.getElementById('rangeTotal').textContent = total.toString();
+    document.getElementById('pgNum').textContent = currentPage.toString();
+    document.getElementById('pgTotal').textContent = totalPages.toString();
+
+    const body = document.getElementById('scopeBody');
+    body.innerHTML = slice.map(c => {
+      const m = c.method;
+      const justifyText = m.justifyShort(c.sampleN, c.population, c.tdr, c.cl);
+      const sampleDisplay = (m.id === 'full-pop')
+        ? `<span class="sample-n">${c.population}<span class="of"> / ${c.population}</span></span>`
+        : (m.id === 'walkthrough' || m.id === 'inquiry')
+          ? `<span class="sample-n">${c.sampleN}<span class="of"> · n/a</span></span>`
+          : `<span class="sample-n">${c.sampleN}<span class="of"> / ${c.population.toLocaleString()}</span></span>`;
+      const excBadge = c.exceptions > 0
+        ? `<span class="badge ${c.exceptions >= 3 ? 'orange' : 'yellow'}" style="margin-left: 4px;"><span class="badge-dot"></span>${c.exceptions} exc</span>`
+        : '';
+      const relColor = c.reliancePct === 100 ? 'var(--luna-green-500)' : c.reliancePct >= 90 ? 'var(--luna-text)' : c.reliancePct >= 80 ? 'var(--luna-orange-500)' : 'var(--luna-red-500)';
+      return `
+        <tr onclick="openDossier('${c.id}')">
+          <td class="ctrl-id">${c.id}</td>
+          <td class="ctrl-name">
+            <div class="nm">${c.name}</div>
+            <div class="own">${c.owner} · ${c.ownerTeam}</div>
+          </td>
+          <td><span class="badge gray">${c.domainLabel}</span></td>
+          <td class="tabular">${c.population.toLocaleString()}</td>
+          <td class="sample-cell">
+            ${sampleDisplay}
+            <div class="sample-method"><span class="method-pill ${m.pillClass}">${m.label}</span></div>
+          </td>
+          <td class="justify">
+            <span class="just-chip">${m.id === 'full-pop' ? '100% coverage' : m.id === 'walkthrough' ? 'Design only' : m.id === 'inquiry' ? 'Triangulation' : `${c.tdr}% TDR @ ${c.cl}% CL`}</span>
+            <div class="just-text">${justifyText}</div>
+          </td>
+          <td class="status-cell">
+            <div class="pct" style="color: ${relColor};">${c.reliancePct}%</div>
+            <div class="pct-meta">${c.exceptions === 0 ? 'No exceptions' : c.exceptions + ' exception' + (c.exceptions > 1 ? 's' : '')}</div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Pager
+    const pgC = document.getElementById('pgControls');
+    let pgHtml = '';
+    pgHtml += `<button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>«</button>`;
+    pgHtml += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+    // Render numbered buttons (show up to 7)
+    let from = Math.max(1, currentPage - 3);
+    let to = Math.min(totalPages, from + 6);
+    from = Math.max(1, to - 6);
+    for (let p = from; p <= to; p++) {
+      pgHtml += `<button class="${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+    }
+    pgHtml += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+    pgHtml += `<button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>»</button>`;
+    pgC.innerHTML = pgHtml;
+  }
+
+  function goToPage(p) {
+    const totalPages = Math.max(1, Math.ceil(filteredControls().length / PAGE_SIZE));
+    currentPage = Math.max(1, Math.min(totalPages, p));
+    renderScopeTable();
+  }
+
+  function filterByDomain(domId) {
+    if (activeDomain === domId) {
+      activeDomain = null;
+      growl(`Domain filter cleared. Showing all 317 controls.`);
+    } else {
+      activeDomain = domId;
+      const d = DOMAIN_DEFS.find(d => d.id === domId);
+      growl(`Filtered to ${d.shortLabel} · ${d.count} controls.`);
+    }
+    currentPage = 1;
+    renderScopeTable();
+  }
+
+  // Filter chip handlers
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeMethod = chip.dataset.method;
+      currentPage = 1;
+      renderScopeTable();
+    });
+  });
+  document.getElementById('sortBy').addEventListener('change', (e) => {
+    sortBy = e.target.value;
+    renderScopeTable();
+  });
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQ = e.target.value;
+    currentPage = 1;
+    renderScopeTable();
+  });
+
+  // ============================================================
+  // Premium dossier drawer
+  // ============================================================
+  function genSampleItems(ctrl, n) {
+    const rand = seedRand(ctrl.seed * 7 + 13);
+    const items = [];
+    const cnt = Math.min(n, ctrl.sampleN);
+    for (let i = 0; i < cnt; i++) {
+      const day = 1 + Math.floor(rand() * 91); // Jul 1 → Sep 30
+      const d = new Date(2026, 6, 1);
+      d.setDate(d.getDate() + day - 1);
+      const dateStr = d.toISOString().slice(0,10);
+      const owner = OWNERS[Math.floor(rand() * OWNERS.length)];
+      const evId = `EV-2026Q3-${10000 + Math.floor(rand() * 89000)}`;
+      const isExc = ctrl.exceptions > 0 && i < ctrl.exceptions;
+      let amount = '';
+      if (ctrl.domain === 'finrep' || ctrl.domain === 'revenue' || ctrl.domain === 'treasury') {
+        const a = 50000 + Math.floor(rand() * 2500000);
+        amount = '$' + a.toLocaleString();
+      }
+      items.push({
+        idx: i + 1,
+        evId,
+        date: dateStr,
+        preparer: owner.name,
+        approver: OWNERS[(Math.floor(rand() * OWNERS.length) + 3) % OWNERS.length].name,
+        amount,
+        result: isExc ? 'Exception' : 'Pass',
+        note: isExc
+          ? ['Approver field blank', 'Coverage period stops 9/24', 'Preparer == approver (SOD)', 'Missing supporting attachment'][i % 4]
+          : 'All control attributes verified',
+      });
+    }
+    return items;
+  }
+
+  function partnerStatus(c) {
+    if (c.status === 'deficient') return { id: 'substantive', label: 'Routed to substantive' };
+    if (c.status === 'borderline') return { id: 'challenged', label: 'Under partner challenge' };
+    const r = (c.seed & 0xFF) % 4;
+    if (r === 0) return { id: 'pending', label: 'Awaiting partner review' };
+    return { id: 'accepted', label: 'Reliance accepted by partner' };
+  }
+
+  function openDossier(ctrlId) {
+    const c = ALL_CONTROLS.find(x => x.id === ctrlId);
+    if (!c) return;
+    activeControl = c;
+    const ps = partnerStatus(c);
+
+    document.getElementById('dossier-toolbar-title').textContent = `${c.id} · ${c.name}`;
+    document.getElementById('dossier-toolbar-pages').textContent = `10 pages · Premium dossier · ${c.reliancePct}% reliance`;
+
+    const m = c.method;
+    const samples = genSampleItems(c, m.id === 'full-pop' ? Math.min(c.population, 12) : Math.min(c.sampleN, 12));
+    const showingNote = (m.id === 'full-pop')
+      ? `Showing 12 of ${c.population} (full population — all tested)`
+      : (m.id === 'walkthrough' || m.id === 'inquiry')
+        ? `Showing all ${c.sampleN} traces`
+        : `Showing 12 of ${c.sampleN} sampled (sample drawn from population of ${c.population.toLocaleString()})`;
+    const opinionClass = c.status === 'accepted' ? '' : c.status === 'borderline' ? 'borderline' : 'insufficient';
+    const opinionLabel = c.status === 'accepted' ? 'Reliance accepted' : c.status === 'borderline' ? 'Reliance with exception(s)' : 'Substantive procedures required';
+
+    const exceptions = samples.filter(s => s.result === 'Exception');
+    const exceptionHTML = exceptions.length ? exceptions.map(e => `
+      <div style="padding: var(--luna-sp-2) var(--luna-sp-3); background: var(--luna-orange-50); border: 1px solid var(--luna-orange-100); border-left: 3px solid var(--luna-orange-400); border-radius: 4px; margin-bottom: var(--luna-sp-2); font-size: var(--luna-fs-100);">
+        <b>${e.evId}</b> · ${e.date} · ${e.preparer} → ${e.approver} ${e.amount ? '· ' + e.amount : ''}
+        <div style="color: var(--luna-orange-700); margin-top: 2px;">${e.note}</div>
+      </div>
+    `).join('') : `<p style="color: var(--luna-green-700);"><b>No exceptions identified.</b> All ${c.sampleN === c.population ? c.population : c.sampleN} items pass all control attributes.</p>`;
+
+    const html = `
+      <div class="dossier-page" data-page="1" data-total="10">
+        <div class="dp-header">
+          <span>Helios Robotics, Inc.</span>
+          <span>External Auditor Reliance Dossier · Q3 2026</span>
+        </div>
+        <span class="dossier-status ${ps.id}"><span class="ds-dot"></span>${ps.label}</span>
+        <h1>${c.id} — ${c.name}</h1>
+        <p style="font-size: var(--luna-fs-100); color: var(--luna-text-subdued); margin-bottom: var(--luna-sp-5);">
+          Cover · Issued ${new Date().toISOString().slice(0,10)} · For Deloitte &amp; Touche LLP
+        </p>
+
+        <dl class="meta-grid">
+          <div><dt>Domain</dt><dd>${c.domainShort}</dd></div>
+          <div><dt>Frequency</dt><dd>${({D:'Daily',W:'Weekly',M:'Monthly',Q:'Quarterly',Y:'Annual'})[c.freq]}</dd></div>
+          <div><dt>Process owner</dt><dd>${c.owner} (${c.ownerTeam})</dd></div>
+          <div><dt>Period</dt><dd>2026-07-01 → 2026-09-30</dd></div>
+          <div><dt>Population</dt><dd>${c.population.toLocaleString()} occurrences</dd></div>
+          <div><dt>Sample N</dt><dd>${c.sampleN} ${m.id === 'full-pop' ? '(100%)' : ''}</dd></div>
+          <div><dt>Method</dt><dd>${m.method}</dd></div>
+          <div><dt>Status</dt><dd>${opinionLabel} · ${c.reliancePct}%</dd></div>
+        </dl>
+
+        <div class="opinion-block ${opinionClass}">
+          <div class="op-label">Auditor reliance recommendation</div>
+          <p style="margin: 0;">${
+            c.status === 'accepted' ? `Management's testing supports reliance for the period ending 2026-09-30. ${c.sampleN === c.population ? 'Full population tested.' : `Sample of ${c.sampleN} items drawn from population of ${c.population.toLocaleString()}.`} <b>No exceptions identified.</b> Recommend reliance on this control to reduce substantive testing.`
+            : c.status === 'borderline' ? `Management's testing identifies ${c.exceptions} exception${c.exceptions > 1 ? 's' : ''} in a sample of ${c.sampleN}. Exception rate ${(c.exceptions / c.sampleN * 100).toFixed(2)}% remains below tolerable threshold. <b>Reliance maintained with documented exception disposition.</b>`
+            : `Management's testing identifies ${c.exceptions} exceptions. Sample-based projected error rate exceeds tolerable threshold. <b>Substantive procedures required</b> — reliance not granted for this control this cycle.`
+          }</p>
+        </div>
+      </div>
+
+      <div class="dossier-page" data-page="2" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section I · Control Description &amp; Risk</span>
+        </div>
+        <h1>I. Control description &amp; risk linkage</h1>
+
+        <h3>Control objective</h3>
+        <p>This control is designed to provide reasonable assurance that ${c.name.toLowerCase()} activity at Helios Robotics, Inc. is initiated, approved, recorded and reviewed in accordance with established policy, and that financial statement assertions over the related accounts are not misstated due to the absence or failure of the control activity.</p>
+
+        <h3>Financial-statement assertions covered</h3>
+        <p><b>Existence/Occurrence</b> · <b>Completeness</b> · <b>Accuracy/Valuation</b> · <b>Cutoff</b> ${c.domain === 'finrep' || c.domain === 'revenue' ? '· <b>Presentation/Disclosure</b>' : ''}</p>
+
+        <h3>Inherent risk rating</h3>
+        <p style="margin: 0;"><b>${c.exceptions >= 3 ? 'High' : c.population > 1000 ? 'High' : c.population > 100 ? 'Moderate' : 'Low'}</b> — based on (a) population volume of ${c.population.toLocaleString()} occurrences across the period, (b) ${c.domain === 'revenue' || c.domain === 'finrep' ? 'direct linkage to financial statement caption' : 'compensating controls in adjacent processes'}, and (c) Q2 2026 prior-period testing history.</p>
+
+        <h2>Walkthrough summary</h2>
+        <p>Internal Audit performed a walkthrough on ${new Date(2026, 6, 14).toISOString().slice(0,10)} with ${c.owner} (process owner) and ${OWNERS[(c.seed) % OWNERS.length].name} (preparer). Walkthrough confirmed the control's design is suitable to address the relevant assertions. Two-party preparer/approver segregation observed in the workflow tooling. No design deficiency identified.</p>
+      </div>
+
+      <div class="dossier-page" data-page="3" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section II · Sampling Plan</span>
+        </div>
+        <h1>II. Sampling plan &amp; population analysis</h1>
+
+        <div class="dossier-sampling">
+          <div class="ds-label">Method · ${m.method}</div>
+          <div class="ds-formula">${m.formula}</div>
+          <div class="ds-explainer">${m.explainer(c.sampleN, c.population, c.tdr, c.cl)}</div>
+        </div>
+
+        <h3>Why this sample size is sufficient</h3>
+        ${m.id === 'full-pop'
+          ? `<p>Population of ${c.population} occurrences is below the sampling-efficiency threshold of 25. Testing the full population yields 100% coverage with audit effort equal to or less than what statistical sampling would require. <b>Conclusion: testing every item is the most efficient and most defensible approach.</b></p>
+             <p>This is consistent with AICPA AU-C §530.A26 and PCAOB AS 2315 .19: when the population is small, the auditor may not need to use sampling.</p>`
+          : (m.id === 'walkthrough' || m.id === 'inquiry')
+            ? `<p>Control activity is inherently subjective or low-frequency. Sampling would not produce a statistically meaningful inference. Sufficient appropriate evidence is obtained via ${m.method.toLowerCase()} per PCAOB AS 1105 .07.</p>
+               <p>Triangulation evidence: (1) primary process owner inquiry, (2) corroborating documentation, (3) reperformance by Internal Audit.</p>`
+            : `<p>Sample size derived using ${m.label}. For an attribute population of ${c.population.toLocaleString()}, a sample of ${c.sampleN} provides ${c.cl}% confidence to detect a deviation rate above ${c.tdr}% — the auditor's pre-defined tolerable deviation rate.</p>
+               <p>Reference: AICPA Audit Sampling Guide, Table 1 — for ${c.tdr}% TDR at ${c.cl}% CL with expected deviation 0%, required sample is ${c.tdr === 5 ? 60 : c.tdr === 7 ? 42 : 32}. Our sample of ${c.sampleN} ${c.sampleN >= (c.tdr === 5 ? 60 : c.tdr === 7 ? 42 : 32) ? 'meets or exceeds' : 'slightly exceeds'} that requirement.</p>
+               <p>Selection technique: random selection via deterministic seeded RNG (seed = ${c.seed}). Sample is reproducible by re-running with the same seed.</p>`}
+
+        <h3>Population scoping</h3>
+        <p>Population defined as all occurrences of ${c.name.toLowerCase()} executed during the period 2026-07-01 → 2026-09-30 as extracted from ${c.domain === 'itgc' ? 'the IGA platform (Okta + JumpCloud) and AWS CloudTrail' : c.domain === 'revenue' || c.domain === 'finrep' ? 'NetSuite ERP (subledger views: rev_recognition, je_master)' : c.domain === 'payroll' ? 'Workday HCM (payroll_register)' : 'authoritative system of record'}. Reconciled to GL where applicable.</p>
+        <p><b>Population total: ${c.population.toLocaleString()}</b> · Source extraction timestamp: 2026-10-02 06:00 UTC · Extraction control: data team certification on file.</p>
+      </div>
+
+      <div class="dossier-page" data-page="4" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section III · Sample Detail</span>
+        </div>
+        <h1>III. Sampled items</h1>
+        <p style="font-size: var(--luna-fs-100); color: var(--luna-text-subdued);">${showingNote}</p>
+
+        <table class="sample-table">
+          <thead>
+            <tr>
+              <th style="width: 30px;">#</th>
+              <th style="width: 110px;">Evidence ID</th>
+              <th style="width: 80px;">Date</th>
+              <th>Preparer → Approver</th>
+              ${samples[0] && samples[0].amount ? '<th style="width: 110px;">Amount</th>' : ''}
+              <th style="width: 60px;">Result</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${samples.map(s => `
+              <tr class="${s.result === 'Exception' ? 'exc' : ''}">
+                <td>${s.idx}</td>
+                <td class="id-col">${s.evId}</td>
+                <td>${s.date}</td>
+                <td>${s.preparer} → ${s.approver}</td>
+                ${s.amount ? `<td class="tabular">${s.amount}</td>` : ''}
+                <td>${s.result === 'Pass' ? '<span class="ok-mark">✓</span> Pass' : '<span class="exc-mark">!</span> Exc'}</td>
+                <td>${s.note}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        ${m.id !== 'full-pop' && m.id !== 'walkthrough' && m.id !== 'inquiry'
+          ? `<p style="font-size: var(--luna-fs-100); color: var(--luna-text-subdued);">Full sample detail (${c.sampleN} items) is included as Appendix A of the dossier PDF.</p>`
+          : ''}
+      </div>
+
+      <div class="dossier-page" data-page="5" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section IV · Exceptions &amp; Disposition</span>
+        </div>
+        <h1>IV. Exceptions &amp; disposition</h1>
+        ${exceptionHTML}
+
+        ${c.exceptions > 0 ? `
+          <h3>Disposition</h3>
+          <p>Exception${c.exceptions > 1 ? 's' : ''} reviewed with control owner. Root cause analysis attached as Appendix B. ${c.exceptions <= 2 ? 'Exception rate of ' + (c.exceptions / c.sampleN * 100).toFixed(2) + '% remains below tolerable deviation rate of ' + c.tdr + '%. Reliance maintained.' : 'Exception rate exceeds tolerable threshold; substantive procedures required.'}</p>
+          <h3>Projected error</h3>
+          <p>Sample exception rate of ${(c.exceptions / c.sampleN * 100).toFixed(2)}% projected to a population of ${c.population.toLocaleString()} yields an estimated <b>${Math.round(c.exceptions / c.sampleN * c.population)} occurrence${Math.round(c.exceptions / c.sampleN * c.population) === 1 ? '' : 's'}</b> of the deficient condition population-wide. ${c.status === 'deficient' ? 'Material to ICFR conclusion.' : 'Below materiality threshold ($1.2M) for ICFR conclusion.'}</p>
+        ` : `
+          <h3>Projected error rate</h3>
+          <p>With zero exceptions in a sample of ${c.sampleN}, the upper deviation rate at ${c.cl}% confidence is ${(Math.log(1 - c.cl/100) / -c.sampleN * 100).toFixed(2)}%, which is <b>below the auditor's tolerable deviation rate of ${c.tdr}%</b>. Reliance fully supported.</p>
+        `}
+      </div>
+
+      <div class="dossier-page" data-page="6" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section V · Evidence Inventory</span>
+        </div>
+        <h1>V. Evidence inventory</h1>
+        <p>Total evidence artifacts attached to this control's reliance package: <b>${c.sampleN === c.population ? c.population : c.sampleN + ' sampled + ' + Math.min(8, c.population) + ' walkthrough'} files</b>, ${Math.round(c.sampleN * 0.4)}MB compressed.</p>
+
+        <h3>Artifact types</h3>
+        <ul style="margin: 0; padding-left: var(--luna-sp-5); font-size: var(--luna-fs-100);">
+          <li>System-extracted population listing (CSV, certified by data team)</li>
+          <li>Sample selection log with seed and selection timestamps</li>
+          <li>Per-item evidence files (PDFs, screenshots, system reports)</li>
+          <li>Workflow approval records exported from ${c.domain === 'finrep' ? 'NetSuite' : c.domain === 'itgc' ? 'Okta + ServiceNow' : 'process system'} </li>
+          <li>Walkthrough memorandum with diagram</li>
+          <li>Q2 2026 prior-period comparison (for change-of-state analysis)</li>
+        </ul>
+
+        <h3>Chain of custody</h3>
+        <p>Each artifact carries an immutable hash recorded at ingest. Hash chain verified at dossier-generation time (${new Date().toISOString().slice(0, 19).replace('T', ' ')}Z) — <b>no artifact modifications detected after ingestion.</b></p>
+      </div>
+
+      <div class="dossier-page" data-page="7" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section VI · Prior Period Comparison</span>
+        </div>
+        <h1>VI. Prior-period comparison</h1>
+        <p>Compared against the same control tested in <b>Q2 2026</b> close. Trend analysis informs the residual risk assessment.</p>
+        <table class="sample-table">
+          <thead><tr><th>Metric</th><th>Q2 2026</th><th>Q3 2026</th><th>Δ</th></tr></thead>
+          <tbody>
+            <tr><td>Population size</td><td>${Math.round(c.population * 0.92).toLocaleString()}</td><td>${c.population.toLocaleString()}</td><td>+${((c.population / Math.round(c.population * 0.92) - 1) * 100).toFixed(1)}%</td></tr>
+            <tr><td>Sample N</td><td>${Math.max(1, c.sampleN - 2)}</td><td>${c.sampleN}</td><td>${c.sampleN > c.sampleN - 2 ? '+' : ''}${c.sampleN > Math.max(1, c.sampleN - 2) ? c.sampleN - Math.max(1, c.sampleN - 2) : 0}</td></tr>
+            <tr><td>Exceptions identified</td><td>${Math.max(0, c.exceptions - 1)}</td><td>${c.exceptions}</td><td>${c.exceptions - Math.max(0, c.exceptions - 1) >= 0 ? '+' : ''}${c.exceptions - Math.max(0, c.exceptions - 1)}</td></tr>
+            <tr><td>Reliance %</td><td>${Math.min(100, c.reliancePct + 4)}%</td><td>${c.reliancePct}%</td><td>${c.reliancePct - Math.min(100, c.reliancePct + 4)}pp</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top: var(--luna-sp-4);">${c.exceptions > 0 ? '<b>Direction-of-travel:</b> Negative quarter-over-quarter. Owner attribution recorded — see Appendix C.' : '<b>Direction-of-travel:</b> Stable. Control continues to operate as designed.'}</p>
+      </div>
+
+      <div class="dossier-page" data-page="8" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section VII · Auditor Standards Citation</span>
+        </div>
+        <h1>VII. Auditing standards citations</h1>
+
+        <h3>PCAOB</h3>
+        <ul style="font-size: var(--luna-fs-100); padding-left: var(--luna-sp-5);">
+          <li><b>AS 1105 — Audit Evidence:</b> Sufficient appropriate audit evidence obtained per .07–.08</li>
+          <li><b>AS 2201 — Audit of ICFR:</b> Control included in scope per .B7 risk assessment</li>
+          <li><b>AS 2315 — Audit Sampling:</b> ${m.id === 'walkthrough' || m.id === 'inquiry' ? 'Not applicable — non-sampling approach' : 'Sample design per .19–.25; evaluation per .31–.36'}</li>
+        </ul>
+
+        <h3>AICPA (private-company alt)</h3>
+        <ul style="font-size: var(--luna-fs-100); padding-left: var(--luna-sp-5);">
+          <li><b>AU-C §330 — Performing Audit Procedures:</b> ${m.method} responds to assessed risk</li>
+          <li><b>AU-C §530 — Audit Sampling:</b> ${m.id === 'walkthrough' || m.id === 'inquiry' ? 'Not applicable' : 'Sample size and selection consistent with §.05–.A26'}</li>
+        </ul>
+
+        <h3>Materiality &amp; tolerable misstatement</h3>
+        <p>Performance materiality applied: <b>$1.2M</b> (75% of overall materiality of $1.6M). Tolerable misstatement for this control: <b>${c.domain === 'finrep' || c.domain === 'revenue' ? '$250K' : '$120K'}</b>. Sample design supports detection at this level.</p>
+      </div>
+
+      <div class="dossier-page" data-page="9" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Section VIII · Conclusion</span>
+        </div>
+        <h1>VIII. Conclusion of reliance testing</h1>
+
+        <div class="opinion-block ${opinionClass}">
+          <div class="op-label">${opinionLabel}</div>
+          <p style="margin: 0;">${
+            c.status === 'accepted' ? `Based on the sample tested and the procedures applied, IA has obtained sufficient appropriate evidence to support reliance on ${c.id} for the period ending 2026-09-30. ${m.id === 'full-pop' ? 'Population tested in full.' : `Sample of ${c.sampleN} of ${c.population.toLocaleString()} executed without exception.`} The control operated effectively throughout the period.`
+            : c.status === 'borderline' ? `Based on the sample tested, IA has obtained sufficient appropriate evidence to support reliance with documented exceptions. The ${c.exceptions} exception${c.exceptions > 1 ? 's' : ''} identified ${c.exceptions === 1 ? 'is' : 'are'} below the tolerable deviation rate of ${c.tdr}%. Compensating controls reviewed; no material weakness implied.`
+            : `Based on the sample tested, IA has identified ${c.exceptions} exceptions in a sample of ${c.sampleN}. Projected error rate exceeds tolerable deviation. <b>Reliance is not granted for this control this cycle.</b> External auditor to perform substantive procedures over the related assertion.`
+          }</p>
+        </div>
+
+        <h3>Recommended external-auditor action</h3>
+        <ul style="font-size: var(--luna-fs-100); padding-left: var(--luna-sp-5);">
+          ${c.status === 'accepted' ? `
+            <li>Accept reliance — re-perform a sample of 4–6 items per inspection of auditor's own paper</li>
+            <li>No additional substantive procedures required for the related assertion</li>
+            <li>Sample selection seed retained for reproducibility (${c.seed})</li>
+          ` : c.status === 'borderline' ? `
+            <li>Accept reliance with caveats — expand re-performance sample to 8–10 items</li>
+            <li>Review exception disposition; concur with control owner remediation plan</li>
+            <li>Consider impact on related assertions for adjacent controls</li>
+          ` : `
+            <li>Do not rely — substantive procedures required</li>
+            <li>Recommend testing on Deloitte's behalf with auditor-selected sample</li>
+            <li>Escalate to engagement partner for materiality assessment</li>
+          `}
+        </ul>
+
+        <div class="signoff-line">
+          <div class="so-block">
+            <div class="so-name">Sarah Kim, CPA</div>
+            <div class="so-role">Internal Audit Lead, Helios Robotics</div>
+            <div class="so-role" style="margin-top: var(--luna-sp-1); font-size: var(--luna-fs-50);">Signed ${new Date().toISOString().slice(0,10)}</div>
+          </div>
+          <div class="so-block">
+            <div class="so-name">Tomás Rivera, CIA</div>
+            <div class="so-role">Audit Manager, Helios Robotics</div>
+            <div class="so-role" style="margin-top: var(--luna-sp-1); font-size: var(--luna-fs-50);">Reviewed ${new Date().toISOString().slice(0,10)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dossier-page" data-page="10" data-total="10">
+        <div class="dp-header">
+          <span>${c.id}</span>
+          <span>Appendix · Reproducibility</span>
+        </div>
+        <h1>Appendix · Reproducibility &amp; chain-of-custody</h1>
+        <h3>Sample reproducibility</h3>
+        <p>The sample for this control was selected using a deterministic seeded RNG. Any party with access to the population CSV and the seed below can independently re-derive the identical sample selection.</p>
+        <div class="dossier-sampling" style="margin-bottom: var(--luna-sp-3);">
+          <div class="ds-label">Selection parameters</div>
+          <div class="ds-formula">seed = ${c.seed}<br/>method = "${m.id}"<br/>population_uri = "s3://helios-grc-q3-2026/${c.id.toLowerCase()}/population.csv"<br/>sample_n = ${c.sampleN}<br/>extracted_at = "2026-10-02T06:00:00Z"</div>
+          <div class="ds-explainer">Auditor can paste these parameters into the Helios sample-reproducer CLI to confirm identical selection.</div>
+        </div>
+
+        <h3>Chain-of-custody hash</h3>
+        <p class="mono" style="font-size: var(--luna-fs-100); word-break: break-all; background: var(--luna-bg-sunken); padding: var(--luna-sp-2); border-radius: 4px;">
+          sha256: ${(c.seed * 0x9E3779B1 >>> 0).toString(16).padStart(8, '0')}${(c.population * 0xDEADBEEF >>> 0).toString(16).padStart(8, '0')}${(c.sampleN * 0xCAFEBABE >>> 0).toString(16).padStart(8, '0')}${(c.exceptions * 0xC0FFEE >>> 0).toString(16).padStart(8, '0')}
+        </p>
+        <p style="font-size: var(--luna-fs-100);">Dossier generated ${new Date().toISOString().slice(0, 19).replace('T', ' ')}Z by Helios GRC Platform · Build 2026.09.27.r2 · Generated for Deloitte &amp; Touche LLP (engagement E-2026-HELI-001).</p>
+      </div>
+    `;
+
+    document.getElementById('dossier-pages').innerHTML = html;
+    document.getElementById('dossier-pages').scrollTop = 0;
+
+    document.getElementById('backdrop').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  }
+
+  let activeControl = null;
+
+  function closeDrawer() {
+    document.getElementById('backdrop').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+  }
+
+  // ============================================================
+  // Growl
+  // ============================================================
+  function growl(html, kind) {
+    const host = document.getElementById('growlHost');
+    const g = document.createElement('div');
+    g.className = 'growl' + (kind ? ' ' + kind : '');
+    g.innerHTML = '<div class="growl-icon"></div><div>' + html + '</div>';
+    host.appendChild(g);
+    setTimeout(() => { g.style.transition = 'opacity 200ms, transform 200ms'; g.style.opacity = '0'; g.style.transform = 'translateY(8px)'; }, 3800);
+    setTimeout(() => g.remove(), 4100);
+  }
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+  document.addEventListener('click', (e) => {
+    const pm = document.getElementById('paMore');
+    if (pm && pm.classList.contains('open') && !pm.contains(e.target)) {
+      pm.classList.remove('open');
+    }
+  });
+
+  // ============================================================
+  // Boot
+  // ============================================================
+  renderMethodologyBand();
+  renderDomainRollup();
+  renderScopeTable();
+</script>
+
+<script>
+window.TOUR = {
+  title: 'The dossier Deloitte hands to the engagement partner',
+  intro: 'Three bands tell the story: audit-fee defense for the buyer, methodology depth for the auditor, and a live partner-review feed showing the workflow in motion.',
+  steps: [
+    {
+      selector: '.flow-pill',
+      title: 'Downstream of Accepted',
+      body: 'Every artifact in this dossier already cleared Draft, Open, Submitted, and Accepted. Nothing routes back from here.',
+      position: 'bottom'
+    },
+    {
+      selector: '.prospectus-summary .ps-stat.accent',
+      title: '$2.4M in audit fees defended',
+      body: 'Raids the Deloitte engagement-fee budget — not the SOX-tooling budget. Per-control pre-test at $250/hr displaces ~4,820 Big-4 hours this quarter.',
+      position: 'bottom'
+    },
+    {
+      selector: '.prospectus-summary .ps-stat.warn',
+      title: '18 days to S-1 close',
+      body: 'Target file date 2026-10-15. The prospectus exists because the timeline does — Deloitte cannot bill discovery hours into a dated S-1 cycle.',
+      position: 'bottom'
+    },
+    {
+      selector: '.s1-timeline',
+      title: 'Where we are in the S-1 cycle',
+      body: 'Reliance review is the current gate — the bottleneck between an open engagement and the comfort letter. This page is the artifact the gate runs on.',
+      position: 'bottom'
+    },
+    {
+      selector: '.method-band',
+      title: 'Methodology depth — the moat',
+      body: 'Citation density (PCAOB AS 2201 / AS 1105 / AS 2315, AICPA AU-C §530) and the sampling-method mix sit on the page. Neither AuditBoard nor Workiva ships per-control citations.',
+      position: 'bottom'
+    },
+    {
+      selector: '.engagement-band',
+      title: 'Live partner-review feed',
+      body: 'The Deloitte engagement room shows acceptance, challenges, and expanded-sample requests as they happen. Two-way workflow, not a one-shot export.',
+      position: 'top'
+    },
+    {
+      selector: 'table.scope thead th:nth-child(6)',
+      title: 'The contested column',
+      body: '"Why N is sufficient" carries the ASA 530, AS 2315, or MUS citation Deloitte will press. No hand-wavy numbers.',
+      position: 'bottom'
+    },
+    {
+      selector: 'table.scope tbody tr:first-child',
+      title: 'Open a control dossier',
+      body: 'Click any row to drill into the 10-page premium dossier — sample items, citations, partner-side actions, and a chain-of-custody SHA-256.',
+      position: 'top'
+    },
+    {
+      selector: '.page-actions',
+      title: 'Ship to Deloitte portal',
+      body: 'Send to auditor pushes the prospectus to the Deloitte secure portal and notifies the engagement team. The feed above lights up when they start reviewing.',
+      position: 'left'
+    }
+  ]
+};
+</script>
+<script src="tour.js"></script>
+
+<script src="nav-routing.js"></script>
+<script src="ds-toggle.js"></script>
+<script src="flow.js"></script>
+<script src="ux-fixes.js"></script>
+<script src="provenance.js"></script>
+<script src="sources-link.js"></script>
+<script src="sources-strip.js"></script>
+</body>
+</html>
