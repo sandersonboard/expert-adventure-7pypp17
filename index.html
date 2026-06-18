@@ -1,492 +1,284 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>Sufficiency at Scale — Reliance-Grade SOX prototype family</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script src="gate.js"></script>
-<link rel="stylesheet" href="tokens.css" />
-<link rel="stylesheet" href="chrome.css" />
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOX-96456 options</title>
 <style>
-  body[data-ds="midship"] {
-    --luna-teal-50:  #FFF1EB;
-    --luna-teal-100: #FFDFD0;
-    --luna-teal-200: #FFC2A4;
-    --luna-teal-300: #FF9466;
-    --luna-teal-400: #FF7A33;
-    --luna-teal-500: #FF4F00;
-    --luna-teal-600: #EF3608;
-    --luna-teal-700: #C42800;
-    --luna-font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-      "Segoe UI", Roboto, sans-serif;
-    --luna-radius-md: 8px;
-    --luna-radius-lg: 12px;
+  :root{
+    --luna-gray-50:#f8fafc;--luna-gray-100:#f1f5f9;--luna-gray-200:#e2e8f0;--luna-gray-300:#cbd5e1;
+    --luna-gray-500:#64748b;--luna-gray-600:#475569;--luna-gray-700:#334155;--luna-gray-800:#1e293b;--luna-gray-900:#0f172a;
+    --luna-blue-50:#f2f8ff;--luna-blue-100:#dbeaff;--luna-blue-600:#1f5dd8;--luna-blue-700:#0e48a1;
+    --luna-shadow-sm:0 1px 2px hsl(215deg 30% 20%/6%),0 1px 4px hsl(215deg 30% 20%/4%);
+    --luna-shadow-md:0 4px 16px hsl(215deg 30% 20%/9%),0 1px 4px hsl(215deg 30% 20%/5%);
+    --luna-fontFamily:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --text:var(--luna-gray-900);--soft:var(--luna-gray-600);--muted:var(--luna-gray-500);--border:var(--luna-gray-200);
   }
-  body[data-ds="midship"] .option-card { border-radius: 12px; }
-  body[data-ds="midship"] .opt-thumb { background: linear-gradient(180deg, #FFF8F4 0%, #FFF1EB 100%); }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--luna-fontFamily);color:var(--text);background:var(--luna-gray-50);min-height:100vh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:52px 28px 72px;}
 
-  .ds-switcher {
-    position: absolute;
-    top: var(--luna-sp-8); right: var(--luna-sp-6);
-    display: inline-flex; align-items: center; gap: 2px;
-    padding: 4px;
-    background: var(--luna-bg-surface);
-    border: 1px solid var(--luna-border);
-    border-radius: 999px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-    z-index: 10;
-  }
-  .ds-switcher .ds-label {
-    font-size: var(--luna-fs-25); letter-spacing: 0.1em;
-    text-transform: uppercase; font-weight: 700;
-    color: var(--luna-text-subdued);
-    padding: 0 var(--luna-sp-3) 0 var(--luna-sp-2);
-  }
-  .ds-switcher .ds-option {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 12px;
-    background: transparent; border: none;
-    border-radius: 999px;
-    font-family: inherit; font-size: var(--luna-fs-100); font-weight: 500;
-    color: var(--luna-text-subdued); cursor: pointer;
-  }
-  .ds-switcher .ds-option .ds-swatch {
-    width: 10px; height: 10px; border-radius: 999px;
-    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
-  }
-  .ds-switcher .ds-option[data-ds-value="luna"] .ds-swatch    { background: #266c92; }
-  .ds-switcher .ds-option[data-ds-value="midship"] .ds-swatch { background: linear-gradient(135deg, #FF4F00, #EF3608); }
-  .ds-switcher .ds-option.active {
-    background: var(--luna-teal-50); color: var(--luna-teal-700); font-weight: 600;
-  }
+  /* ── Page header ── */
+  .eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--luna-blue-600);}
+  h1{font-size:30px;margin:10px 0 8px;letter-spacing:-.4px;}
+  .lede{font-size:15px;color:var(--soft);max-width:720px;line-height:1.65;margin:0 0 6px;}
+  .anchor{font-size:13px;color:var(--muted);max-width:720px;line-height:1.6;margin:14px 0 32px;
+    border-left:3px solid var(--luna-gray-200);padding:8px 0 8px 14px;}
+  .anchor b{color:var(--luna-gray-700);}
 
-  .landing-page { max-width: 1120px; margin: 0 auto; padding: var(--luna-sp-10) var(--luna-sp-6) var(--luna-sp-12); }
-  .landing-hero { margin-bottom: var(--luna-sp-8); }
-  .landing-hero .eyebrow {
-    color: var(--luna-teal-500);
-    font-size: var(--luna-fs-25); letter-spacing: 0.1em;
-    text-transform: uppercase; font-weight: 700;
-  }
-  .landing-hero h1 {
-    font-size: var(--luna-fs-600); font-weight: 600; letter-spacing: -0.02em;
-    margin: var(--luna-sp-2) 0 var(--luna-sp-3); color: var(--luna-text);
-    max-width: 880px;
-  }
-  .landing-hero p.lede {
-    font-size: var(--luna-fs-300); color: var(--luna-text-subdued);
-    max-width: 760px; margin: 0; line-height: 1.55;
-  }
+  /* ── Grids ── */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid.baseline-row{grid-template-columns:1fr 1fr 1fr;}
+  @media (max-width:900px){.grid,.grid.baseline-row{grid-template-columns:1fr;}}
 
-  .section-head { margin: var(--luna-sp-10) 0 var(--luna-sp-4); }
-  .section-head .family-label {
-    display: inline-block; font-size: var(--luna-fs-25);
-    letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
-    color: var(--luna-teal-500); margin-bottom: var(--luna-sp-1);
-  }
-  .section-head h2 {
-    font-size: var(--luna-fs-450); font-weight: 600; letter-spacing: -0.01em;
-    color: var(--luna-text); margin: 0 0 var(--luna-sp-1);
-  }
-  .section-head p {
-    color: var(--luna-text-subdued); font-size: var(--luna-fs-150);
-    margin: 0; max-width: 720px; line-height: 1.55;
-  }
+  /* ── Card shell ── */
+  .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--luna-shadow-sm);
+    display:flex;flex-direction:column;overflow:hidden;transition:transform .15s,box-shadow .15s;}
+  .card:hover{transform:translateY(-2px);box-shadow:var(--luna-shadow-md);}
 
-  /* ---------- Top-3 hero cards ---------- */
-  .option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--luna-sp-5); align-items: stretch; }
-  .option-grid > a { display: flex; height: 100%; }
-  .option-card {
-    width: 100%;
-    background: var(--luna-bg-surface);
-    border: 1px solid var(--luna-border);
-    border-radius: var(--luna-radius-lg);
-    box-shadow: var(--luna-shadow-sm);
-    overflow: hidden;
-    display: flex; flex-direction: column;
-    transition: box-shadow 120ms, transform 120ms, border-color 120ms;
-  }
-  .option-card:hover {
-    box-shadow: var(--luna-shadow-md);
-    transform: translateY(-2px);
-    border-color: var(--luna-teal-300);
-  }
-  .option-card .opt-thumb {
-    height: 168px;
-    background: var(--luna-bg-sunken);
-    border-bottom: 1px solid var(--luna-border);
-    padding: var(--luna-sp-4);
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  .option-card .opt-body {
-    padding: var(--luna-sp-4) var(--luna-sp-5) var(--luna-sp-5);
-    flex: 1; display: flex; flex-direction: column;
-  }
-  .option-card .opt-header-row {
-    display: flex; align-items: center; gap: var(--luna-sp-2);
-    margin-bottom: var(--luna-sp-2);
-  }
-  .rank-chip {
-    display: inline-flex; align-items: center;
-    padding: 2px 8px;
-    background: var(--luna-teal-500); color: var(--luna-white);
-    font-size: var(--luna-fs-100); font-weight: 700;
-    border-radius: 999px;
-    font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
-  }
-  .option-card .opt-composite {
-    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
-    font-weight: 600; font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em; text-transform: uppercase;
-  }
-  .score-row {
-    display: flex; gap: 6px; flex-wrap: wrap;
-    margin-bottom: var(--luna-sp-3);
-  }
-  .score-pill {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 8px;
-    background: var(--luna-bg-sunken);
-    border: 1px solid var(--luna-border);
-    border-radius: 999px;
-    font-size: var(--luna-fs-100);
-    color: var(--luna-text);
-    font-variant-numeric: tabular-nums;
-  }
-  .score-pill .score-sym {
-    font-size: 11px; color: var(--luna-teal-500); font-weight: 700;
-  }
-  .score-pill .score-label {
-    color: var(--luna-text-subdued); font-weight: 500;
-  }
-  .score-pill .score-val {
-    font-weight: 700; color: var(--luna-text);
-  }
+  /* top accent strip — 3 tiers */
+  .card .top{height:3px;background:var(--luna-gray-200);}
+  .b .top,.e .top{background:var(--luna-blue-600);}
+  .c .top,.f .top{background:var(--luna-gray-800);}
 
-  .option-card .opt-title {
-    font-size: var(--luna-fs-450); font-weight: 600;
-    color: var(--luna-text); margin: 0 0 var(--luna-sp-2);
-    letter-spacing: -0.01em; line-height: 1.2;
-  }
-  .option-card .opt-acv {
-    display: inline-block;
-    font-size: var(--luna-fs-100); color: var(--luna-text);
-    background: var(--luna-teal-50);
-    border: 1px solid var(--luna-teal-200);
-    padding: 1px var(--luna-sp-2);
-    border-radius: 999px;
-    margin-bottom: var(--luna-sp-3);
-    font-variant-numeric: tabular-nums; font-weight: 600;
-    width: fit-content;
-  }
-  .option-card .opt-desc {
-    font-size: var(--luna-fs-150); color: var(--luna-text-subdued);
-    margin: 0 0 var(--luna-sp-4); flex: 1; line-height: 1.55;
-  }
-  .option-card a.opt-cta {
-    display: inline-flex; align-items: center; gap: var(--luna-sp-2);
-    color: var(--luna-teal-500); font-weight: 600;
-    font-size: var(--luna-fs-200); text-decoration: none;
-    padding: var(--luna-sp-2) 0 0;
-    border-top: 1px solid var(--luna-border);
-  }
-  .option-card a.opt-cta::after { content: '→'; }
+  /* ── Card body ── */
+  .card .pad{padding:22px 22px 0;display:flex;flex-direction:column;flex:1;}
 
-  .thumb {
-    width: 100%; height: 100%;
-    border-radius: 4px;
-    background: var(--luna-bg-surface);
-    border: 1px solid var(--luna-border);
-    padding: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600;
-    color: var(--luna-text-subdued); letter-spacing: 0.02em;
-  }
-  .thumb .bars { display: flex; gap: 2px; align-items: flex-end; height: 100%; width: 100%; padding: 4px; }
-  .thumb .bar { flex: 1; background: var(--luna-teal-300); border-radius: 1px 1px 0 0; }
-  .thumb .bar.lighter { background: var(--luna-teal-200); }
-  .thumb .bar.warn { background: var(--luna-orange-400); }
-  .thumb .bar.bad { background: var(--luna-red-500); }
-  .thumb .grid { display: grid; gap: 2px; width: 100%; height: 100%; padding: 4px; }
-  .thumb .cell { background: var(--luna-teal-200); border-radius: 1px; }
-  .thumb .cell.g { background: var(--luna-green-400); }
-  .thumb .cell.y { background: var(--luna-yellow-400); }
-  .thumb .cell.o { background: var(--luna-orange-400); }
-  .thumb .cell.r { background: var(--luna-red-500); }
+  /* altitude badge */
+  .alt{display:inline-flex;align-items:center;font-size:10.5px;font-weight:800;letter-spacing:.3px;
+    text-transform:uppercase;border-radius:5px;padding:3px 8px;align-self:flex-start;
+    background:var(--luna-gray-100);color:var(--luna-gray-600);}
+  .b .alt,.e .alt{background:var(--luna-blue-50);color:var(--luna-blue-700);}
+  .c .alt,.f .alt{background:var(--luna-gray-800);color:#fff;}
+  .base .alt{background:var(--luna-gray-100);color:var(--luna-gray-500);font-weight:700;}
 
-  /* ---------- Runners-up dense list ---------- */
-  .runners-up-list {
-    display: flex; flex-direction: column;
-    border: 1px solid var(--luna-border);
-    border-radius: var(--luna-radius-md);
-    background: var(--luna-bg-surface);
-    overflow: hidden;
-  }
-  .runner-row {
-    display: grid;
-    grid-template-columns: 36px 1fr 132px 1fr 56px;
-    align-items: center;
-    gap: var(--luna-sp-4);
-    padding: 0 var(--luna-sp-5);
-    min-height: 56px;
-    border-bottom: 1px solid var(--luna-border);
-    text-decoration: none; color: inherit;
-    transition: background 100ms, transform 100ms;
-  }
-  .runner-row:last-child { border-bottom: none; }
-  .runner-row:nth-child(even) { background: var(--luna-bg-sunken); }
-  .runner-row:hover {
-    background: var(--luna-teal-50);
-    transform: translateX(2px);
-  }
-  .runner-row .rr-rank {
-    font-size: var(--luna-fs-150); font-weight: 700;
-    color: var(--luna-text-subdued);
-    font-variant-numeric: tabular-nums;
-  }
-  .runner-row .rr-title {
-    font-size: var(--luna-fs-200); font-weight: 600;
-    color: var(--luna-text); letter-spacing: -0.005em;
-  }
-  .runner-row .rr-acv {
-    font-size: var(--luna-fs-100); color: var(--luna-text);
-    background: var(--luna-teal-50);
-    border: 1px solid var(--luna-teal-200);
-    padding: 1px var(--luna-sp-2);
-    border-radius: 999px;
-    text-align: center;
-    font-variant-numeric: tabular-nums; font-weight: 600;
-    width: fit-content;
-  }
-  .runner-row .rr-score {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 2px 8px;
-    background: var(--luna-bg-canvas);
-    border: 1px solid var(--luna-border-strong);
-    border-radius: var(--luna-radius-sm);
-    font-size: var(--luna-fs-150); font-weight: 700;
-    color: var(--luna-teal-600);
-    font-variant-numeric: tabular-nums;
-  }
-  .runner-row .rr-why {
-    font-size: var(--luna-fs-100); color: var(--luna-text-subdued);
-    line-height: 1.45;
-  }
-  .runner-row .rr-cta {
-    text-align: right;
-    color: var(--luna-teal-500);
-    font-size: var(--luna-fs-150); font-weight: 600;
-  }
-  .runner-row:hover .rr-cta { color: var(--luna-teal-700); }
+  /* option label */
+  .opt{font-size:11px;font-weight:700;color:var(--muted);margin:14px 0 3px;letter-spacing:.2px;}
+  .title{font-size:18.5px;font-weight:700;line-height:1.25;margin:0 0 9px;}
+  .bet{font-size:13px;color:var(--soft);line-height:1.6;margin:0 0 14px;}
 
-  /* ---------- Also-in-the-family accordion ---------- */
-  .also-accordion {
-    margin-top: var(--luna-sp-6);
-    border-top: 1px solid var(--luna-border);
-    padding-top: var(--luna-sp-6);
-  }
-  .also-accordion details {
-    background: transparent;
-  }
-  .also-accordion summary {
-    display: flex; align-items: center; gap: var(--luna-sp-2);
-    cursor: pointer;
-    list-style: none;
-    padding: var(--luna-sp-2) 0;
-    font-size: var(--luna-fs-200); font-weight: 600;
-    color: var(--luna-text-subdued);
-    user-select: none;
-  }
-  .also-accordion summary::-webkit-details-marker { display: none; }
-  .also-accordion summary::before {
-    content: '▸';
-    display: inline-block;
-    font-size: 10px;
-    color: var(--luna-text-muted);
-    transition: transform 120ms;
-    width: 12px;
-  }
-  .also-accordion details[open] summary::before { transform: rotate(90deg); }
-  .also-accordion summary .also-count {
-    color: var(--luna-text-muted);
-    font-weight: 500;
-  }
-  .also-accordion .runners-up-list {
-    margin-top: var(--luna-sp-3);
-    opacity: 0.85;
-  }
-  .also-accordion .runner-row .rr-title { color: var(--luna-text-subdued); }
-  .also-accordion .runner-row:hover .rr-title { color: var(--luna-text); }
+  /* feature list */
+  .feat{list-style:none;margin:0 0 18px;padding:0;}
+  .feat li{font-size:12.5px;color:var(--luna-gray-700);line-height:1.45;padding:5px 0 5px 20px;
+    position:relative;border-top:1px solid var(--luna-gray-100);}
+  .feat li:first-child{border-top:none;}
+  .feat li::before{content:"";position:absolute;left:2px;top:11px;width:7px;height:7px;
+    border-radius:2px;background:var(--luna-blue-600);}
+  .base .feat li::before{background:var(--luna-gray-400);}
 
-  .footnote {
-    margin-top: var(--luna-sp-12);
-    padding-top: var(--luna-sp-5);
-    border-top: 1px solid var(--luna-border);
-    font-size: var(--luna-fs-100); color: var(--luna-text-muted);
-    display: flex; gap: var(--luna-sp-4); flex-wrap: wrap;
-  }
-  .footnote code {
-    background: var(--luna-bg-sunken);
-    padding: 1px 6px; border-radius: 3px;
-    font-family: var(--luna-font-mono); font-size: 10px;
-  }
+  /* meta pills */
+  .meta{display:flex;gap:7px;margin:0 0 18px;flex-wrap:wrap;}
+  .pill{font-size:10.5px;font-weight:600;color:var(--soft);background:var(--luna-gray-100);
+    border:1px solid var(--border);border-radius:5px;padding:2px 8px;}
+
+  /* ── Card footer — always at the bottom of the card ── */
+  .card-foot{padding:0 22px 22px;margin-top:auto;}
+  .open{display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;
+    font-weight:700;font-size:13.5px;border-radius:8px;padding:11px;color:#fff;
+    background:var(--luna-gray-900);transition:background .15s;}
+  .open:hover{background:var(--luna-gray-700);}
+  /* Reserve space for the rec line on every card — keeps buttons level */
+  .rec{margin-top:10px;min-height:20px;font-size:11.5px;color:var(--muted);text-align:center;}
+  .rec b{color:var(--luna-blue-600);}
+  .rec b.ns{color:var(--luna-gray-700);}
+
+  /* ── Footer ── */
+  .foot{margin-top:44px;font-size:12px;color:var(--muted);line-height:1.6;}
+  .foot a{color:var(--luna-blue-600);}
+  svg{vertical-align:middle;}
+
+  /* ── Section separators ── */
+  .section-sep{margin:52px 0 0;}
+  .section-sep .eyebrow{margin-bottom:6px;}
+  .section-sep .lede{margin-bottom:4px;}
+  .section-sep .anchor{margin-bottom:28px;}
 </style>
 </head>
-<body data-ds="luna">
+<body>
+<div class="wrap">
+  <div class="eyebrow">SOX-96456 · Optro AI Review</div>
+  <h1>SOX-96456 options</h1>
+  <p class="lede">Six approaches to improving the AI Review panel for SOX/GRC practitioners who already use Optro. The baseline shows the panel as-is; A–F show what's possible.</p>
+  <div class="anchor"><b>The shared problem all six attack:</b> an experienced reviewer has to clear a high-volume reconciliation queue — one process change can hit a dozen-plus objects — and today every item costs several expand-read-decide clicks, with no triage step, no completion signal, and a narrow side rail to do it through.</div>
 
-<div class="landing-page" style="position: relative;">
-
-  <div class="ds-switcher" role="radiogroup" aria-label="Design system">
-    <span class="ds-label">Design system</span>
-    <button class="ds-option active" data-ds-value="luna" role="radio" aria-checked="true" type="button">
-      <span class="ds-swatch" aria-hidden="true"></span>
-      <span>Optro · Luna</span>
-    </button>
-    <button class="ds-option" data-ds-value="midship" role="radio" aria-checked="false" type="button">
-      <span class="ds-swatch" aria-hidden="true"></span>
-      <span>Midship</span>
-    </button>
+  <!-- ─── Baseline ─────────────────────────────────────────────────────────── -->
+  <div class="section-sep" style="margin-top:0;">
+    <div class="eyebrow">Starting point</div>
+    <p class="lede" style="margin-bottom:28px;">The original panel, reskinned to the Luna design system. No UX modifications — this is what all six options compare against.</p>
   </div>
 
-  <div class="landing-hero">
-    <div class="eyebrow">Reliance-grade SOX · The Top 3</div>
-  </div>
-
-  <!-- ===== TOP 3 HERO CARDS ===== -->
-  <div class="option-grid">
-
-    <!-- #1 Prospectus -->
-    <a href="option-12-prospectus.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb">
-          <div class="thumb"><div style="text-align:center;"><div style="font-size:24px;font-weight:600;color:var(--luna-text);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;">317<span style="color:var(--luna-text-subdued);font-size:14px;font-weight:500;"> in scope</span></div><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;margin-top:8px;">RELIANCE DOSSIER</div><div style="display:flex;gap:6px;margin-top:10px;justify-content:center;font-size:9px;color:var(--luna-text-subdued);"><span>184 sampled</span><span>·</span><span>133 census</span></div><div style="margin-top:10px;display:flex;gap:3px;justify-content:center;"><span style="display:inline-block;width:18px;height:4px;background:var(--luna-teal-500);border-radius:1px;"></span><span style="display:inline-block;width:14px;height:4px;background:var(--luna-teal-300);border-radius:1px;"></span><span style="display:inline-block;width:10px;height:4px;background:var(--luna-teal-200);border-radius:1px;"></span></div></div></div>
-        </div>
-        <div class="opt-body">
-          <div class="opt-header-row">
-            <span class="rank-chip">Rank #1</span>
-          </div><div class="opt-title">Prospectus</div>
-          <span class="opt-acv">$120-300K · up to $500K accel</span>
-          <p class="opt-desc">External auditor reliance dossier built for the S-1 moment. 317 controls, each with per-control PCAOB AS 2201/1105 citations and ASA 530 / MUS / stratified sampling math shown inline. The 10-page premium PDF drawer is what Deloitte hands to the engagement partner. ACV $120-300K with a $500K accelerated tier, raiding the audit-fee pool rather than SOX tooling. Neither AuditBoard, Workiva, nor Vanta ships a per-control PCAOB-cited dossier — the moat is methodology depth and Big-4 channel pull.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
+  <div class="grid baseline-row">
+    <div class="card base">
+      <div class="top"></div>
+      <div class="pad">
+        <span class="alt">Reference</span>
+        <div class="opt">BASELINE</div>
+        <div class="title">Original Luna-reskinned panel</div>
+        <div class="bet">The AI Review panel as it exists today, reskinned to Luna tokens. Colored signal badges, uniform button weights, full context shown at once.</div>
+        <ul class="feat">
+          <li>All content visible immediately — no progressive disclosure</li>
+          <li>Signal badges in orange, purple, teal, and gray (color overload)</li>
+          <li>Apply, Dismiss, Assign, and Create Issue at equal visual weight</li>
+          <li>List view default — one suggestion per expand cycle</li>
+        </ul>
+        <div class="meta"><span class="pill">No changes</span><span class="pill">Reference state</span></div>
       </div>
-    </a>
-
-    <!-- #2 Oracle -->
-    <a href="option-19-oracle.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb">
-          <div class="thumb"><div style="text-align:center;width:100%;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;">NOTARIZED TODAY</div><div style="font-size:28px;font-weight:600;color:var(--luna-text);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;margin-top:6px;">5,284</div><div style="font-size:9px;color:var(--luna-text-subdued);margin-top:2px;">Ed25519 · Merkle anchored · 0.6s seal</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;font-size:9px;color:var(--luna-text-subdued);"><span>Sealed</span><span>·</span><span>Held</span><span>·</span><span>Recon</span><span>·</span><span>Done</span></div><div style="margin-top:6px;display:flex;gap:3px;justify-content:center;"><span style="display:inline-block;width:24px;height:5px;background:var(--luna-green-400);border-radius:1px;"></span><span style="display:inline-block;width:8px;height:5px;background:var(--luna-red-500);border-radius:1px;"></span><span style="display:inline-block;width:14px;height:5px;background:var(--luna-yellow-400);border-radius:1px;"></span><span style="display:inline-block;width:18px;height:5px;background:var(--luna-teal-300);border-radius:1px;"></span></div></div></div>
-        </div>
-        <div class="opt-body">
-          <div class="opt-header-row">
-            <span class="rank-chip">Rank #2</span>
-          </div><div class="opt-title">Oracle — Notarization</div>
-          <span class="opt-acv">$120-280K mid · $300-650K $1B+</span>
-          <p class="opt-desc">Notarization at 5,284/day with 0.6-second seal time, hash-chained to a tamper-evident ledger and reconciled across 11 sources. The 4-column kanban surfaces Sealed vs Held above the fold; the drawer walks a 5-step recon flow with an embedded PCAOB AS 2315 sample plan. Batch-seal carries a confirm-with-impact modal and 10-second undo. ACV $120-280K mid and $300-650K at $1B+, displacing audit-fee labor. Crypto plus sampling math is hard for incumbents to fast-follow without both.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
+      <div class="card-foot">
+        <a class="open" href="baseline.html">Open Baseline &nbsp;→</a>
+        <div class="rec"></div>
       </div>
-    </a>
+    </div>
+  </div>
 
-    <!-- #3 Auto-disposition -->
-    <a href="option-2-auto.html" style="text-decoration:none;color:inherit;">
-      <div class="option-card">
-        <div class="opt-thumb">
-          <div class="thumb"><div style="width:100%;display:flex;flex-direction:column;gap:6px;padding:8px;"><div style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--luna-teal-500);font-weight:700;text-align:center;">2,847 · AUTO-DISPOSED</div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-green-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:5px;border-radius:1px;position:relative;"><span style="position:absolute;left:0;top:0;bottom:0;width:94%;background:var(--luna-green-400);border-radius:1px;"></span></span><span style="color:var(--luna-text-subdued);font-variant-numeric:tabular-nums;">94%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-yellow-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:5px;border-radius:1px;position:relative;"><span style="position:absolute;left:0;top:0;bottom:0;width:71%;background:var(--luna-yellow-400);border-radius:1px;"></span></span><span style="color:var(--luna-text-subdued);font-variant-numeric:tabular-nums;">71%</span></div><div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--luna-text);"><span style="width:6px;height:6px;border-radius:999px;background:var(--luna-orange-500);"></span><span style="flex:1;background:var(--luna-bg-sunken);height:5px;border-radius:1px;position:relative;"><span style="position:absolute;left:0;top:0;bottom:0;width:88%;background:var(--luna-orange-400);border-radius:1px;"></span></span><span style="color:var(--luna-text-subdued);font-variant-numeric:tabular-nums;">88%</span></div><div style="font-size:9px;color:var(--luna-text-subdued);text-align:center;margin-top:4px;">spot-check 19 / 20 · SHA-chained</div></div></div>
-        </div>
-        <div class="opt-body">
-          <div class="opt-header-row">
-            <span class="rank-chip">Rank #3</span>
-          </div><div class="opt-title">Auto-disposition + audit trail</div>
-          <span class="opt-acv">$90-180K</span>
-          <p class="opt-desc">Auto-disposition with human co-sign on 2,847 evidences, displacing 60-70% of reviewer hours against an audit-fee / IA-headcount pool. The 3-column layout reads in under 3 seconds: threshold + split bar, immutable log with SHA chip, spot-check (19/20). Two actions — Confirm, Send back — with honest reversal counts (4 today) build auditor trust. ACV $90-180K. Buyer-pulled and ships now; moat is execution craft incumbents copy in two quarters.</p>
-          <span class="opt-cta">Open prototype</span>
-        </div>
+  <!-- ─── A / B / C ─────────────────────────────────────────────────────────── -->
+  <div class="section-sep">
+    <div class="eyebrow">Options A / B / C &nbsp;&middot;&nbsp; New capabilities at three altitudes</div>
+    <p class="lede">Three approaches to improving the AI Review panel, framed as three altitudes of ambition. Each is a working, clickable prototype.</p>
+    <div class="anchor"><b>What these three change:</b> the workflow, the interaction model, and ultimately the surface itself — each at a different level of ambition and risk.</div>
+  </div>
+
+  <div class="grid">
+    <!-- A -->
+    <div class="card a">
+      <div class="top"></div>
+      <div class="pad">
+        <span class="alt">● Conservative</span>
+        <div class="opt">OPTION A</div>
+        <div class="title">Friction reduction inside the current panel</div>
+        <div class="bet">Keep the model, layout, and mental model exactly. Just make each decision cost less.</div>
+        <ul class="feat">
+          <li>Keyboard-driven review — J/K move, A apply, D dismiss, E edit, S sources</li>
+          <li>Inline word-level redline on every text field</li>
+          <li>Glanceable collapsed containers — field count + confidence</li>
+          <li>Inline top-source line for provenance at a glance</li>
+        </ul>
+        <div class="meta"><span class="pill">Risk: low</span><span class="pill">Ships fast</span><span class="pill">No retraining</span></div>
       </div>
-    </a>
+      <div class="card-foot">
+        <a class="open" href="option-a.html">Open Option A &nbsp;→</a>
+        <div class="rec"></div>
+      </div>
+    </div>
 
+    <!-- B -->
+    <div class="card b">
+      <div class="top"></div>
+      <div class="pad">
+        <span class="alt">●● Moderate</span>
+        <div class="opt">OPTION B</div>
+        <div class="title">Re-sequence the review workflow</div>
+        <div class="bet">Keep the data model, but change how a reviewer moves through volume — from "expand everything" to "triage, then act."</div>
+        <ul class="feat">
+          <li>Triage pass — recommended disposition + rationale per item</li>
+          <li>One-click sweep to batch-apply low-risk updates</li>
+          <li>Reconciliation progress bar + an explicit finish line</li>
+          <li>Everything in Option A, folded in as table stakes</li>
+        </ul>
+        <div class="meta"><span class="pill">Risk: medium</span><span class="pill">Biggest time win</span></div>
+      </div>
+      <div class="card-foot">
+        <a class="open" href="option-b.html">Open Option B &nbsp;→</a>
+        <div class="rec">★ <b>Recommended build</b> — B with A's table stakes</div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="card c">
+      <div class="top"></div>
+      <div class="pad">
+        <span class="alt">●●● Bold</span>
+        <div class="opt">OPTION C</div>
+        <div class="title">Side panel → reconciliation workspace</div>
+        <div class="bet">When a change hits 14 objects, the side rail is a soda straw. Make reconciliation a full-screen workspace with an impact map.</div>
+        <ul class="feat">
+          <li>Impact map — the full blast radius, grouped by reason</li>
+          <li>Edit in context with the suggestion as tracked changes</li>
+          <li>Reconciliation as a first-class, auditable session</li>
+          <li>Progress, assignees, keyboard nav across all objects</li>
+        </ul>
+        <div class="meta"><span class="pill">Risk: high</span><span class="pill">Structural moat</span></div>
+      </div>
+      <div class="card-foot">
+        <a class="open" href="option-c.html">Open Option C &nbsp;→</a>
+        <div class="rec"><b class="ns">North star</b> — full-screen reconciliation</div>
+      </div>
+    </div>
   </div>
 
-  <!-- ===== STRONG RUNNERS-UP ===== -->
-  <div class="section-head">
-    <span class="family-label">Runners-up</span>
-    <h2>Strong wedges that didn't make the top</h2>
-    <p>Each scores well on craft and dollar math but loses to the top 3 on contention, comprehension, or fast-follow risk.</p>
+  <!-- ─── D / E / F ────────────────────────────────────────────────────────── -->
+  <div class="section-sep">
+    <div class="eyebrow">Options D / E / F &nbsp;&middot;&nbsp; UX quality, no new features</div>
+    <p class="lede">Three intensities of restraint — same data model, no added functionality. Pure UX-quality improvement justified by heuristic evaluation, HCAI principles, progressive disclosure, and UX laws.</p>
+    <div class="anchor"><b>What these three change:</b> the panel already has the right data. It just presents everything at once, competing for attention. D/E/F reduce that competition — each at a different depth.</div>
   </div>
 
-  <div class="runners-up-list">
+  <div class="grid">
+    <!-- D -->
+    <div class="card d">
+      <div class="top"></div>
+      <div class="pad">
+        <span class="alt">&#9679; Light</span>
+        <div class="opt">OPTION D</div>
+        <div class="title">Visual &amp; typographic discipline</div>
+        <div class="bet">No structural change. Make the existing layout read better through color, hierarchy, and spacing alone.</div>
+        <ul class="feat">
+          <li>Signal badges neutralised &mdash; one neutral gray, no color noise</li>
+          <li>Apply is the hero action &mdash; Dismiss/Assign/Create Issue retreat</li>
+          <li>Typography &amp; 8-pt rhythm &mdash; consistent field label hierarchy</li>
+          <li>Applied/Dismissed states more readable and distinct</li>
+        </ul>
+        <div class="meta"><span class="pill">Risk: lowest</span><span class="pill">Ships fast</span><span class="pill">Pure CSS</span></div>
+      </div>
+      <div class="card-foot">
+        <a class="open" href="option-d.html">Open Option D &nbsp;&rarr;</a>
+        <div class="rec"></div>
+      </div>
+    </div>
 
-    <a href="option-5-assertion-tracer.html" class="runner-row">
-      <div class="rr-rank">#4</div>
-      <div class="rr-title">Assertion Tracer</div>
-      <div class="rr-acv">$75-180K</div>
-      <div class="rr-why">ASA 530 sampling in-product across 3,072 assertions × 512 controls is the unfakeable Big-4 credibility moat; jargon density raises sales-cycle drag.</div>
-      <div class="rr-cta">Open →</div>
-    </a>
+    <!-- E -->
+    <div class="card e">
+      <div class="top"></div>
+      <div class="pad">
+        <span class="alt">&#9679;&#9679; Moderate</span>
+        <div class="opt">OPTION E</div>
+        <div class="title">Re-sequence + progressive disclosure + trust</div>
+        <div class="bet">Same content, different order &mdash; what changed first, then why, then the diff on demand, then action.</div>
+        <ul class="feat">
+          <li>Original text hidden by default &mdash; &ldquo;Show original &amp; reason&rdquo; reveals context</li>
+          <li>HCAI trust frame &mdash; confidence badge + &ldquo;AI proposes &middot; you decide&rdquo;</li>
+          <li>Panel chrome compressed into a quieter control row</li>
+          <li>Built on D&rsquo;s visual base as table stakes</li>
+        </ul>
+        <div class="meta"><span class="pill">Risk: medium</span><span class="pill">Biggest scan-speed gain</span></div>
+      </div>
+      <div class="card-foot">
+        <a class="open" href="option-e.html">Open Option E &nbsp;&rarr;</a>
+        <div class="rec">★ <b>Recommended</b> &mdash; E on D&rsquo;s visual base</div>
+      </div>
+    </div>
 
-    <a href="option-13-tumor-board.html" class="runner-row">
-      <div class="rr-rank">#5</div>
-      <div class="rr-title">Hard-Control Panel</div>
-      <div class="rr-acv">$60-140K</div>
-      <div class="rr-why">"Panel the 15, sample the 797" with Cochran-justified stratification is a PCAOB-shaped category name; ACV mid and ROI still narrative.</div>
-      <div class="rr-cta">Open →</div>
-    </a>
-
-    <a href="option-16-referee.html" class="runner-row">
-      <div class="rr-rank">#6</div>
-      <div class="rr-title">Referee — CCM at scale</div>
-      <div class="rr-acv">$120-280K</div>
-      <div class="rr-why">10,247-to-41 throughput funnel and 1.5-2.5 FTE displacement is the cleanest dollar story, but CCM is a red-ocean wedge vs Workiva/CrossComply.</div>
-      <div class="rr-cta">Open →</div>
-    </a>
-
-    <a href="option-1-clusters.html" class="runner-row">
-      <div class="rr-rank">#7</div>
-      <div class="rr-title">Pattern-cluster triage</div>
-      <div class="rr-acv">$60-120K</div>
-      <div class="rr-why">2,847 items collapse to 14 patterns with 70% bulk-fixable — strong UX and hard-ROI math, but embeddings+LLM is a 1-2 quarter fast-follow.</div>
-      <div class="rr-cta">Open →</div>
-    </a>
-
-    <a href="option-6-evidence-score.html" class="runner-row">
-      <div class="rr-rank">#8</div>
-      <div class="rr-title">Evidence Score</div>
-      <div class="rr-acv">$60-140K</div>
-      <div class="rr-why">Brier 0.073 model card + stratified N=200 over 812 controls is audit-grade defensible, but adjacent to AuditBoard's existing risk-rating surface.</div>
-      <div class="rr-cta">Open →</div>
-    </a>
-
+    <!-- F -->
+    <div class="card f">
+      <div class="top"></div>
+      <div class="pad">
+        <span class="alt">&#9679;&#9679;&#9679; Deep</span>
+        <div class="opt">OPTION F</div>
+        <div class="title">Focus-first calm reading model</div>
+        <div class="bet">Focus is the default. One suggestion at a time. HCAI baked in as a template, not an afterthought.</div>
+        <ul class="feat">
+          <li>Opens in Focus view &mdash; one card at a time, prev/next navigation</li>
+          <li>HCAI decision frame on every card &mdash; confidence, provenance, you decide</li>
+          <li>Chrome fades to 68% opacity &mdash; content/chrome separation</li>
+          <li>Uniform decision unit &mdash; same template for every suggestion</li>
+        </ul>
+        <div class="meta"><span class="pill">Risk: highest</span><span class="pill">Biggest quality leap</span></div>
+      </div>
+      <div class="card-foot">
+        <a class="open" href="option-f.html">Open Option F &nbsp;&rarr;</a>
+        <div class="rec"><b class="ns">North star</b> &mdash; the &ldquo;calm panel&rdquo; vision</div>
+      </div>
+    </div>
   </div>
 
+  <div class="foot">
+    The baseline shows the Luna-reskinned panel with no modifications. Options A/B/C explore <em>new capabilities</em> at three altitudes of ambition. Options D/E/F are the opposite axis: no new features, pure UX-quality improvement. A &amp; B share one codebase; C is a full-screen build; D/E/F each start from the baseline.
+  </div>
 </div>
-
-<script>
-  /* Design-system switcher — persists choice to localStorage. */
-  (function () {
-    var KEY = 'sufficiency-ds';
-    var body = document.body;
-    var buttons = document.querySelectorAll('.ds-switcher .ds-option');
-    function apply(ds) {
-      body.setAttribute('data-ds', ds);
-      buttons.forEach(function (b) {
-        var on = b.dataset.dsValue === ds;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-checked', on ? 'true' : 'false');
-      });
-      try { localStorage.setItem(KEY, ds); } catch (e) {}
-    }
-    var saved = null;
-    try { saved = localStorage.getItem(KEY); } catch (e) {}
-    if (saved === 'midship' || saved === 'luna') apply(saved);
-    buttons.forEach(function (b) {
-      b.addEventListener('click', function () { apply(b.dataset.dsValue); });
-    });
-  })();
-</script>
-
-</body>
-</html>
+</body></html>
